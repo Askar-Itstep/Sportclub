@@ -1,0 +1,49 @@
+﻿@model Sportclub.Models.LoginModel
+
+@{
+    ViewBag.Title = "Регистрация";
+}
+
+<h2>Авторизация</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    @Html.ValidationSummary(true)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Login, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Login, new { htmlAttributes = new { @placeholder = "e-mail" } })
+            @Html.ValidationMessageFor(model => model.Login)
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Password, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @placeholder = "password" } })
+            @Html.ValidationMessageFor(model => model.Password)
+        </div>
+    </div>
+
+    @*<div class="form-group">
+        @Html.LabelFor(model => model.Token, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <p>Only managers and coaches</p>
+            @Html.EditorFor(model => model.Token, new { htmlAttributes = new { @placeholder = "password" } })
+            @Html.ValidationMessageFor(model => model.Token)
+        </div>
+    </div>*@
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Вход" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+<br />
+@Html.ActionLink("Зарегистрироваться", "Registration", "Account")

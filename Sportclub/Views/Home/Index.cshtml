@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Спортклуб Itstep</h1>
+    <p class="lead">Присоединяйся к нам. Делай вместе с нами. Делай лучше нас!</p>
+    <p>@Html.ActionLink("Узнать больше >>", "Section", "Home", new { @class = "btn btn-primary btn-lg" })</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Правила спортклуба</h2>
+        <p> Наш спортклуб продолжает политику внедрения экологии разума в трудовые массы. Lorem ipsum...</p>
+        <p>@Html.ActionLink("Узнать больше >>", "Politics", "Home", new { @class="btn btn-default"})</p>
+    </div>
+</div>

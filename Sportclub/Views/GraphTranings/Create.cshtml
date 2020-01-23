@@ -1,0 +1,136 @@
+﻿@model Sportclub.Entities.GraphTraning
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        //1 - взаимодейств. select option м/у собой
+        $('#coaches').change(function (e) {
+            var id = $(this).val();
+            console.log("coache change!")
+            console.log($(this).val())
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetSpecialists")/' + id,
+                success: function (data) {
+                    $('#specializations').replaceWith(data)
+                    $('#specializations').addClass('form-control')
+                    console.log(data)
+                },
+                error: function (xhr, status) {
+                    alert(status)
+                }
+            });
+        });
+
+        $('#specializations').change(function (e) {
+            var id = $(this).val();
+            console.log("spec change!")
+            console.log($(this).val())
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCoaches")/' + id,
+                success: function (data) {
+                    $('#coaches').replaceWith(data);
+                    $('#coaches').addClass('form-control')                    
+                },
+                error: function (xhr, status) {
+                    alert(status)
+                }
+            })
+        });
+
+        //2 - submit------------------------------------------------------
+        var myForm = document.forms[0];
+        $('input[type=submit]').click(function (e) {
+            $(this).attr('disabled', true)
+            $(myForm).triggerHandler('submit');
+        });
+        $(myForm).submit(function(e) {
+            event.preventDefault();
+            var specId = $('#specializations').val()
+            var formData = new FormData(this);
+            
+            formData.append("specId", specId)
+            //for (key of formData.keys()) 
+            //    console.log(`${key}: ${formData.get(key)}`);  //!-specId
+            
+            $.ajax({
+                method: "POST",
+                processData: false,
+                contentType: false,
+                data: formData,
+                url: "/GraphTranings/Create",
+                success: function (data) {
+                    alert(data);
+                    $(location).attr('href', '/GraphTranings/Index')
+                },
+                error: function (xhr, status) {
+                    alert(status);
+                }
+            })
+        });
+    })
+</script>
+<h2>Create</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Graphic Traning</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div style="display:flex">
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.CoacheId, "CoacheId", htmlAttributes: new { @class = "control-label" })
+                <div>
+                    @Html.DropDownList("CoacheId", null, htmlAttributes: new { @class = "form-control", id = "coaches" })
+                    @Html.ValidationMessageFor(model => model.CoacheId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group col-md-5">
+                @Html.LabelFor(model => model.CoacheId, "Specialist", htmlAttributes: new { @class = "control-label" })
+                <div>
+                    @Html.DropDownList("SpecializationId", null, htmlAttributes: new { @class = "form-control", id = "specializations" })
+                    @Html.ValidationMessageFor(model => model.CoacheId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DayOfWeek, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EnumDropDownListFor(model => model.DayOfWeek, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.DayOfWeek, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.TimeBegin, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TimeBegin, new { htmlAttributes = new { @class = "form-control", @placeholder = "09:00" } })
+                @Html.ValidationMessageFor(model => model.TimeBegin, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TimeEnd, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TimeEnd, new { htmlAttributes = new { @class = "form-control", @placeholder = "10:30" } })
+                @Html.ValidationMessageFor(model => model.TimeEnd, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

@@ -1,0 +1,50 @@
+﻿@model Sportclub.Entities.GraphTraning
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>GraphTraning</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Тренер
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Coache.User.FullName)
+        </dd>
+
+        <dt>
+            День недели
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DayOfWeek)
+        </dd>
+
+        <dt>
+           Время начала
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeBegin.GetDateTimeFormats('t')[0])
+        </dd>
+
+        <dt>
+            Время окончания
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeEnd.GetDateTimeFormats('t')[0])
+        </dd>        
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

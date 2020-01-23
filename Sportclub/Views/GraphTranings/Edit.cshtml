@@ -1,0 +1,164 @@
+﻿@model Sportclub.Entities.GraphTraning
+@using Sportclub.Entities
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    $(document).ready(function () {
+        {
+            ////2-передача формы + клиенты выбранн. графика (больше не надо - навигац.)     
+            ////обраб. формы
+            //var myForm = document.forms[0];
+            //var formData = new FormData(myForm);
+
+            //$('input[type=submit').click(function (e) {
+            //    e.preventDefault();
+            //    console.log("click: "+$('#graphicId').val())
+            //    $(this).attr('disabled', true);
+            //    //по графику-соотв. клиенты
+            //    $.ajax({    //промеж. запрос на получ. клиентов
+            //        method: "GET",
+            //        data: { id: $('#graphicId').val() },
+            //        url: "/GraphTranings/PreEdit/",
+            //        success: function (data) {
+            //            console.log(data)
+            //            formData.append("clientsResponce", data);
+            //            $(myForm).triggerHandler('submit');
+            //        },
+            //        error: function (xhr, status) {
+            //            alert(status);
+            //        }
+            //    })
+            //});
+            //$(myForm).submit(function (e) {
+            //    e.preventDefault();
+            //    for (key of formData.keys()) 
+            //        console.log(`${key}: ${formData.get(key)}`);  //!-specId
+            //    $.ajax({
+            //        method: "POST",
+            //        contentType: false,
+            //        processData: false,
+            //        data: formData,
+            //        url: "/GraphTranings/Edit",
+            //        success: function (data) {
+            //            alert(status)
+            //        },
+            //        error: function (xhr, status) {
+            //            alert(status)
+            //        }
+            //    })
+            //}); 
+        }
+        //3-установ. подписи специализ.
+        var data = $('#selectCoaches').val();
+        setLabelSpec(data);
+
+        $('#selectCoaches').change(function (e) {
+            var param = $(this).val()
+            setLabelSpec(param)
+        })      
+
+
+   //------------------service func------------------------
+        function setLabelSpec(data) {
+            console.log(data)
+            $.ajax({
+                method: "GET",
+                contentType: false,
+                data: { id: data },
+                url: "/GraphTranings/GetSpecializ",
+                success: function (data) {
+                    $('#labelSpec').html(data)
+                    return data;
+                },
+                error: function (xhr, status) {
+                    alert(status)
+                }
+            })
+        }
+        {
+            //function getArrTime(time) {   //больше не нужно - во вьюху уходит уже подготовл. инф
+            //    var fullTime = {
+            //        year: 2020,
+            //        month: 1,
+            //        day: 1,
+            //        hour: 0,
+            //        minute: 0,
+            //        secund: 0
+            //    }
+            //    var indexSplit = 0;
+            //    for (var index in time) {  
+            //        if (/[:./]/.test(time[index]) != true) {
+            //            //console.log(time[index]) //9 1 5 (not ':')
+            //            indexSplit = index;
+            //        }
+            //    }
+            //    fullTime.hour = time.slice(0, indexSplit - 2)
+            //    fullTime.minute = time.slice(indexSplit - 1);
+            //    return fullTime;
+            //};
+        }
+    });
+   
+</script>
+<h2>Edit</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>GraphTraning</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.Id, htmlAttributes: new { id = "graphicId" })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CoacheId, "Тренер", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-8">
+        @Html.LabelFor(model => model.CoacheId, "Специализация", htmlAttributes: new { @class = "control-label col-md-0", id="labelSpec"})
+            @Html.DropDownListFor(m => m.CoacheId, ViewBag.Coaches as SelectList, new { @class = "form-control", id = "selectCoaches" })
+            @Html.ValidationMessageFor(model => model.CoacheId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DayOfWeek, "День недели", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EnumDropDownListFor(model => model.DayOfWeek, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.DayOfWeek, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TimeBegin, "Время начала", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @*форма отправляет поля co врeменем во вложении "[0]"-?!*@
+            @*@Html.EditorFor(model => model.TimeBegin.GetDateTimeFormats('t')[0],  new { htmlAttributes = new { @class = "form-control", id = "timeBegin"} })*@
+
+            @Html.Editor("TimeBegin", new { htmlAttributes = new { @class = "form-control", id = "timeBegin" } })
+            @Html.ValidationMessageFor(model => model.TimeBegin, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TimeEnd, "Время окончания", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @*@Html.EditorFor(model => model.TimeEnd.GetDateTimeFormats('t')[0], new { htmlAttributes = new { @class = "form-control", id = "timeEnd"}})*@
+
+            @Html.Editor("TimeEnd", null, new { htmlAttributes = new { @class = "form-control", id = "timeEnd" } })
+            @Html.ValidationMessageFor(model => model.TimeEnd, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

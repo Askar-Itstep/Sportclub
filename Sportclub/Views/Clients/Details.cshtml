@@ -1,0 +1,67 @@
+﻿@model Sportclub.Entities.Clients
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Clients</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.User.FullName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.FullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.BirthDay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.BirthDay)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GraphicId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GraphicId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Password)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Password)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

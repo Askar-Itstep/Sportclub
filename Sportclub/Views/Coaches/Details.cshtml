@@ -1,0 +1,99 @@
+﻿@model Sportclub.Entities.Coaches
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Coaches</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.User.FullName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.FullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.BirthDay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.BirthDay)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Gender)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Gender)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Specialization)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Specialization)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeWork)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeWork)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Login)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Login)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Password)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.Password)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

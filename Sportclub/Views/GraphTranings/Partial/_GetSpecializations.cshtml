@@ -1,0 +1,12 @@
+﻿@*@model IEnumerable<Sportclub.Entities.Specialization>*@
+@model IEnumerable<Sportclub.Entities.Coaches>
+
+
+<select id="specializations">
+    @foreach (var item in Model) {
+        <option value="@item.SpecializationId">@item.Specialization.Title</option>
+    }
+
+</select>
+
+

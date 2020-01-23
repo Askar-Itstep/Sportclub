@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Sportclub.Entities.Coaches>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Тренеры</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.User.FullName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.BirthDay)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.Phone)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.Gender)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Specialization)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TimeWork)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.Login)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.User.Password)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.FullName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.BirthDay.GetDateTimeFormats('D')[0])
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.Phone)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.Gender)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Specialization.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TimeWork)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.Login)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User.Password)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>

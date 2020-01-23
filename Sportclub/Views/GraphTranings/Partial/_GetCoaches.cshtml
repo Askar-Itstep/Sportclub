@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Sportclub.Entities.Coaches>
+
+
+<select id="coaches">
+    @foreach (var item in Model) {
+        <option value="@item.Id">@item.User.FullName</option>
+    }
+
+</select>
+
