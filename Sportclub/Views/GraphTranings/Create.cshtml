@@ -41,8 +41,19 @@
                 }
             })
         });
+        //2------выставл. возм-го. времени занятий----------------
+        sendQueryTime();
+        $('#DayOfWeek').change(function (e) {
+            sendQueryTime()
+        })
+        //2d)блокир. при вводе занятого времени ---------
+        $('#inpTimeBegin').change(function (e) {
 
-        //2 - submit------------------------------------------------------
+        });
+        $('#inpTimeEnd').change(function (e) {
+
+        });
+        //3 --------- submit--------------------------------------------
         var myForm = document.forms[0];
         $('input[type=submit]').click(function (e) {
             $(this).attr('disabled', true)
@@ -72,6 +83,36 @@
                 }
             })
         });
+ //---------------------service func------------------------
+        function sendQueryTime() {
+            var intDay = $('#DayOfWeek').val()
+            $.ajax({
+                method: "GET",
+                data: { intDay: intDay },
+                url: "GetTime",
+                success: function (data) {                    
+                    var res = JSON.parse(data);
+                    if (res != null && res != undefined && res != "") {
+                        console.log("res Undef!")
+                        var timeBeginFull = res[0]["Item1"];
+                        var timeEndFull = res[0]["Item2"];
+                        console.log(timeBeginFull)
+                        var indexSplit = timeBeginFull.indexOf('T');
+                        var timeBegin = timeBeginFull.slice(indexSplit + 1)
+                        var timeEnd = timeEndFull.slice(indexSplit + 1)
+                        $('#TimeBegin').val(timeBegin)    //insert
+                        $('#TimeEnd').val(timeEnd)
+                    }
+                    else {
+                        $('#TimeBegin').val("09:00")    //insert
+                        $('#TimeEnd').val("10:30")
+                    }
+                },
+                error: function (xhr, status) {
+                    alert(status)
+                }
+            })
+        }
     })
 </script>
 <h2>Create</h2>
@@ -110,7 +151,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.TimeBegin, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.TimeBegin, new { htmlAttributes = new { @class = "form-control", @placeholder = "09:00" } })
+                @Html.EditorFor(model => model.TimeBegin, new { htmlAttributes = new { @class = "form-control", @placeholder = "09:00"} })
                 @Html.ValidationMessageFor(model => model.TimeBegin, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -118,7 +159,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.TimeEnd, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.TimeEnd, new { htmlAttributes = new { @class = "form-control", @placeholder = "10:30" } })
+                @Html.EditorFor(model => model.TimeEnd, new { htmlAttributes = new { @class = "form-control", @placeholder = "10:30"} })
                 @Html.ValidationMessageFor(model => model.TimeEnd, "", new { @class = "text-danger" })
             </div>
         </div>
