@@ -36,7 +36,7 @@ namespace Sportclub.Controllers
             return View(clients);
         }
 
-       
+       [Authorize(Roles ="admin, top_manager, manager")]
         public ActionResult Create()
         {
             return View();
@@ -44,16 +44,21 @@ namespace Sportclub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,FullName,BirthDay,Phone,Email,GraphicId,Password")] Clients clients)
+        public ActionResult Create(Clients clients)
         {
-            if (ModelState.IsValid)
-            {
-                db.Clients.Add(clients);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+            if (clients.UserId != 0) {              //Добав. возм. админу добавл. нов. клиента..
+                if (ModelState.IsValid) {
+                    db.Clients.Add(clients);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
-
-            return View(clients);
+            clients.User.Role = new Role { RoleName = "client" };//.. (т.к. нов. клиент ~ нов. юзер)
+            db.Users.Add(clients.User);
+            db.Clients.Add(clients);
+            db.SaveChanges();
+            //return View(clients);
+            return RedirectToAction("Index");
         }
 
        
