@@ -8,17 +8,18 @@ using System.Web;
 using System.Web.Mvc;
 using Sportclub;
 using Sportclub.Entities;
+using Sportclub.Repository;
 
 namespace Sportclub.Controllers
 {
     public class GymsController : Controller
     {
-        private Model1 db = new Model1();
-
-        // GET: Gyms
+        //private Model1 unitOfWork = new Model1();
+        private UnitOfWork unitOfWork = new UnitOfWork();
+        
         public ActionResult Index()
         {
-            return View(db.Gyms.ToList());
+            return View(unitOfWork.Gyms.GetAll().ToList());
         }
 
         // GET: Gyms/Details/5
@@ -28,7 +29,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Gyms gyms = db.Gyms.Find(id);
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
             if (gyms == null)
             {
                 return HttpNotFound();
@@ -48,8 +49,8 @@ namespace Sportclub.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Gyms.Add(gyms);
-                db.SaveChanges();
+                unitOfWork.Gyms.Create(gyms);
+                unitOfWork.Gyms.Save();
                 return RedirectToAction("Index");
             }
 
@@ -63,7 +64,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Gyms gyms = db.Gyms.Find(id);
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
             if (gyms == null)
             {
                 return HttpNotFound();
@@ -77,8 +78,8 @@ namespace Sportclub.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(gyms).State = EntityState.Modified;
-                db.SaveChanges();
+                unitOfWork.Gyms.Update(gyms);
+                unitOfWork.Gyms.Save();
                 return RedirectToAction("Index");
             }
             return View(gyms);
@@ -91,7 +92,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Gyms gyms = db.Gyms.Find(id);
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
             if (gyms == null)
             {
                 return HttpNotFound();
@@ -104,9 +105,9 @@ namespace Sportclub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Gyms gyms = db.Gyms.Find(id);
-            db.Gyms.Remove(gyms);
-            db.SaveChanges();
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
+            unitOfWork.Gyms.Delete(gyms.Id);
+            unitOfWork.Gyms.Save();
             return RedirectToAction("Index");
         }
 
@@ -114,7 +115,7 @@ namespace Sportclub.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                unitOfWork.Dispose();
             }
             base.Dispose(disposing);
         }

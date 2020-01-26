@@ -1,4 +1,5 @@
 ﻿using Sportclub.Entities;
+using Sportclub.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,107 +11,97 @@ namespace Sportclub.Controllers
 {
     public class AdminController : Controller
     {
-       
+        private UnitOfWork unitOfWork;
+        public AdminController()
+        {
+            unitOfWork = new UnitOfWork();
+        }
+
         [Authorize(Roles = "admin, top_manager, manager")] //CustomRoleProvider!
         public ActionResult Index()
         {
-            using(Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(a=>a.User).ToList());
-            }
-            
+            var admins = unitOfWork.Administration.GetAll().ToList();   //virtual!
+            return View(admins);
+
+
         }
-        
+
         public ActionResult Details(int? id)
         {
             if (id == null)
                 return HttpNotFound();
-            using (Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(a => a.User).ToList().Find(a=>a.Id==id));
-            }
-        }
-        
-        public ActionResult Create()
-        {
-            using (Model1 db = new Model1())
-            {
-                return View();
-            }
+            var admin = unitOfWork.Administration.GetById(id);
+            return View(admin);
+            //}
         }
 
-       
-        [HttpPost]
-        public ActionResult Create(Administration manager)//FormCollection collection
+        public ActionResult Create()
         {
-            try
-            {
-                using(Model1 db = new Model1())
-                {
-                    db.Administrations.Add(manager);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }                
+            ViewBag.UserList = new SelectList(unitOfWork.Users.GetAll()
+                .Where(u => u.Token == null).ToList(), "Id", "FullName");
+            return View();
+
+        }
+
+
+        [HttpPost]
+        public ActionResult Create(Administration manager)
+        {
+            try {
+                unitOfWork.Administration.Create(manager);
+                unitOfWork.Administration.Save();
+                return RedirectToAction("Index");
             }
-            catch
-            {
+            catch {
                 return View(manager);
             }
         }
 
-      
+
         public ActionResult Edit(int? id)
         {
             if (id == null)
                 return HttpNotFound();
-            using (Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(nameof(User)).ToList().Find(a=>a.Id==id));
-            }
+            var admin = unitOfWork.Administration.Include("User").ToList().Find(a => a.Id == id);
+            return View(admin);
+
         }
-        
+
         [HttpPost]
-        public ActionResult Edit(Administration manager) //int id, FormCollection collection
+        public ActionResult Edit(Administration manager)
         {
-            try
-            {
-                using (Model1 db = new Model1())
-                {
-                    db.Entry(manager).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }                
+            try {
+                unitOfWork.Administration.Update(manager);
+                unitOfWork.Administration.Save();
+                return RedirectToAction("Index");
+                //}                
             }
-            catch
-            {
+            catch (Exception e) {
+                System.Diagnostics.Debug.WriteLine("error: " + e.Message);
                 return View(manager);
             }
         }
-        
+
         public ActionResult Delete(int? id)
         {
             if (id == null)
                 return HttpNotFound();
-            using (Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(a => a.User).ToList().Find(a => a.Id == id));
-            }            
+            var admin = unitOfWork.Administration.Include("User").ToList().Find(a => a.Id == id);
+            return View(admin);
+
         }
-        
+
         [HttpPost]
-        public ActionResult Delete(Administration manager)//int id, FormCollection collection
+        public ActionResult Delete(Administration manager)
         {
-            try
-            {
-                using (Model1 db = new Model1())
-                {
-                    db.Administrations.Remove(manager);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+            try {
+
+                unitOfWork.Administration.Delete(manager.Id);
+                unitOfWork.Administration.Save();
+                return RedirectToAction("Index");
             }
-            catch
-            {
+
+            catch {
                 return View(manager);
             }
         }

@@ -21,7 +21,7 @@ namespace Sportclub.Entities
 
         [ForeignKey("User")]
         public int UserId { get; set; }
-        public User User { get; set; }
+        virtual public User User { get; set; }
 
         [Required]
         public StatusManager Status { get; set; }

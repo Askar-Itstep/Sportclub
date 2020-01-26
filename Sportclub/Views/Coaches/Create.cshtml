@@ -6,33 +6,37 @@
 }
 <script>
     $(document).ready(function () {
+        //------обраб. выбора <-Добавить специаль.> в select "Specialization"---------
         var formCreateSpec = document.forms["formCreateSpec"];
 
         $('#selSpec').on('change', function (e) {
             console.log($(this).val())
             if ($(this).val() == 0) {
                 $('#exampleModalScrollable').modal('show');
-
             }
         });
-        
+
         $('#btnCreateSpec').on('click', function (e) {
             $('#exampleModalScrollable').modal('hide');
             $('#formCreateCpec').triggerHandler('submit');
         });
-        $(formCreateSpec).on('submit', function (e) {//пусть работает Microsoft Ajax (_CreateSpec.)
+        $(formCreateSpec).on('submit', function (e) {//пусть работает Microsoft Ajax (_CreateSpec.-page)
             //e.preventDefault();   
-            console.log(this)
+            console.log("Jquery is run!")
             $.ajax({
                 method: "POST",
                 //dataType: "json",
                 url: "CreateSpec",
                 data: $(this).serialize(),
+                beforeSend: function () {
+                    console.log("before: " + $(this).serialize())
+                },
                 success: function (data) {
                     if (Array.isArray(data)) {
                         console.log("array")
                         var arr = JSON.parse(data)
                         console.log(arr)
+                        alert("Gooood!")
                     }
                     else
                         console.log("noArr!")
@@ -100,8 +104,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="modal-body">
-                @Html.Partial("Partial/_CreateSpecialization", new Specialization())
+            <div class="modal-body" id="modal-body">               
+                    @Html.Partial("Partial/_CreateSpecialization", new Specialization())
             </div>
         </div>
     </div>

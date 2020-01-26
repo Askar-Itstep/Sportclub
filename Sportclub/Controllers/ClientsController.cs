@@ -8,17 +8,22 @@ using System.Web;
 using System.Web.Mvc;
 using Sportclub;
 using Sportclub.Entities;
+using Sportclub.Repository;
 
 namespace Sportclub.Controllers
 {
     public class ClientsController : Controller
     {
-        private Model1 db = new Model1();
-
+        //private Model1 db = new Model1();
+        private UnitOfWork unityOfWork;
+        public ClientsController()
+        {
+            unityOfWork = new UnitOfWork();
+        }
     
         public ActionResult Index()
         {
-            return View(db.Clients.Include(c=>c.User).ToList());
+            return View(unityOfWork.Clients.GetAll().ToList());
         }
 
        
@@ -28,12 +33,12 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = db.Clients.Include(c=>c.User).ToList().Find(c=>c.Id==id);
-            if (clients == null)
+            Clients client = unityOfWork.Clients.GetById(id);
+            if (client == null)
             {
                 return HttpNotFound();
             }
-            return View(clients);
+            return View(client);
         }
 
        [Authorize(Roles ="admin, top_manager, manager")]
@@ -44,20 +49,19 @@ namespace Sportclub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Clients clients)
+        public ActionResult Create(Clients client)
         {
-            if (clients.UserId != 0) {              //Добав. возм. админу добавл. нов. клиента..
+            if (client.UserId != 0) {              //Добав. возм. админу добавл. нов. клиента..
                 if (ModelState.IsValid) {
-                    db.Clients.Add(clients);
-                    db.SaveChanges();
+                    unityOfWork.Clients.Create(client);
+                    unityOfWork.Clients.Save();
                     return RedirectToAction("Index");
                 }
             }
-            clients.User.Role = new Role { RoleName = "client" };//.. (т.к. нов. клиент ~ нов. юзер)
-            db.Users.Add(clients.User);
-            db.Clients.Add(clients);
-            db.SaveChanges();
-            //return View(clients);
+            client.User.Role = new Role { RoleName = "client" };//.. (т.к. нов. клиент ~ нов. юзер)
+            unityOfWork.Users.Create(client.User);
+            unityOfWork.Clients.Create(client);
+            unityOfWork.Clients.Save();
             return RedirectToAction("Index");
         }
 
@@ -68,27 +72,27 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = db.Clients.Include(c=>c.User).ToList().Find(c=>c.Id==id);
-            if (clients == null)
+            Clients client = unityOfWork.Clients.GetById(id);
+            if (client == null)
             {
                 return HttpNotFound();
             }
-            return View(clients);
+            return View(client);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(
-            //[Bind(Include = "Id,FullName,BirthDay,Phone,Email,Login,Password")]
-        Clients clients)
+        public ActionResult Edit(Clients client)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(clients).State = EntityState.Modified;
-                db.SaveChanges();
+                unityOfWork.Clients.Update(client);
+                unityOfWork.Users.Update(client.User);
+                unityOfWork.Users.Save();
+                unityOfWork.Clients.Save();
                 return RedirectToAction("Index");
             }
-            return View(clients);
+            return View(client);
         }
 
         
@@ -98,7 +102,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = db.Clients.Include(c=>c.User).ToList().Find(c=>c.Id==id);
+            Clients clients = unityOfWork.Clients.GetById(id);
             if (clients == null)
             {
                 return HttpNotFound();
@@ -111,19 +115,11 @@ namespace Sportclub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Clients clients = db.Clients.Include(c => c.User).ToList().Find(c => c.Id == id);
-            db.Clients.Remove(clients);
-            db.SaveChanges();
+            Clients clients = unityOfWork.Clients.GetById(id);
+            unityOfWork.Clients.Delete(clients.Id);
+            unityOfWork.Clients.Save();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

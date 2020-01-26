@@ -6,6 +6,7 @@
         if (Array.isArray(data)) {
             $(data).each(function (i, item) {
                 $('#selSpec').append("<option>" + item["Title"] + "</option>")
+                console.log("AjaxBegin!")
             })
         }
         else {
