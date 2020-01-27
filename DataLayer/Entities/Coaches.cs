@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Sportclub.Entities
 {
-    public class Administration
+    public class Coaches
     {
         [Key]
         public int Id { get; set; }
@@ -15,15 +15,19 @@ namespace Sportclub.Entities
         [ForeignKey("User")]
         public int UserId { get; set; }
         public User User { get; set; }
+        public StatusCoach Status { get; set; }
 
-        [Required]
-        public StatusManager Status { get; set; }
-  
+        [ForeignKey("Specialization")]
+        public int SpecializationId { get; set; }
 
+        virtual public Specialization Specialization { get; set; }
+        public double TimeWork { get; set; }  
+      
 
-        public enum StatusManager
+        public enum StatusCoach
         {
-           ADMIN,  MANAGER, TOP_MANAGER
+            COACHE, HEAD_COACHE_HALL, TOP_COACHE
         }
+       
     }
 }

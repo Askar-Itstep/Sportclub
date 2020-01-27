@@ -11,6 +11,13 @@ namespace Sportclub.Entities
     {
         [Key]
         public int Id { get; set; }
+        //public string FullName { get; set; }
+        //public DateTime BirthDay { get; set; }
+        //public string Phone { get; set; }
+        //public string Email { get; set; }
+        //public Gender Gender { get; set; }  
+        //public string Login { get; set; }
+        //public string Password { get; set; }
 
         [ForeignKey("User")]
         public int UserId { get; set; }
