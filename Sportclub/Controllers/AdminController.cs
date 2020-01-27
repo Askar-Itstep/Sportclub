@@ -1,4 +1,5 @@
 ﻿using Sportclub.Entities;
+using Sportclub.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,47 +11,39 @@ namespace Sportclub.Controllers
 {
     public class AdminController : Controller
     {
+        private UnitOfWork unitOfWork = new UnitOfWork();
        
+
         [Authorize(Roles = "admin, top_manager, manager")] //CustomRoleProvider!
         public ActionResult Index()
         {
-            using(Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(a=>a.User).ToList());
-            }
-            
+            var managers = unitOfWork.Administration.Include(nameof(User));
+            return View(managers.ToList());
         }
         
         public ActionResult Details(int? id)
         {
             if (id == null)
                 return HttpNotFound();
-            using (Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(a => a.User).ToList().Find(a=>a.Id==id));
-            }
+
+            var manager = unitOfWork.Administration.Include(nameof(User)).Where(m => m.Id == id);
+            return View(manager);
         }
         
         public ActionResult Create()
         {
-            using (Model1 db = new Model1())
-            {
-                return View();
-            }
+            return View();
         }
 
        
         [HttpPost]
-        public ActionResult Create(Administration manager)//FormCollection collection
+        public ActionResult Create(Administration manager)
         {
             try
             {
-                using(Model1 db = new Model1())
-                {
-                    db.Administrations.Add(manager);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }                
+                unitOfWork.Administration.Create(manager);
+                unitOfWork.Administration.Save();
+                return RedirectToAction("Index");                           
             }
             catch
             {
@@ -63,10 +56,9 @@ namespace Sportclub.Controllers
         {
             if (id == null)
                 return HttpNotFound();
-            using (Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(nameof(User)).ToList().Find(a=>a.Id==id));
-            }
+            
+            var manager = unitOfWork.Administration.Include(nameof(User)).Where(m => m.Id == id);
+            return View(manager);
         }
         
         [HttpPost]
@@ -74,13 +66,11 @@ namespace Sportclub.Controllers
         {
             try
             {
-                using (Model1 db = new Model1())
-                {
-                    db.Entry(manager).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }                
-            }
+                unitOfWork.Administration.Update(manager);
+                unitOfWork.Administration.Save();
+                return RedirectToAction("Index");
+            }                
+            
             catch
             {
                 return View(manager);
@@ -91,10 +81,10 @@ namespace Sportclub.Controllers
         {
             if (id == null)
                 return HttpNotFound();
-            using (Model1 db = new Model1())
-            {
-                return View(db.Administrations.Include(a => a.User).ToList().Find(a => a.Id == id));
-            }            
+
+            var manager = unitOfWork.Administration.Include(nameof(User)).Where(m => m.Id == id);
+            return View(manager);
+
         }
         
         [HttpPost]
@@ -102,12 +92,9 @@ namespace Sportclub.Controllers
         {
             try
             {
-                using (Model1 db = new Model1())
-                {
-                    db.Administrations.Remove(manager);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+                unitOfWork.Administration.Delete(manager.Id);
+                unitOfWork.Administration.Save();
+                return RedirectToAction("Index");                
             }
             catch
             {

@@ -8,16 +8,17 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using Sportclub.Repository;
 
 namespace Sportclub.Controllers
 {
     public class GraphTraningsController : Controller
     {
-        private Model1 db = new Model1();
+        private UnitOfWork unitOfWork = new UnitOfWork();
 
         public ActionResult Index()
         {
-            var graphTranings = db.GraphTranings.Include(g => g.Coache.User).Include(g => g.Clients);
+            var graphTranings = unitOfWork.GraphTranings.Include("Coache.User").Include(g => g.Clients);
             return View(graphTranings.ToList());
         }
 
@@ -27,7 +28,7 @@ namespace Sportclub.Controllers
             if (intDay == null) 
                 return HttpNotFound();
             
-            var graphics = db.GraphTranings.Where(g=>(int)g.DayOfWeek == intDay);
+            var graphics = unitOfWork.GraphTranings.GetAll().Where(g=>(int)g.DayOfWeek == intDay);
             //занятое время
             DateTime today = DateTime.Today;
             var times = graphics.Select(g => new { TimeBegin = g.TimeBegin, TimeEnd = g.TimeEnd }).ToList();
@@ -50,10 +51,10 @@ namespace Sportclub.Controllers
         [HttpGet]
         public ActionResult Create()    //надо добавить авто-коррекцию врмени в полях ввода в соотв. с граф.
         {
-            var coachesId = new SelectList(db.Coaches.Include(nameof(User)), "Id", "User.FullName");
+            var coachesId = new SelectList(unitOfWork.Coaches.Include(nameof(User)), "Id", "User.FullName");
 
             ViewBag.CoacheId = coachesId;   //-> DropDownList("CoacheId"..)
-            ViewBag.SpecializationId = new SelectList(db.Coaches.Include(nameof(Specialization)), "SpecializationId", "Specialization.Title");
+            ViewBag.SpecializationId = new SelectList(unitOfWork.Coaches.Include(nameof(Specialization)), "SpecializationId", "Specialization.Title");
             return View();
         }
 
@@ -62,8 +63,8 @@ namespace Sportclub.Controllers
         public ActionResult Create(GraphTraning graphTraning)
         {
             if (ModelState.IsValid) {
-                db.GraphTranings.Add(graphTraning);
-                db.SaveChanges();
+                unitOfWork.GraphTranings.Create(graphTraning);
+                unitOfWork.GraphTranings.Save();
                 return new JsonResult { Data = "Данные добавлены!", JsonRequestBehavior = JsonRequestBehavior.DenyGet };
             }
             return new JsonResult { Data = "Модель не валидна!", JsonRequestBehavior = JsonRequestBehavior.DenyGet };
@@ -72,8 +73,8 @@ namespace Sportclub.Controllers
         [HttpGet]   //вызов из CreatePage
         public ActionResult GetSpecialists(int id)//выбрать специальности  у выбранн. тренера по его UserId (сначала по ID-coache)
         {
-            var coache = db.Coaches.Include(nameof(Specialization)).FirstOrDefault(c => c.Id == id);    //тренер-личность
-            var resCoaches = db.Coaches.Include(nameof(Specialization)).Where(c => c.UserId == coache.UserId).ToList(); //его тренер-должности 
+            var coache = unitOfWork.Coaches.Include(nameof(Specialization)).FirstOrDefault(c => c.Id == id);    //тренер-личность
+            var resCoaches = unitOfWork.Coaches.Include(nameof(Specialization)).Where(c => c.UserId == coache.UserId).ToList(); //его тренер-должности 
             return PartialView("Partial/_GetSpecializations", resCoaches);
         }
         //вызов из CreatePage
@@ -83,12 +84,11 @@ namespace Sportclub.Controllers
                 return HttpNotFound();
             }
 
-            var specialization = db.Specializations.FirstOrDefault(s => s.Id == id);
+            var specialization = unitOfWork.Specialization.GetAll().FirstOrDefault(s => s.Id == id);
             List<Coaches> coaches = new List<Coaches>();
-            var coachesQuery = db.Coaches.Include(nameof(User))
+            var coachesQuery = unitOfWork.Coaches.Include(nameof(User))
                 .Where(c => c.SpecializationId == specialization.Id).ToList();
             coaches.AddRange(coachesQuery);
-
 
             return PartialView("Partial/_GetCoaches", coaches);
         }
@@ -97,7 +97,7 @@ namespace Sportclub.Controllers
         [HttpGet]   //вызов из EditPage (установ. label в соотв. с select)
         public ActionResult GetSpecializ(int id)//выбрать  специальностЬ  по ID-coache (одно имя - разн. спец.)
         {
-            var coache = db.Coaches.Include(nameof(Specialization)).FirstOrDefault(c => c.Id == id);    
+            var coache = unitOfWork.Coaches.Include(nameof(Specialization)).FirstOrDefault(c => c.Id == id);    
             
             return new JsonResult { Data = coache.Specialization.Title, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
@@ -106,11 +106,11 @@ namespace Sportclub.Controllers
             if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            GraphTraning graphTraning = db.GraphTranings.Find(id);
+            GraphTraning graphTraning = unitOfWork.GraphTranings.GetById(id);
             if (graphTraning == null) {
                 return HttpNotFound();
             }            
-            var graphicWithCoacheWithName = db.GraphTranings.Include(g => g.Coache)
+            var graphicWithCoacheWithName = unitOfWork.GraphTranings.Include("Coache")
                                                  .Select(g => new { Id = g.Id, CoacheId = (int)g.CoacheId, UserCoache = g.Coache.User});
             ViewBag.Coaches = new SelectList(graphicWithCoacheWithName, "CoacheId", "UserCoache.FullName", graphTraning.CoacheId);
             ViewBag.TimeBegin = graphTraning.TimeBegin.GetDateTimeFormats('t')[0];
@@ -125,7 +125,7 @@ namespace Sportclub.Controllers
         //        return HttpNotFound("Такoй график не найден!");
         //    }
 
-        //    var clients = db.Clients.Include(nameof(User)).Where(c => c.GraphicId == id).Select(c => c.Id).ToList();
+        //    var clients = unitOfWork.Clients.Include(nameof(User)).Where(c => c.GraphicId == id).Select(c => c.Id).ToList();
         //    //System.Diagnostics.Debug.WriteLine("clients[0]: " + clients[0].User.FullName);
         //    return new JsonResult { Data = clients, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 
@@ -137,11 +137,11 @@ namespace Sportclub.Controllers
         {
             var form = Request.Form;
             if (ModelState.IsValid) {
-                db.Entry(graphTraning).State = EntityState.Modified;
-                db.SaveChanges();
+                unitOfWork.GraphTranings.Update(graphTraning);
+                unitOfWork.GraphTranings.Save();
                 return RedirectToAction("Index");
             }
-            ViewBag.CoacheId = new SelectList(db.Coaches.Include(nameof(User)), "UserId", "User.FullName", graphTraning.CoacheId); 
+            ViewBag.CoacheId = new SelectList(unitOfWork.Coaches.Include(nameof(User)), "UserId", "User.FullName", graphTraning.CoacheId); 
 
             return View(graphTraning);
         }
@@ -152,13 +152,12 @@ namespace Sportclub.Controllers
             if (id == null) {
                 return HttpNotFound();
             }
-            using (Model1 db = new Model1()) {
-                var graphic = db.GraphTranings.Where(g => g.Id == id).Include(g => g.Clients).FirstOrDefault();
+           
+                var graphic = unitOfWork.GraphTranings.GetAll().Where(g => g.Id == id).Include(g => g.Clients).FirstOrDefault();
                 //----------исп-ся User(~Principal) авторизованн. юзера----------
-                var client = db.Clients.Include(c => c.User).Where(c => c.User.Login.Equals(User.Identity.Name)).FirstOrDefault();
+                var client = unitOfWork.Clients.Include("User").Where(c => c.User.Login.Equals(User.Identity.Name)).FirstOrDefault();
                 graphic.Clients.Add(client);
-                db.SaveChanges();
-            }
+               
             return RedirectToAction("Index");
         }
 
@@ -168,7 +167,7 @@ namespace Sportclub.Controllers
             if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            GraphTraning graphTraning = db.GraphTranings.Find(id);
+            GraphTraning graphTraning = unitOfWork.GraphTranings.GetById(id);
             if (graphTraning == null) {
                 return HttpNotFound();
             }
@@ -179,9 +178,9 @@ namespace Sportclub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            GraphTraning graphTraning = db.GraphTranings.Find(id);
-            db.GraphTranings.Remove(graphTraning);
-            db.SaveChanges();
+            GraphTraning graphTraning = unitOfWork.GraphTranings.GetById(id);
+            unitOfWork.GraphTranings.Delete(graphTraning.Id);
+            unitOfWork.GraphTranings.Save();
             return RedirectToAction("Index");
         }
 
@@ -191,18 +190,12 @@ namespace Sportclub.Controllers
             if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            GraphTraning graphTraning = db.GraphTranings.Include(g => g.Coache.User).ToList().Find(g => g.Id == id);
+            GraphTraning graphTraning = unitOfWork.GraphTranings.Include("Coache.User").ToList().Find(g => g.Id == id);
             if (graphTraning == null) {
                 return HttpNotFound();
             }
             return View(graphTraning);
         }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+       
     }
 }

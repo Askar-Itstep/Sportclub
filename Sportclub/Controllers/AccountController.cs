@@ -159,17 +159,15 @@ namespace Sportclub.Controllers
 
         private Role IsRole(Role role, string param)
         {
-            //using (Model1 db = new Model1())
-            //{
             if (role == null)//если в БД нет роли client
             {
-                unitOfWork.Roles.Create(new Role { RoleName = param }); //пока
+                unitOfWork.Roles.Create(new Role { RoleName = param }); 
                 unitOfWork.Roles.Save();
                 role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals(param)).FirstOrDefault();
             }
 
             return role;
-            //}
+           
         }
 
         public ActionResult Logoff()

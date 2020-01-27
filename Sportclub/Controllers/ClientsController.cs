@@ -8,17 +8,18 @@ using System.Web;
 using System.Web.Mvc;
 using Sportclub;
 using Sportclub.Entities;
+using Sportclub.Repository;
 
 namespace Sportclub.Controllers
 {
     public class ClientsController : Controller
     {
-        private Model1 db = new Model1();
-
+        private UnitOfWork unitOfWork = new UnitOfWork();
     
         public ActionResult Index()
         {
-            return View(db.Clients.Include(c=>c.User).ToList());
+            var clients = unitOfWork.Clients.GetAll();
+            return View(clients.ToList());
         }
 
        
@@ -28,7 +29,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = db.Clients.Include(c=>c.User).ToList().Find(c=>c.Id==id);
+            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c=>c.Id==id);
             if (clients == null)
             {
                 return HttpNotFound();
@@ -48,15 +49,15 @@ namespace Sportclub.Controllers
         {
             if (clients.UserId != 0) {              //Добав. возм. админу добавл. нов. клиента..
                 if (ModelState.IsValid) {
-                    db.Clients.Add(clients);
-                    db.SaveChanges();
+                    unitOfWork.Clients.Create(clients);
+                    unitOfWork.Clients.Save();
                     return RedirectToAction("Index");
                 }
             }
             clients.User.Role = new Role { RoleName = "client" };//.. (т.к. нов. клиент ~ нов. юзер)
-            db.Users.Add(clients.User);
-            db.Clients.Add(clients);
-            db.SaveChanges();
+            unitOfWork.Users.Create(clients.User);
+            unitOfWork.Clients.Create(clients);
+            unitOfWork.Clients.Save();
             //return View(clients);
             return RedirectToAction("Index");
         }
@@ -68,7 +69,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = db.Clients.Include(c=>c.User).ToList().Find(c=>c.Id==id);
+            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c=>c.Id==id);
             if (clients == null)
             {
                 return HttpNotFound();
@@ -84,8 +85,8 @@ namespace Sportclub.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(clients).State = EntityState.Modified;
-                db.SaveChanges();
+                unitOfWork.Clients.Update(clients);
+                unitOfWork.Clients.Save();
                 return RedirectToAction("Index");
             }
             return View(clients);
@@ -98,7 +99,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = db.Clients.Include(c=>c.User).ToList().Find(c=>c.Id==id);
+            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c=>c.Id==id);
             if (clients == null)
             {
                 return HttpNotFound();
@@ -111,19 +112,12 @@ namespace Sportclub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Clients clients = db.Clients.Include(c => c.User).ToList().Find(c => c.Id == id);
-            db.Clients.Remove(clients);
-            db.SaveChanges();
+            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c => c.Id == id);
+            unitOfWork.Clients.Delete(clients.Id);
+            unitOfWork.Clients.Save();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        
     }
 }

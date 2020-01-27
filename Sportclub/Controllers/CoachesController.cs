@@ -8,17 +8,19 @@ using System.Web;
 using System.Web.Mvc;
 using Sportclub;
 using Sportclub.Entities;
+using Sportclub.Repository;
 
 namespace Sportclub.Controllers
 {
     public class CoachesController : Controller
     {
-        private Model1 db = new Model1();
+        private UnitOfWork unitOfWork = new UnitOfWork();
 
         
         public ActionResult Index()
         {
-            return View(db.Coaches.Include(nameof(User)).Include(nameof(Specialization)).ToList());
+            var coaches = unitOfWork.Coaches.Include(nameof(User)).Include(nameof(Specialization));
+            return View(coaches.ToList());
         }
 
         
@@ -28,7 +30,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Coaches coaches = db.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
+            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
             if (coaches == null)
             {
                 return HttpNotFound();
@@ -39,26 +41,24 @@ namespace Sportclub.Controllers
        
         public ActionResult Create()
         {
-            using(Model1 db = new Model1())
-            {
-                var specializations = db.Specializations.ToList();
+                var specializations = unitOfWork.Specialization.GetAll().ToList();
                 specializations.Add(new Specialization { Title = "-- Добавить специализацию --" });
                 ViewBag.Specializations = new SelectList(specializations, "Id", "Title");
-                ViewBag.UserList = new SelectList(db.Users.Where(u=>u.Token.Contains("coache")).ToList(), "Id", "FullName");
+                ViewBag.UserList = new SelectList(unitOfWork.Users.GetAll().Where(u=>u.Token.Contains("coache")).ToList(), "Id", "FullName");
                 return View();
-            }            
+                      
         }
         //[HttpPost]
         //public ActionResult CreateSpec()
         //{
         //    if (ModelState.IsValid)
         //    {
-        //        using (Model1 db = new Model1())
+        //        using (Model1 unitOfWork = new Model1())
         //        {
         //            Specialization specialization = new Specialization { Title = form["Title"] };
-        //            db.Specializations.Add(specialization);
-        //            db.SaveChanges();
-        //            var specializations = db.Specializations.ToList();
+        //            unitOfWork.Specializations.Create(specialization);
+        //            unitOfWork.Save();
+        //            var specializations = unitOfWork.Specializations.ToList();
         //            ViewBag.Specializations = new SelectList(specializations, "Id", "Title");
         //            return new JsonResult {
         //                Data = specialization,
@@ -66,7 +66,7 @@ namespace Sportclub.Controllers
         //            };
         //        }
         //    }
-        //    return RedirectToAction("Index", db.Coaches.Include(nameof(User)).ToList());
+        //    return RedirectToAction("Index", unitOfWork.Coaches.Include(nameof(User)).ToList());
         //}
 
         [HttpPost]
@@ -76,19 +76,18 @@ namespace Sportclub.Controllers
                 return HttpNotFound();
             if (ModelState.IsValid)
             {
-                using (Model1 db = new Model1())
-                {
-                    db.Specializations.Add(specialization);
-                    db.SaveChanges();
-                    var specializations = db.Specializations.ToList();
+               
+                    unitOfWork.Specialization.Create(specialization);
+                    unitOfWork.Specialization.Save();
+                    var specializations = unitOfWork.Specialization.GetAll().ToList();
                     ViewBag.Specializations = new SelectList(specializations, "Id", "Title");
                     return new JsonResult  {
                         Data = specializations,
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
                     };
-                }
+                
             }
-            return RedirectToAction("Index", db.Coaches.Include(nameof(User)).ToList());
+            return RedirectToAction("Index", unitOfWork.Coaches.Include(nameof(User)).ToList());
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -101,8 +100,8 @@ namespace Sportclub.Controllers
             }
             if (ModelState.IsValid)
             {
-                db.Coaches.Add(coaches);
-                db.SaveChanges();
+                unitOfWork.Coaches.Create(coaches);
+                unitOfWork.Coaches.Save();
                 return RedirectToAction("Index");
             }
 
@@ -115,8 +114,8 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ViewBag.SpecList = new SelectList(db.Specializations.ToList(), "Id", "Title");
-            Coaches coaches = db.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
+            ViewBag.SpecList = new SelectList(unitOfWork.Specialization.GetAll().ToList(), "Id", "Title");
+            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
             if (coaches == null)
             {
                 return HttpNotFound();
@@ -130,8 +129,8 @@ namespace Sportclub.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(coaches).State = EntityState.Modified; //здесь coaches.UserId == coaches.User.Id
-                db.SaveChanges();
+                unitOfWork.Coaches.Update(coaches); //здесь coaches.UserId == coaches.User.Id
+                unitOfWork.Coaches.Save();
                 return RedirectToAction("Index");
             }
             return View(coaches);
@@ -143,7 +142,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Coaches coaches = db.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
+            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
             if (coaches == null)
             {
                 return HttpNotFound();
@@ -156,19 +155,12 @@ namespace Sportclub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Coaches coaches = db.Coaches.Include(nameof(User)).ToList().Find(c=>c.Id==id);
-            db.Coaches.Remove(coaches);
-            db.SaveChanges();
+            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c=>c.Id==id);
+            unitOfWork.Coaches.Delete(coaches.Id);
+            unitOfWork.Coaches.Save();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+       
     }
 }
