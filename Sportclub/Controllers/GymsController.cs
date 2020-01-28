@@ -8,17 +8,18 @@ using System.Web;
 using System.Web.Mvc;
 using Sportclub;
 using Sportclub.Entities;
+using Sportclub.Repository;
 
 namespace Sportclub.Controllers
 {
     public class GymsController : Controller
     {
-        private Model1 db = new Model1();
+        private UnitOfWork unitOfWork = new UnitOfWork();
 
-        // GET: Gyms
+       
         public ActionResult Index()
         {
-            return View(db.Gyms.ToList());
+            return View(unitOfWork.Gyms.GetAll().ToList());
         }
 
         // GET: Gyms/Details/5
@@ -28,7 +29,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Gyms gyms = db.Gyms.Find(id);
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
             if (gyms == null)
             {
                 return HttpNotFound();
@@ -48,8 +49,8 @@ namespace Sportclub.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Gyms.Add(gyms);
-                db.SaveChanges();
+                unitOfWork.Gyms.Create(gyms);
+                unitOfWork.Gyms.Save();
                 return RedirectToAction("Index");
             }
 
@@ -63,7 +64,7 @@ namespace Sportclub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Gyms gyms = db.Gyms.Find(id);
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
             if (gyms == null)
             {
                 return HttpNotFound();
@@ -77,21 +78,20 @@ namespace Sportclub.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(gyms).State = EntityState.Modified;
-                db.SaveChanges();
+                unitOfWork.Gyms.Update(gyms);
+                unitOfWork.Gyms.Save();
                 return RedirectToAction("Index");
             }
             return View(gyms);
         }
 
-        // GET: Gyms/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Gyms gyms = db.Gyms.Find(id);
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
             if (gyms == null)
             {
                 return HttpNotFound();
@@ -99,24 +99,17 @@ namespace Sportclub.Controllers
             return View(gyms);
         }
 
-        // POST: Gyms/Delete/5
+      
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Gyms gyms = db.Gyms.Find(id);
-            db.Gyms.Remove(gyms);
-            db.SaveChanges();
+            Gyms gyms = unitOfWork.Gyms.GetById(id);
+            unitOfWork.Gyms.Delete(gyms.Id);
+            unitOfWork.Gyms.Save();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+       
     }
 }

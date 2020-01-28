@@ -17,11 +17,7 @@ namespace Sportclub.Controllers
         public ActionResult Section()
         {
             ViewBag.Message = "Секции спортклуба";
-            using(Model1 db = new Model1())
-            {
-                //var specializations = db.Coaches.Select(c=>c.Specialization).Distinct().ToList();
-                //specializations.ForEach(s=>System.Diagnostics.Debug.WriteLine(s));
-            }
+            
 
             return View();
         }
