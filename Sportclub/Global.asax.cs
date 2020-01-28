@@ -1,5 +1,5 @@
-﻿using Sportclub.Models;
-using Sportclub.Providers;
+﻿using DataLayer.Models;
+using DataLayer.Providers;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,7 +9,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace Sportclub
+namespace DataLayer
 {
     public class MvcApplication : System.Web.HttpApplication
     {
@@ -23,8 +23,7 @@ namespace Sportclub
         }
 
         protected void Application_EndRequest()
-        {   //here breakpoint
-            // under debug mode you can find the exceptions at code: this.Context.AllErrors
+        {   
             Exception[] exceptions = Context.AllErrors;
         }
     }

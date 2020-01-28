@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace Sportclub
+namespace DataLayer
 {
     public class BundleConfig
     {

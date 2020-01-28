@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28306.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sportclub", "Sportclub\Sportclub.csproj", "{B6AACEC9-8671-41A9-8F89-CA96A4325823}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{1CE33A74-D80E-46BC-9A97-B2D650941A9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer", "BusinessLayer\BusinessLayer.csproj", "{A766AEB1-CF48-438E-8B94-98B890E2A0E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B6AACEC9-8671-41A9-8F89-CA96A4325823}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6AACEC9-8671-41A9-8F89-CA96A4325823}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6AACEC9-8671-41A9-8F89-CA96A4325823}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CE33A74-D80E-46BC-9A97-B2D650941A9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CE33A74-D80E-46BC-9A97-B2D650941A9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CE33A74-D80E-46BC-9A97-B2D650941A9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CE33A74-D80E-46BC-9A97-B2D650941A9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A766AEB1-CF48-438E-8B94-98B890E2A0E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A766AEB1-CF48-438E-8B94-98B890E2A0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A766AEB1-CF48-438E-8B94-98B890E2A0E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A766AEB1-CF48-438E-8B94-98B890E2A0E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

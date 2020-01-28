@@ -1,10 +1,10 @@
-﻿using Sportclub.Entities;
+﻿using DataLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Security;
-namespace Sportclub.Providers
+namespace DataLayer.Providers
 {
     public class CustomRoleProvider : RoleProvider
     {

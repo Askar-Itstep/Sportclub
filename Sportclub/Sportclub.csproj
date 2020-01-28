@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -51,10 +52,10 @@
       <HintPath>..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -165,52 +166,13 @@
     <Compile Include="Controllers\GraphTraningsController.cs" />
     <Compile Include="Controllers\GymsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Entities\Administration.cs" />
-    <Compile Include="Entities\Clients.cs" />
-    <Compile Include="Entities\Coaches.cs" />
-    <Compile Include="Entities\Gender.cs" />
-    <Compile Include="Entities\GraphTraning.cs" />
-    <Compile Include="Entities\Gyms.cs" />
-    <Compile Include="Entities\Role.cs" />
-    <Compile Include="Entities\Specialization.cs" />
-    <Compile Include="Entities\User.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202001021313511_FixOne.cs" />
-    <Compile Include="Migrations\202001021313511_FixOne.Designer.cs">
-      <DependentUpon>202001021313511_FixOne.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001021531173_ExtractUserIntoTable.cs" />
-    <Compile Include="Migrations\202001021531173_ExtractUserIntoTable.Designer.cs">
-      <DependentUpon>202001021531173_ExtractUserIntoTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001030411114_AddTableRole.cs" />
-    <Compile Include="Migrations\202001030411114_AddTableRole.Designer.cs">
-      <DependentUpon>202001030411114_AddTableRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001030453571_FixRole.cs" />
-    <Compile Include="Migrations\202001030453571_FixRole.Designer.cs">
-      <DependentUpon>202001030453571_FixRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001040720093_AddTokenUser.cs" />
-    <Compile Include="Migrations\202001040720093_AddTokenUser.Designer.cs">
-      <DependentUpon>202001040720093_AddTokenUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001041417320_fix-Initial.cs" />
-    <Compile Include="Migrations\202001041417320_fix-Initial.Designer.cs">
-      <DependentUpon>202001041417320_fix-Initial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Providers\CustomRoleProvider.cs" />
-    <Compile Include="Models\Model1.cs" />
     <Compile Include="Models\LoginModel.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\RegisterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\BaseRepository.cs" />
-    <Compile Include="Repository\IRepository.cs" />
-    <Compile Include="Repository\IUnitOfWork.cs" />
-    <Compile Include="Repository\UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -319,7 +281,9 @@
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -389,24 +353,14 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202001021313511_FixOne.resx">
-      <DependentUpon>202001021313511_FixOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001021531173_ExtractUserIntoTable.resx">
-      <DependentUpon>202001021531173_ExtractUserIntoTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001030411114_AddTableRole.resx">
-      <DependentUpon>202001030411114_AddTableRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001030453571_FixRole.resx">
-      <DependentUpon>202001030453571_FixRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001040720093_AddTokenUser.resx">
-      <DependentUpon>202001040720093_AddTokenUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001041417320_fix-Initial.resx">
-      <DependentUpon>202001041417320_fix-Initial.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\BusinessLayer\BusinessLayer.csproj">
+      <Project>{a766aeb1-cf48-438e-8b94-98b890e2a0e8}</Project>
+      <Name>BusinessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataLayer\DataLayer.csproj">
+      <Project>{1CE33A74-D80E-46BC-9A97-B2D650941A9F}</Project>
+      <Name>DataLayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -442,7 +396,10 @@
       <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.targets'))" />
   </Target>
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

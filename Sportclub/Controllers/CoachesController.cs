@@ -6,11 +6,11 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Sportclub;
-using Sportclub.Entities;
-using Sportclub.Repository;
+using DataLayer;
+using DataLayer.Entities;
+using DataLayer.Repository;
 
-namespace Sportclub.Controllers
+namespace DataLayer.Controllers
 {
     public class CoachesController : Controller
     {

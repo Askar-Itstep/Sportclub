@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace Sportclub
+namespace DataLayer
 {
     public class FilterConfig
     {

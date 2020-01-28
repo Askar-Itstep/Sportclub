@@ -2,7 +2,7 @@ using System;
 
 using Unity;
 
-namespace DataLayer
+namespace BusinessLayer
 {
     /// <summary>
     /// Specifies the Unity configuration for the main container.

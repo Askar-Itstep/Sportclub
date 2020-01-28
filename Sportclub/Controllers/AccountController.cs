@@ -1,7 +1,7 @@
-﻿using Sportclub.Entities;
-using Sportclub.Models;
-using Sportclub.Providers;
-using Sportclub.Repository;
+﻿using DataLayer.Entities;
+using DataLayer.Models;
+using DataLayer.Providers;
+using DataLayer.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
-namespace Sportclub.Controllers
+namespace DataLayer.Controllers
 {
     public class AccountController : Controller
     {

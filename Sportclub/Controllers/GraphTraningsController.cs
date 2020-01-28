@@ -1,5 +1,4 @@
 ﻿using Microsoft.Ajax.Utilities;
-using Sportclub.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,9 +7,10 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Newtonsoft.Json;
-using Sportclub.Repository;
+using DataLayer.Repository;
+using DataLayer.Entities;
 
-namespace Sportclub.Controllers
+namespace DataLayer.Controllers
 {
     public class GraphTraningsController : Controller
     {
