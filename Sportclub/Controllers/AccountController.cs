@@ -1,5 +1,4 @@
 ﻿using DataLayer.Entities;
-using DataLayer.Models;
 using DataLayer.Providers;
 using DataLayer.Repository;
 using System;

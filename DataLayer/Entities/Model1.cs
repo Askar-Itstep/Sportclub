@@ -11,7 +11,6 @@ namespace DataLayer
         public Model1()
             : base("name=Model1")
         {
-            //Database.SetInitializer(new MyContextInitializer());//Global.asax
         }
        
         public virtual DbSet<User> Users { get; set; }
@@ -26,8 +25,7 @@ namespace DataLayer
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
-
-        public System.Data.Entity.DbSet<Sportclub.Models.LoginModel> LoginModels { get; set; }
+        
     }
     public class MyContextInitializer : DropCreateDatabaseIfModelChanges<Model1>    //Always //
     {

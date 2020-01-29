@@ -44,9 +44,9 @@ namespace DataLayer.Repository
         public IQueryable<T> Include(params string[] navigationProperty)
         {
             var query = GetAll();
-            //foreach (var item in navigationProperty)               
+            //foreach (var item in navigationProperty)
             //    query.Include(item);
-
+            //return query;
             return navigationProperty.Aggregate(query, (curr, naviProp) => curr.Include(naviProp));
         }
 

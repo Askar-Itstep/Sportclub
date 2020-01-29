@@ -14,7 +14,7 @@ namespace DataLayer.Controllers
         private UnitOfWork unitOfWork = new UnitOfWork();
        
 
-        [Authorize(Roles = "admin, top_manager, manager")] //CustomRoleProvider!
+        [Authorize(Roles = "admin, top_manager, manager")] //из CustomRoleProvider!
         public ActionResult Index()
         {
             var managers = unitOfWork.Administration.Include(nameof(User));
