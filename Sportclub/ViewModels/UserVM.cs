@@ -17,12 +17,13 @@ namespace Sportclub.ViewModel
         public DateTime BirthDay { get; set; }
 
 
-        [RegularExpression(@"(^\+\d{1,2})?((\(\d{3}\))|(\-?\d{3}\-)|(\d{3}))((\d{3}\-\d{4})|(\d{3}\-\d\d\  
-                    -\d\d)|(\d{7})|(\d{3}\-\d\-\d{3})) ", ErrorMessage = "Некорректный номер")]
+        //[RegularExpression(
+        //    @"(^\+\d{1,2})?((\(\d{3}\))|(\-?\d{3}\-)|(\d{3}))((\d{3}\-\d{4})|(\d{3}\-\d\d\ -\d\d)
+        //        |(\d{7})|(\d{3}\-\d\-\d{3}))", ErrorMessage = "Некорректный номер")]
         public string Phone { get; set; }
 
 
-        [RegularExpression(@"(/\A[^@]+@([^@\.]+\.)+[^@\.]+\z/)) ", ErrorMessage = "Некорректный e-mail")]
+        //[RegularExpression(@"(/\A[^@]+@([^@\.]+\.)+[^@\.]+\z/) ", ErrorMessage = "Некорректный e-mail")]
         public string Email { get; set; }
         public GenderVM GenderVM { get; set; }
 

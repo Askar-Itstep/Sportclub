@@ -1,5 +1,5 @@
-﻿@using Sportclub.Entities
-@model Sportclub.Entities.Coaches
+﻿@using DataLayer.Entities
+@model DataLayer.Entities.Coaches
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -22,25 +22,25 @@
         });
         $(formCreateSpec).on('submit', function (e) {//пусть работает Microsoft Ajax (_CreateSpec.)
             //e.preventDefault();   
-            console.log(this)
-            $.ajax({
-                method: "POST",
-                //dataType: "json",
-                url: "CreateSpec",
-                data: $(this).serialize(),
-                success: function (data) {
-                    if (Array.isArray(data)) {
-                        console.log("array")
-                        var arr = JSON.parse(data)
-                        console.log(arr)
-                    }
-                    else
-                        console.log("noArr!")
-                },
-                error: function (xhr, status) {
-                    alert(xhr.statusCode, + status)
-                }
-            });
+            //console.log(this)
+            //$.ajax({
+            //    method: "POST",
+            //    //dataType: "json",
+            //    url: "CreateSpec",
+            //    data: $(this).serialize(),
+            //    success: function (data) {
+            //        if (Array.isArray(data)) {
+            //            console.log("array")
+            //            var arr = JSON.parse(data)
+            //            console.log(arr)
+            //        }
+            //        else
+            //            console.log("noArr!")
+            //    },
+            //    error: function (xhr, status) {
+            //        alert(xhr.statusCode, + status)
+            //    }
+            //});
         });
     });
 </script>
