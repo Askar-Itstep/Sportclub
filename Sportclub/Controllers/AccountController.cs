@@ -1,6 +1,9 @@
-﻿using DataLayer.Entities;
+﻿using AutoMapper;
+using BusinessLayer.BusinessObject;
+using DataLayer.Entities;
 using DataLayer.Providers;
 using DataLayer.Repository;
+using Sportclub.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +12,18 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
-namespace DataLayer.Controllers
+namespace Sportclub.Controllers
 {
     public class AccountController : Controller
     {
         private UnitOfWork unitOfWork = new UnitOfWork();
+        IMapper mapper;
+        public AccountController()
+        {}
+        public AccountController(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
 
         public ActionResult Login()
         {
@@ -21,17 +31,18 @@ namespace DataLayer.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginModel model)//вызыв-ся 1-ым после Global\Application_Start\Database
+        public ActionResult Login(LoginModelVM model)
         {
             if (ModelState.IsValid) {
-                User user = null;
                 string nick = "";
                 if (model.Login.Contains('@'))
                     nick = model.Login.Split('@')[0];
-                user = unitOfWork.Users.Include(nameof(Role))
-                .FirstOrDefault(u => (u.Login.Equals(model.Login) || u.Login.Equals(nick)) && u.Password.Equals(model.Password));
-
-                if (user != null) {
+                else nick = model.Login;
+                var userBO = DependencyResolver.Current.GetService<UserBO>();
+                var userBOList = userBO.LoadAll();
+                userBO = userBOList.FirstOrDefault(u=>(u.Login.Equals(model.Login) || u.Login.Equals(nick)) && u.Password.Equals(model.Password));
+                
+                if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {
                     FormsAuthentication.SetAuthCookie(model.Login, true); //куки-набор (.AUTHPATH)
                     return RedirectToAction("Index", "Home");
                 }
@@ -39,7 +50,6 @@ namespace DataLayer.Controllers
                     ModelState.AddModelError("", "Пользователя с таким логином и паролем нет"); //error validat.
                 }
             }
-
             return View(model);
         }
 
@@ -53,17 +63,11 @@ namespace DataLayer.Controllers
         public ActionResult Registration(RegisterModel model)
         {
             if (ModelState.IsValid) {
-                User user = null;                                 //есть ли такой юзер?
-                user = unitOfWork.Users.GetAll()
-                .FirstOrDefault(u => u.Email == model.Email || u.FullName.Equals(model.FullName));
-
-                if (user == null) {
-                    // создаем нового пользователя
-
-                    user = CreateUser(model);
-
-                    //..и если юзер добавлен в бд - загруз. в куки
-                    if (user != null) {
+                var userBO = DependencyResolver.Current.GetService<UserBO>();
+                userBO = userBO.LoadAll().Where(u=>u.Email != null && u.FullName != null).FirstOrDefault(u => u.Email == model.Email || u.FullName.Equals(model.FullName));
+                if (userBO == null) {
+                    userBO = CreateUser(model);                   
+                    if (userBO != null) {   //..и если юзер добавлен в бд - загруз. в куки
                         FormsAuthentication.SetAuthCookie(model.FullName, true);
                         return RedirectToAction("Index", "Home");
                     }
@@ -75,97 +79,126 @@ namespace DataLayer.Controllers
             return View(model);
         }
 
-        private User CreateUser(RegisterModel model)
+        private UserBO CreateUser(RegisterModel model)
         {
-            User user;
+            UserBO userBO = DependencyResolver.Current.GetService<UserBO>();
             string login = model.Email.Split('@')[0];
-            Role role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Contains("client")).FirstOrDefault();
-            role = IsRole(role, "client");    //проверка, если надо-установ.
-            user = new User
-            {
-                FullName = model.FullName,
-                BirthDay = model.BirthDay,
-                Phone = model.Phone,
-                Email = model.Email,
-                Login = login,
-                Password = model.Password
-            };  //Role - далее, Gender, Graphic - в Edit-активн.
+            var roleBO = DependencyResolver.Current.GetService<RoleBO>();
+            roleBO = roleBO.LoadAll().FirstOrDefault(r => r.RoleName.Contains("client"));
+            roleBO = IsRole(roleBO, "client");    //проверка, если надо-установ.
+            userBO.FullName = model.FullName;
+            userBO.BirthDay = model.BirthDay;
+            userBO.Phone = model.Phone;
+            userBO.Email = model.Email;
+            userBO.Login = login;
+            userBO.Password = model.Password;
 
             //1-client
             if (model.Token == null || model.Token.Equals(""))  //Токен выдается административно или не выдается
             {
-                user.Role = role;
-                unitOfWork.Users.Create(user);
-                unitOfWork.Clients.Create(new Clients { User = user });
+                userBO.RoleBO = roleBO;
+                userBO.RoleBOId = roleBO.Id;
+                userBO.Save(userBO);
+                userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.FullName == model.FullName).FirstOrDefault();
+
+                var clientBO = DependencyResolver.Current.GetService<ClientsBO>();
+                clientBO.UserBO = userBO;
+                clientBO.UserBOId = userBO.Id;
+                clientBO.Save(clientBO);
             }
             //2-managers
             else if (model.Token.Contains("manager"))           //может быть и 1234-ABCD-..
             {
+                var admin = DependencyResolver.Current.GetService<AdministrationBO>();
                 //int key = int.Parse(new Regex(@"\d").Match(model.Token).Value);
-                if (!model.Token.Contains("top")) {
-                    role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals("manager")).FirstOrDefault();
-                    role = IsRole(role, "manager");
-                    user.Role = role;
-                    unitOfWork.Users.Create(user);
-                    user.Token = "manager1";
-                    unitOfWork.Administration.Create(new Administration { User = user, Status = Administration.StatusManager.MANAGER });
+                if (!model.Token.Contains("top") && !model.Token.Contains("2")) {
+                    roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("manager")).FirstOrDefault();
+                    roleBO = IsRole(roleBO, "manager"); //может быть и NULL
+                    userBO.RoleBO = roleBO;
+                    userBO.RoleBOId = roleBO.Id;
+                    userBO.Token = "manager1";
+                    userBO.Save(userBO);    //если надо - проапдейт-ся
+                    admin.UserBO = userBO;
+                    admin.Status = AdministrationBO.StatusManager.MANAGER;
                 }
                 else {
-                    role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals("top_manager")).FirstOrDefault();
-                    role = IsRole(role, "top_manager");
-                    user.Role = role;
-                    unitOfWork.Users.Create(user);
-                    user.Token = "top_manager";
-                    unitOfWork.Administration.Create(new Administration { User = user, Status = Administration.StatusManager.TOP_MANAGER });
+                    roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("top_manager")).FirstOrDefault();
+                    roleBO = IsRole(roleBO, "top_manager");
+                    userBO.RoleBO = roleBO;
+                    userBO.RoleBOId = roleBO.Id;
+                    userBO.Token = "top_manager";
+                    userBO.Save(userBO);
+                    userBO = userBO.LoadAll().Where(u=>u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    admin.UserBO = userBO;
+                    admin.UserBOId = userBO.Id;
+                    admin.Status = AdministrationBO.StatusManager.TOP_MANAGER;
                 }
-                
+                admin.Save(admin);
             }
+
             //3-coaches
             else if (model.Token.Contains("coache")) {
-                var specialization = unitOfWork.Specialization.GetAll().Where(s => s.Title.Contains("individ")).FirstOrDefault();   //сначала все индивидуал
-                unitOfWork.Users.Create(user);
+                var coache = DependencyResolver.Current.GetService<CoachesBO>();
+                var specializationBO = DependencyResolver.Current.GetService<SpecializationBO>();
+                specializationBO = specializationBO.LoadAll().Where(s => s.Title == "individual").FirstOrDefault();
                 int key = int.Parse(new Regex(@"\d").Match(model.Token).Value);
                 if (key == 1) {
-                    role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals("coache")).FirstOrDefault();
-                    role = IsRole(role, "coache");
-                    user.Role = role;
-                    user.Token = "coache1";
-                    unitOfWork.Coaches.Create(new Coaches { User = user, Status = Coaches.StatusCoach.COACHE, SpecializationId = specialization.Id });
+                    roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("coache")).FirstOrDefault();
+                    roleBO = IsRole(roleBO, "coache");
+                    userBO.RoleBO = roleBO;
+                    userBO.RoleBOId = roleBO.Id;                 
+                    userBO.Token = "coache1";
+                    userBO.Save(userBO); 
+                    userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    coache.UserBO = userBO;
+                    coache.UserBOId = userBO.Id;
+                    coache.Status = CoachesBO.StatusCoach.COACHE;
+                    coache.SpecializationBOId = specializationBO.Id;    //все сначала individual
                 }
+               
                 else if (key == 2) {
-                    role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals("head_coache")).FirstOrDefault();
-                    role = IsRole(role, "head_coache");
-                    user.Role = role;
-                    user.Token = "coache2";
-                    unitOfWork.Coaches.Create(new Coaches { User = user, Status = Coaches.StatusCoach.HEAD_COACHE_HALL, SpecializationId = specialization.Id });
+                    roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("coache")).FirstOrDefault();
+                    roleBO = IsRole(roleBO, "head_coache");
+                    userBO.RoleBO = roleBO;
+                    userBO.RoleBOId = roleBO.Id;
+                    userBO.Token = "coache2";
+                    userBO.Save(userBO);  
+                    userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    coache.UserBO = userBO;
+                    coache.UserBOId = userBO.Id;
+                    coache.Status = CoachesBO.StatusCoach.HEAD_COACHE_HALL;
+                    coache.SpecializationBOId = specializationBO.Id;
                 }
-                else {
-                    role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals("top_coache")).FirstOrDefault();
-                    role = IsRole(role, "top_coache");
-                    user.Role = role;
-                    user.Token = "coache3";
-                    unitOfWork.Coaches.Create(new Coaches { User = user, Status = Coaches.StatusCoach.TOP_COACHE, SpecializationId = specialization.Id });
+                else if (key == 3) {
+                    roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("top_coache")).FirstOrDefault();
+                    roleBO = IsRole(roleBO, "top_coache");
+                    userBO.RoleBO = roleBO;
+                    userBO.RoleBOId = roleBO.Id;
+                    userBO.Token = "coache3";
+                    userBO.Save(userBO);
+                    userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    coache.UserBO = userBO;
+                    coache.UserBOId = userBO.Id;
+                    coache.Status = CoachesBO.StatusCoach.TOP_COACHE;
+                    coache.SpecializationBOId = specializationBO.Id;
                 }
+                coache.Save(coache);
             }
-            unitOfWork.Users.Save();
-            unitOfWork.Clients.Save();
-            unitOfWork.Coaches.Save();
-            unitOfWork.Administration.Save();
             //юзаем юзера..
-            user = unitOfWork.Users.GetAll().Where(u => u.FullName == model.FullName && u.Password == model.Password).FirstOrDefault();
-            return user;
+           userBO = userBO.LoadAll().Where(u => u.FullName == model.FullName && u.Password == model.Password).FirstOrDefault();
+            return userBO;
         }
 
-        private Role IsRole(Role role, string param)
+        private  RoleBO IsRole(RoleBO roleBO, string param)
         {
-            if (role == null)//если в БД нет роли client
+            if (roleBO == null || roleBO.Id == 0)//если в БД нет роли client
             {
-                unitOfWork.Roles.Create(new Role { RoleName = param }); 
-                unitOfWork.Roles.Save();
-                role = unitOfWork.Roles.GetAll().Where(r => r.RoleName.Equals(param)).FirstOrDefault();
+                roleBO = DependencyResolver.Current.GetService<RoleBO>();
+                roleBO.RoleName = param;
+                roleBO.Save(roleBO);
+                roleBO=roleBO.LoadAll().Where(r => r.RoleName.Equals(param)).FirstOrDefault();  //получить уже с ID
             }
-
-            return role;
+            return roleBO;
            
         }
 

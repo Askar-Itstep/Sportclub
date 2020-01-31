@@ -1,5 +1,8 @@
-﻿@using DataLayer.Entities
-@model List<Administration>
+﻿@*@using DataLayer.Entities
+@model List<Administration>*@
+
+@using Sportclub.ViewModel
+@model List<AdministrationVM>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,21 +14,32 @@
 <br />
 <table class="table table-striped">
     <tr>
-        <th>ID</th><th>Name</th><th>Birthday</th><th>Phone</th><th>Email</th><th>Gender</th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Birthday</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Gender</th>
         <th>Status</th>
     </tr>
-    @foreach(var item in Model)
-    {
+    @foreach (var item in Model) {
     <tr>
         <td>@item.Id</td>
-        <td>@item.User.FullName</td>
+        @*<td>@item.User.FullName</td>
         <td>@item.User.BirthDay</td>
         <td>@item.User.Phone</td>
         <td>@item.User.Email</td>
-        <td>@item.User.Gender</td>
+        <td>@item.User.Gender</td>*@
+        <td>@item.UserVM.FullName</td>
+        <td>@item.UserVM.BirthDay</td>
+        <td>@item.UserVM.Phone</td>
+        <td>@item.UserVM.Email</td>
+        <td>@item.UserVM.GenderVM</td>
         <td>@item.Status</td>
-        <td>@Html.ActionLink("Edit", "Edit", new { id = @item.Id })</td><td>|</td>
-        <td>@Html.ActionLink("Details", "Details", new { id = @item.Id })</td><td>|</td>
+        <td>@Html.ActionLink("Edit", "Edit", new { id = @item.Id })</td>
+        <td>|</td>
+        <td>@Html.ActionLink("Details", "Details", new { id = @item.Id })</td>
+        <td>|</td>
         <td>@Html.ActionLink("Delete", "Delete", new { id = @item.Id })</td>
     </tr>
     }

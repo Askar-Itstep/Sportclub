@@ -16,6 +16,7 @@ namespace DataLayer
         protected void Application_Start()
         {
             Database.SetInitializer(new MyContextInitializer());
+            UnityConfig.RegisterTypes();    //использ. статич. метод класса UnityConfig
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

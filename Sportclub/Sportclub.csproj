@@ -151,6 +151,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -167,6 +168,17 @@
     </Compile>
     <Compile Include="Providers\CustomRoleProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AdministrationVM.cs" />
+    <Compile Include="ViewModels\ClientsVM.cs" />
+    <Compile Include="ViewModels\CoachesVM.cs" />
+    <Compile Include="ViewModels\GenderVM.cs" />
+    <Compile Include="ViewModels\GraphTraningVM.cs" />
+    <Compile Include="ViewModels\GymsVM.cs" />
+    <Compile Include="ViewModels\LoginModelVM.cs" />
+    <Compile Include="ViewModels\RegisterModelVM.cs" />
+    <Compile Include="ViewModels\RoleVM.cs" />
+    <Compile Include="ViewModels\SpecializationVM.cs" />
+    <Compile Include="ViewModels\UserVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />

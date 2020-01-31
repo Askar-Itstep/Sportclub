@@ -1,5 +1,8 @@
-﻿using DataLayer.Entities;
+﻿using AutoMapper;
+using BusinessLayer.BusinessObject;
+using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -12,13 +15,23 @@ namespace DataLayer.Controllers
     public class AdminController : Controller
     {
         private UnitOfWork unitOfWork = new UnitOfWork();
-       
+        IMapper mapper;
+        public AdminController()
+        { }
+        public AdminController(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
 
         [Authorize(Roles = "admin, top_manager, manager")] //из CustomRoleProvider!
         public ActionResult Index()
         {
-            var managers = unitOfWork.Administration.Include(nameof(User));
-            return View(managers.ToList());
+            //var managers = unitOfWork.Administration.Include(nameof(User));
+            var managers = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User));
+            //managers.ToList().ForEach(m => System.Diagnostics.Debug.WriteLine(m.UserBO.FullName));
+
+            var managersVM = managers.Select(m => mapper.Map<AdministrationVM>(m)).ToList();
+            return View(managersVM);
         }
         
         public ActionResult Details(int? id)
