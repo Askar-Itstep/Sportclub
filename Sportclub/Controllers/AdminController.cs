@@ -41,6 +41,10 @@ namespace Sportclub.Controllers
         {
             try
             {
+                unitOfWork.Users.Create(manager.User);
+                var curruser = unitOfWork.Users.GetAll().Where(u=>u.FullName==manager.User.FullName && u.Email==manager.User.Email).FirstOrDefault();
+                manager.UserId = curruser.Id;
+
                 unitOfWork.Administration.Create(manager);
                 unitOfWork.Administration.Save();
                 return RedirectToAction("Index");                           
