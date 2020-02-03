@@ -37,18 +37,15 @@ namespace BusinessLayer.BusinessObject
         {
             var managers = unitOfWork.Administration.GetAll();
             var res = managers.AsEnumerable().Select(a => mapper.Map<AdministrationBO>(a)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.Login));
             return res;
         }
         public IEnumerable<AdministrationBO> LoadAllWithInclude(params string[] properties )  //из DataObj в BusinessObj
         {
             var managers = unitOfWork.Administration.Include(properties);
-            //managers.ToList().ForEach(m => System.Diagnostics.Debug.WriteLine(m.User.FullName));
             var res = managers.AsEnumerable().Select(a => mapper.Map<AdministrationBO>(a)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.UserBO.FullName));
             return res;
         }
-        public void Load(int id)
+        public void  Load(int id)
         {
             var managers = unitOfWork.Administration.GetById(id);
             mapper.Map(managers, this);

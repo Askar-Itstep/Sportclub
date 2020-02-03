@@ -37,13 +37,7 @@ namespace DataLayer.Entities
         public int RoleId { get; set; }
         public Role Role { get; set; }
 
-        ////2
-        //public ISet<RoleName> Roles { get; set; }//не нужно-роли с поглощением
-        //public enum RoleName //как добавить новую роль -> сделать табл.
-        //{
-        //    ADMIN, TOP, MANAGER, HEAD_COACHE, COACHE, CLIENT
-        //}
-
+       
         public string Token { get; set; }   //manager, coache
     }
 }

@@ -26,48 +26,51 @@ namespace DataLayer
                 .ForMember("UserBOId", a => a.MapFrom(c => c.UserId)).ForMember("UserBO", a => a.MapFrom(c => c.User));
 
                 mpr.CreateMap<AdministrationBO, Administration>()
-                .ConstructUsing(c => DependencyResolver.Current.GetService<Administration>()).ForMember("UserId", a=>a.MapFrom(c=>c.UserBOId));
+                .ConstructUsing(c => DependencyResolver.Current.GetService<Administration>()).ForMember("UserId", a => a.MapFrom(c => c.UserBOId));
 
                 mpr.CreateMap<AdministrationBO, AdministrationVM>()
                .ConstructUsing(c => DependencyResolver.Current.GetService<AdministrationVM>()).ForMember("UserVM", a => a.MapFrom(c =>
-                new UserVM { FullName= c.UserBO.FullName, BirthDay = c.UserBO.BirthDay, Email = c.UserBO.Email, Phone = c.UserBO.Phone }
-                ));
+               new UserVM {
+                   Id = c.UserBOId, FullName = c.UserBO.FullName, BirthDay = c.UserBO.BirthDay, Email = c.UserBO.Email, Phone = c.UserBO.Phone,
+                   GenderVM = (GenderVM)c.UserBO.GenderBO, Login = c.UserBO.Login, Password = c.UserBO.Password, RoleVMId = c.UserBO.RoleBOId,
+                   Token = c.UserBO.Token,
+                   RoleVM = new RoleVM { Id = c.UserBO.RoleBO.Id, RoleName = c.UserBO.RoleBO.RoleName }
+               }))
+               .ForMember(a=>a.UserVMId, a=>a.MapFrom(c=>c.UserBOId));
+
                 mpr.CreateMap<AdministrationVM, AdministrationBO>()
                .ConstructUsing(c => DependencyResolver.Current.GetService<AdministrationBO>())
                             .ForMember("UserBO", a => a.MapFrom(c =>
-                                new UserVM
+                                new UserBO
                                 {
                                     Id = c.Id,
                                     FullName = c.UserVM.FullName,
                                     BirthDay = c.UserVM.BirthDay,
                                     Phone = c.UserVM.Phone,
                                     Email = c.UserVM.Email,
-                                    GenderVM = c.UserVM.GenderVM,
+                                    GenderBO = (GenderBO)c.UserVM.GenderVM,
                                     Login = c.UserVM.Login,
                                     Password = c.UserVM.Password,
-                                    RoleVMId = c.UserVM.RoleVMId,
-                                    RoleVM = new RoleVM { Id = c.UserVM.RoleVM.Id, RoleName = c.UserVM.RoleVM.RoleName },
+                                    RoleBOId = c.UserVM.RoleVMId,
+                                    RoleBO = new RoleBO { Id = c.UserVM.RoleVM.Id, RoleName = c.UserVM.RoleVM.RoleName },
                                     Token = c.UserVM.Token
                                 }))
-                           .ForMember("Status", src => src.MapFrom(a => AdministrationVM.StatusManager.MANAGER))
-                           //.ForMember("UserBOId", src => src.MapFrom(a => a.UserVMId))
-                           .ForMember("UserBOId", src => src.Ignore())
-                           //.ForMember("Id", src => src.MapFrom(a => a.Id));
-                           .ForMember("Id", src => src.Ignore());
-
-                // mpr.CreateMap<IEnumerable<Administration>, List<AdministrationBO>>()
-                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<AdministrationBO>>());
+                           .ForMember("Status", src => src.MapFrom(a => a.Status))
+                           .ForMember("UserBOId", src => src.MapFrom(a => a.UserVMId))
+                           .ForMember("Id", src => src.MapFrom(a => a.Id));
+                
                 //------------------------------------------------------------------------
+                #region some code
 
                 mpr.CreateMap<Clients, ClientsBO>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<ClientsBO>());
 
                 mpr.CreateMap<ClientsBO, Clients>()
-                .ConstructUsing(c => DependencyResolver.Current.GetService<Clients>()).ForMember("UserId", c=>c.MapFrom(cl => cl.UserBOId))
+                .ConstructUsing(c => DependencyResolver.Current.GetService<Clients>()).ForMember("UserId", c => c.MapFrom(cl => cl.UserBOId))
                                   .ForMember("GraphicId", c => c.MapFrom(cl => cl.GraphicBOId));
 
-               // mpr.CreateMap<IEnumerable<Clients>, List<ClientsBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<ClientsBO>>());
+                // mpr.CreateMap<IEnumerable<Clients>, List<ClientsBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<ClientsBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Coaches, CoachesBO>()
@@ -78,8 +81,8 @@ namespace DataLayer
                 .ConstructUsing(c => DependencyResolver.Current.GetService<Coaches>()).ForMember("SpecializationId", c => c.MapFrom(co => co.SpecializationBOId))
                                             .ForMember("UserId", c => c.MapFrom(cl => cl.UserBOId));
 
-               // mpr.CreateMap<IEnumerable<Coaches>, List<CoachesBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<CoachesBO>>());
+                // mpr.CreateMap<IEnumerable<Coaches>, List<CoachesBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<CoachesBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Gender, GenderBO>()
@@ -88,8 +91,8 @@ namespace DataLayer
                 mpr.CreateMap<GenderBO, Gender>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<Gender>());
 
-               // mpr.CreateMap<IEnumerable<Gender>, List<GenderBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GenderBO>>());
+                // mpr.CreateMap<IEnumerable<Gender>, List<GenderBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GenderBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<GraphTraning, GraphTraningBO>()
@@ -98,8 +101,8 @@ namespace DataLayer
                 mpr.CreateMap<GraphTraningBO, GraphTraning>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<GraphTraning>()).ForMember("CoacheId", u => u.MapFrom(c => c.CoacheBOId));
 
-               // mpr.CreateMap<IEnumerable<GraphTraning>, List<GraphTraningBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GraphTraningBO>>());
+                // mpr.CreateMap<IEnumerable<GraphTraning>, List<GraphTraningBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GraphTraningBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Gyms, GymsBO>()
@@ -108,8 +111,8 @@ namespace DataLayer
                 mpr.CreateMap<GymsBO, Gyms>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<Gyms>());
 
-               // mpr.CreateMap<IEnumerable<Gyms>, List<GymsBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GymsBO>>());
+                // mpr.CreateMap<IEnumerable<Gyms>, List<GymsBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GymsBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<LoginModel, LoginModelBO>()
@@ -118,8 +121,8 @@ namespace DataLayer
                 mpr.CreateMap<LoginModelBO, LoginModel>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<LoginModel>());
 
-               // mpr.CreateMap<IEnumerable<LoginModel>, List<LoginModelBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<LoginModelBO>>());
+                // mpr.CreateMap<IEnumerable<LoginModel>, List<LoginModelBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<LoginModelBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<RegisterModel, RegisterModelBO>()
@@ -128,8 +131,8 @@ namespace DataLayer
                 mpr.CreateMap<RegisterModelBO, RegisterModel>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<RegisterModel>());
 
-               // mpr.CreateMap<IEnumerable<RegisterModel>, List<RegisterModelBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<RegisterModelBO>>());
+                // mpr.CreateMap<IEnumerable<RegisterModel>, List<RegisterModelBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<RegisterModelBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Role, RoleBO>()
@@ -138,8 +141,8 @@ namespace DataLayer
                 mpr.CreateMap<RoleBO, Role>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<Role>());
 
-               // mpr.CreateMap<IEnumerable<Role>, List<RoleBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<RoleBO>>());
+                // mpr.CreateMap<IEnumerable<Role>, List<RoleBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<RoleBO>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Specialization, SpecializationBO>()
@@ -148,24 +151,28 @@ namespace DataLayer
                 mpr.CreateMap<SpecializationBO, Specialization>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<Specialization>());
 
-               // mpr.CreateMap<IEnumerable<Specialization>, List<SpecializationBO>>()
-               //.ConstructUsing(c => DependencyResolver.Current.GetService<List<SpecializationBO>>());
+                // mpr.CreateMap<IEnumerable<Specialization>, List<SpecializationBO>>()
+                //.ConstructUsing(c => DependencyResolver.Current.GetService<List<SpecializationBO>>());
                 //---------------------------------------------------------------------------------------
+                #endregion
 
                 mpr.CreateMap<User, UserBO>()
-               .ConstructUsing(c => DependencyResolver.Current.GetService<UserBO>()).ForMember("RoleBOId", u => u.MapFrom(c => c.RoleId));
+               .ConstructUsing(c => DependencyResolver.Current.GetService<UserBO>()).ForMember("RoleBOId", u => u.MapFrom(c => c.RoleId))
+                                                                                .ForMember("RoleBO", u => u.MapFrom(c => c.Role));
 
                 mpr.CreateMap<UserBO, User>()
-                .ConstructUsing(c => DependencyResolver.Current.GetService<User>()).ForMember("RoleId", u=>u.MapFrom(c=>c.RoleBOId));
+                .ConstructUsing(c => DependencyResolver.Current.GetService<User>()).ForMember("RoleId", u => u.MapFrom(c => c.RoleBOId));
 
-                mpr.CreateMap<User, UserVM>()
-              .ConstructUsing(c => DependencyResolver.Current.GetService<UserVM>())
-              .ForMember("RoleVM", u => u.MapFrom(c => c.Role)).ForMember("GenderVM", u => u.MapFrom(c => c.Gender));
+                mpr.CreateMap<UserVM, UserBO>()
+              .ConstructUsing(c => DependencyResolver.Current.GetService<UserBO>())
+              .ForMember("RoleBOId", u => u.MapFrom(c => c.RoleVMId))
+              .ForMember("RoleBO", u => u.MapFrom(c => new RoleBO { Id = c.RoleVM.Id, RoleName = c.RoleVM.RoleName }))
+              .ForMember("GenderBO", u => u.MapFrom(c => c.GenderVM));
 
                 // mpr.CreateMap<IEnumerable<User>, List<UserBO>>()
                 //.ConstructUsing(c => DependencyResolver.Current.GetService<List<UserBO>>());
             });
         }
-    
+
     }
 }

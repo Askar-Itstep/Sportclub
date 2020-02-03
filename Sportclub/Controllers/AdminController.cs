@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -23,113 +24,123 @@ namespace DataLayer.Controllers
             this.mapper = mapper;
         }
 
-        [Authorize(Roles = "admin, top_manager, manager")] //из CustomRoleProvider!
+        [Authorize(Roles = "admin, top_manager, manager")]          //из CustomRoleProvider!
         public ActionResult Index()
         {
-            //var managers = unitOfWork.Administration.Include(nameof(User)).ToList();
             var managers = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User));
-            //managers.ToList().ForEach(m => System.Diagnostics.Debug.WriteLine(m.UserBO.FullName));
 
             var managersVM = managers.Select(m => mapper.Map<AdministrationVM>(m)).ToList();
             return View(managersVM);
         }
-        
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-                return HttpNotFound();
-
-            //var manager = unitOfWork.Administration.Include(nameof(User)).Where(m => m.Id == id);
-            var manager = DependencyResolver.Current.GetService<AdministrationBO>()
-                .LoadAllWithInclude(nameof(User)).Where(m=>m.Id==id).FirstOrDefault();
-            var managerVM = mapper.Map<AdministrationVM>(manager);
-            return View(managerVM);
-        }
-        
+        //--------------------------------------------------------------------------------------------------------------
+        [HttpGet]
+        [Authorize(Roles ="admin, top_manager")]
         public ActionResult Create()
         {
             return View();
         }
-
        
         [HttpPost]
         public ActionResult Create(AdministrationVM manager)
         {
+            //добор значений не вошедшю в форму
             manager.UserVM.Token = "manager";
             manager.UserVM.RoleVMId = 3;
             manager.UserVM.RoleVM = new RoleVM { Id = 3, RoleName = "manager" };
-            //var users = DependencyResolver.Current.GetService<UserBO>().LoadAll().ToList();
-            //var lastUserId = users[users.Count() - 1].Id;
-            //manager.UserVMId = lastUserId + 1;
-            //manager.UserVM.Id = lastUserId + 1;
-                       
-            foreach (var prop in manager.GetType().GetProperties()) {
-                  System.Diagnostics.Debug.WriteLine("{0} - {1}", prop.Name, ModelState.IsValidField(prop.Name));
-            }
+            int lenUsers = DependencyResolver.Current.GetService<UserBO>().LoadAll().Count();
 
             if(ModelState.IsValid)
             {
-                //unitOfWork.Administration.Create(manager);
-                //unitOfWork.Administration.Save();
-                //var managerBO = DependencyResolver.Current.GetService<AdministrationBO>();
+                var userBO = mapper.Map<UserBO>(manager.UserVM);
+                userBO.Save(userBO);
+                userBO = userBO.LoadAll().Where(u => u.Email == manager.UserVM.Email && u.Password == manager.UserVM.Password).FirstOrDefault();
+              
                 var managerBO = mapper.Map<AdministrationBO>(manager);
+                managerBO.UserBO.Id = userBO.Id;
+                managerBO.UserBOId = userBO.Id;
                 managerBO.Save(managerBO);
                 return RedirectToAction("Index");                           
             }
-            
-                return View(manager);
-            
+            return View(manager);            
         }
-
+        //------------------------------------------------------------------------------------
       
         public ActionResult Edit(int? id)
         {
             if (id == null)
                 return HttpNotFound();
             
-            var manager = unitOfWork.Administration.Include(nameof(User)).Where(m => m.Id == id);
-            return View(manager);
+            var managerBO = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User)).Where(m=>m.Id == id).FirstOrDefault();   //здесь eще нет RoleBO (не явл. навиг. св.)
+            var roleBO = DependencyResolver.Current.GetService<RoleBO>();
+            roleBO = roleBO.LoadAll().Where(r => r.Id == managerBO.UserBO.RoleBOId).FirstOrDefault();
+
+            managerBO.UserBO.RoleBO = roleBO;
+            var managerVM = mapper.Map<AdministrationVM>(managerBO);
+            return View(managerVM);
         }
         
         [HttpPost]
-        public ActionResult Edit(Administration manager) //int id, FormCollection collection
+        public ActionResult Edit(AdministrationVM managerVM) 
         {
-            try
+            if(ModelState.IsValid)
             {
-                unitOfWork.Administration.Update(manager);
-                unitOfWork.Administration.Save();
+                var userBO = mapper.Map<UserBO>(managerVM.UserVM);
+                userBO.Save(userBO);
+                userBO = userBO.LoadAll().Where(u => u.Email == managerVM.UserVM.Email && u.Password == managerVM.UserVM.Password).FirstOrDefault();
+
+                var managerBO = mapper.Map<AdministrationBO>(managerVM);
+                managerBO.UserBO = userBO;
+                managerBO.UserBO.Id = userBO.Id;
+                managerBO.UserBOId = userBO.Id;
+                managerBO.Save(managerBO);
                 return RedirectToAction("Index");
-            }                
+            }   
+            return View(managerVM);
             
-            catch
-            {
-                return View(manager);
-            }
         }
-        
+        //---------------------------------------------------------------------------
+        [HttpGet]
+        [Authorize(Roles = "admin, top_manager")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
                 return HttpNotFound();
-
-            var manager = unitOfWork.Administration.Include(nameof(User)).Where(m => m.Id == id);
-            return View(manager);
+            
+            var managerBO = DependencyResolver.Current.GetService<AdministrationBO>();
+            managerBO = managerBO.LoadAllWithInclude(nameof(User)).Where(m => m.Id == id).FirstOrDefault();
+            var userBO = DependencyResolver.Current.GetService<UserBO>().LoadAllWithInclude(nameof(Role)).Where(u => u.Id == managerBO.UserBO.Id).FirstOrDefault();
+            managerBO.UserBO = userBO;
+            var managerVM = mapper.Map<AdministrationVM>(managerBO);
+            return View(managerVM);
 
         }
         
         [HttpPost]
-        public ActionResult Delete(Administration manager)//int id, FormCollection collection
+        public ActionResult Delete(AdministrationVM managerVM)
         {
-            try
+            if(ModelState.IsValid)
             {
-                unitOfWork.Administration.Delete(manager.Id);
-                unitOfWork.Administration.Save();
+                var managerBO = mapper.Map<AdministrationBO>(managerVM);
+                var userBO = managerBO.UserBO;
+                userBO.DeleteSave(userBO);
+                managerBO.DeleteSave(managerBO);
+
                 return RedirectToAction("Index");                
             }
-            catch
-            {
-                return View(manager);
-            }
+            
+            return View(managerVM);
+            
+        }
+        //------------------------------------------------------------------
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+                return HttpNotFound();
+
+            var managerBO = DependencyResolver.Current.GetService<AdministrationBO>()
+                                .LoadAllWithInclude(nameof(User)).Where(m => m.Id == id).FirstOrDefault();
+            var managerVM = mapper.Map<AdministrationVM>(managerBO);
+            return View(managerVM);
         }
     }
 }

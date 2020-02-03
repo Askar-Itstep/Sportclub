@@ -16,8 +16,6 @@ namespace Sportclub.ViewModel
         [Required]
         public StatusManager Status { get; set; }
 
-
-
         public enum StatusManager
         {
             ADMIN, MANAGER, TOP_MANAGER

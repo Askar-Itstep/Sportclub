@@ -14,6 +14,9 @@ namespace BusinessLayer.BusinessObject
     {
         public int Id { get; set; }
         public string RoleName { get; set; }
+        public RoleBO() { }
+
+        //--------------------------------------------------------------------------------
 
         readonly IUnityContainer unityContainer;
         public RoleBO(IMapper mapper, UnitOfWork unitOfWork, IUnityContainer container)

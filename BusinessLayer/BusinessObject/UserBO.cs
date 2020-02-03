@@ -41,7 +41,8 @@ namespace BusinessLayer.BusinessObject
 
         public string Token { get; set; }   //manager, coache
         #endregion
-
+        //----------------------------------------------------------------------
+        public UserBO() { }
         readonly IUnityContainer unityContainer;
         public UserBO(IMapper mapper, UnitOfWork unitOfWork, IUnityContainer container)
             : base(mapper, unitOfWork)
@@ -52,10 +53,14 @@ namespace BusinessLayer.BusinessObject
         {
             var users = unitOfWork.Users .GetAll();
             var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.Login));
             return res;
         }
-
+        public IEnumerable<UserBO> LoadAllWithInclude(params string[] properties)  //из DataObj в BusinessObj
+        {
+            var users = unitOfWork.Users.Include(properties);
+            var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
+            return res;
+        }
         public void Load(int id)
         {
             var user = unitOfWork.Users.GetById(id);

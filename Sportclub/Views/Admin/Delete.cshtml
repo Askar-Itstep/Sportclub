@@ -1,4 +1,5 @@
-﻿@model Sportclub.Entities.Administration
+﻿@*@model Sportclub.Entities.Administration*@
+@model Sportclub.ViewModel.AdministrationVM
 
 @{
     ViewBag.Title = "Delete";
@@ -11,76 +12,79 @@
 <div>
     <h4>Administration</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.User.FullName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.FullName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.BirthDay)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.BirthDay)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Phone)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Phone)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Email)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Email)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Gender)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Gender)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Login)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Login)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Password)
-        </dd>
-
-    </dl>
 
     @using (Html.BeginForm()) {
-        @Html.AntiForgeryToken()
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.FullName)
+            </dt>
 
+            <dd>
+                @*@Html.DisplayFor(model => model.UserVM.FullName)*@
+                @Html.DisplayFor(model => model.UserVM.FullName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.BirthDay)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserVM.BirthDay)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.Phone)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserVM.Phone)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.Email)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserVM.Email)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.GenderVM)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserVM.GenderVM)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Status)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.Login)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserVM.Login)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.UserVM.Password)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.UserVM.Password)
+            </dd>
+
+        </dl>
+
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.UserVM.Id)
+        @Html.HiddenFor(m => m.UserVMId)
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
             @Html.ActionLink("Back to List", "Index")

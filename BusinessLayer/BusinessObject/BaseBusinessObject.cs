@@ -15,5 +15,6 @@ namespace BusinessLayer.BusinessObject
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
         }
+        public BaseBusinessObject() { }
     }
 }
