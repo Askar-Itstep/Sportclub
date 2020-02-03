@@ -116,7 +116,7 @@ namespace DataLayer.Controllers
         }
         
         [HttpPost]
-        public ActionResult Delete(AdministrationVM managerVM)
+        public ActionResult Delete(AdministrationVM managerVM)  //придется вытаскивать по ID (displayFor не передают данные?!)
         {
             if(ModelState.IsValid)
             {
