@@ -29,15 +29,14 @@ namespace BusinessLayer.BusinessObject
 
         [RegularExpression(@"(/\A[^@]+@([^@\.]+\.)+[^@\.]+\z/)) ", ErrorMessage = "Некорректный e-mail")]
         public string Email { get; set; }
-        public GenderBO GenderBO { get; set; }
-
+        public GenderBO Gender { get; set; }
         public string Login { get; set; }
 
         public string Password { get; set; }
 
 
-        public int RoleBOId { get; set; }
-        public RoleBO RoleBO { get; set; }
+        public int RoleId { get; set; }
+        public RoleBO Role { get; set; }
 
         public string Token { get; set; }   //manager, coache
         #endregion
@@ -52,8 +51,6 @@ namespace BusinessLayer.BusinessObject
         public IEnumerable<UserBO> LoadAll()  //из DataObj в BusinessObj
         {
             var users = unitOfWork.Users .GetAll().ToList();
-            if (mapper == null)
-                System.Diagnostics.Debug.WriteLine("users[1]: " + users[1].FullName);
             var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
             return res;
         }

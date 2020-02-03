@@ -9,11 +9,11 @@ namespace Sportclub.ViewModel
     public class ClientsVM
     {
         public int Id { get; set; }
-        public int UserVMId { get; set; }
-        virtual public UserVM UserVM { get; set; }
+        public int UserId { get; set; }
+        virtual public UserVM User { get; set; }
         
-        public int? GraphicVMId { get; set; }
+        public int? GraphicId { get; set; }
 
-        virtual public GraphTraningVM GraphicVM { get; set; }
+        virtual public GraphTraningVM Graphic { get; set; }
     }
 }

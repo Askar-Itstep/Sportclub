@@ -13,12 +13,12 @@ namespace BusinessLayer.BusinessObject
     public class ClientsBO: BaseBusinessObject
     {
         public int Id { get; set; }
-        public int UserBOId { get; set; }
-        virtual public UserBO UserBO { get; set; }
+        public int UserId { get; set; }
+        virtual public UserBO User { get; set; }
         
-        public int? GraphicBOId { get; set; }
+        public int? GraphicId { get; set; }
 
-        virtual public GraphTraningBO GraphicBO { get; set; }
+        virtual public GraphTraningBO Graphic { get; set; }
 
         //------------------------------------------------------------------------------------------
         readonly IUnityContainer unityContainer;

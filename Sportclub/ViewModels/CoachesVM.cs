@@ -10,13 +10,13 @@ namespace Sportclub.ViewModel
     {
         public int Id { get; set; }
         
-        public int UserVMId { get; set; }
-        public UserVM UserVM { get; set; }
+        public int UserId { get; set; }
+        public UserVM User { get; set; }
         public StatusCoach Status { get; set; }
         
-        public int SpecializationVMId { get; set; }
+        public int SpecializationId { get; set; }
 
-        virtual public SpecializationVM SpecializationVM { get; set; }
+        virtual public SpecializationVM Specialization { get; set; }
         public double TimeWork { get; set; }
 
 

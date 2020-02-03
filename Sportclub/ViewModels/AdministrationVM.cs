@@ -10,8 +10,8 @@ namespace Sportclub.ViewModel
     {
         public int Id { get; set; }
 
-        public int UserVMId { get; set; }
-        public UserVM UserVM { get; set; }
+        public int UserId { get; set; }
+        public UserVM User { get; set; }
 
         [Required]
         public StatusManager Status { get; set; }

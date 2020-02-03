@@ -14,13 +14,13 @@ namespace BusinessLayer.BusinessObject
     {
         public int Id { get; set; }
         
-        public int UserBOId { get; set; }
-        public UserBO UserBO { get; set; }
+        public int UserId { get; set; }
+        public UserBO User { get; set; }
         public StatusCoach Status { get; set; }
         
-        public int SpecializationBOId { get; set; }
+        public int SpecializationId { get; set; }
 
-        virtual public SpecializationBO SpecializationBO { get; set; }
+        virtual public SpecializationBO Specialization { get; set; }
         public double TimeWork { get; set; }
 
 

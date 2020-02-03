@@ -92,7 +92,7 @@
     <Compile Include="BusinessObject\BaseBusinessObject.cs" />
     <Compile Include="BusinessObject\ClientsBO.cs" />
     <Compile Include="BusinessObject\CoachesBO.cs" />
-    <Compile Include="BusinessObject\GenderBO.cs" />
+    <Compile Include="BusinessObject\Gender.cs" />
     <Compile Include="BusinessObject\GraphTraningBO.cs" />
     <Compile Include="BusinessObject\GymsBO.cs" />
     <Compile Include="BusinessObject\LoginModelBO.cs" />

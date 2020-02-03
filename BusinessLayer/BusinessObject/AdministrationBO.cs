@@ -15,8 +15,8 @@ namespace BusinessLayer.BusinessObject
     {
         public int Id { get; set; }
 
-        public int UserBOId { get; set; }
-        public UserBO UserBO { get; set; }
+        public int UserId { get; set; }
+        public UserBO User { get; set; }
 
         [Required]
         public StatusManager Status { get; set; }

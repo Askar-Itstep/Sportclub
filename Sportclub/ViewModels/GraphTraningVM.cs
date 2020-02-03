@@ -11,14 +11,14 @@ namespace Sportclub.ViewModel
     {
         public int Id { get; set; }
 
-        public int? CoacheVMId { get; set; }
-        public CoachesVM CoacheVM { get; set; }
+        public int? CoacheId { get; set; }
+        public CoachesVM Coache { get; set; }
 
         public DayOfWeek DayOfWeek { get; set; }
         //--------------------------
 
 
-        public List<ClientsVM> ClientsVM { get; set; }
+        public List<ClientsVM> Clients { get; set; }
 
 
         [Required]
@@ -31,12 +31,12 @@ namespace Sportclub.ViewModel
 
         public GraphTraningVM()
         {
-            this.ClientsVM = new List<ClientsVM>();
+            this.Clients = new List<ClientsVM>();
         }
         public IEnumerator<ClientsVM> GetEnumerator()
         {
-            for (int i = 0; i < ClientsVM.Count; i++)
-                yield return ClientsVM[i];
+            for (int i = 0; i < Clients.Count; i++)
+                yield return Clients[i];
         }
     }
 }

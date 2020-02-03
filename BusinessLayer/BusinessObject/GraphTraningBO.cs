@@ -16,14 +16,14 @@ namespace BusinessLayer.BusinessObject
         #region Simple Fields
         public int Id { get; set; }
 
-        public int? CoacheBOId { get; set; }
-        public CoachesBO CoacheBO { get; set; }
+        public int? CoacheId { get; set; }
+        public CoachesBO Coache { get; set; }
 
         public DayOfWeek DayOfWeek { get; set; }
         //--------------------------
 
 
-        public List<ClientsBO> ClientsBO { get; set; }
+        public List<ClientsBO> Clients { get; set; }
 
 
         [Required]

@@ -25,15 +25,15 @@ namespace Sportclub.ViewModel
 
         //[RegularExpression(@"(/\A[^@]+@([^@\.]+\.)+[^@\.]+\z/) ", ErrorMessage = "Некорректный e-mail")]
         public string Email { get; set; }
-        public GenderVM GenderVM { get; set; }
+        public GenderVM Gender { get; set; }
 
         public string Login { get; set; }
 
         public string Password { get; set; }
 
 
-        public int RoleVMId { get; set; }
-        public RoleVM RoleVM { get; set; }
+        public int RoleId { get; set; }
+        public RoleVM Role { get; set; }
 
         public string Token { get; set; }   //manager, coache
         

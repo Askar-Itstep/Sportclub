@@ -25,16 +25,11 @@
     @foreach (var item in Model) {
     <tr>
         <td>@item.Id</td>
-        @*<td>@item.User.FullName</td>
+        <td>@item.User.FullName</td>
         <td>@item.User.BirthDay</td>
         <td>@item.User.Phone</td>
         <td>@item.User.Email</td>
-        <td>@item.User.Gender</td>*@
-        <td>@item.UserVM.FullName</td>
-        <td>@item.UserVM.BirthDay</td>
-        <td>@item.UserVM.Phone</td>
-        <td>@item.UserVM.Email</td>
-        <td>@item.UserVM.GenderVM</td>
+        <td>@item.User.Gender</td>
         <td>@item.Status</td>
         <td>@Html.ActionLink("Edit", "Edit", new { id = @item.Id })</td>
         <td>|</td>
