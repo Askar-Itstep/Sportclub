@@ -40,6 +40,7 @@ namespace Sportclub.Controllers
                 else nick = model.Login;
                 var userBO = DependencyResolver.Current.GetService<UserBO>();
                 var userBOList = userBO.LoadAll();
+                //var userBOList = userBO.LoadAllWithInclude(nameof(Role));
                 userBO = userBOList.FirstOrDefault(u=>(u.Login.Equals(model.Login) || u.Login.Equals(nick)) && u.Password.Equals(model.Password));
                 
                 if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {

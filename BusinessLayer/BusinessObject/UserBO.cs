@@ -51,7 +51,9 @@ namespace BusinessLayer.BusinessObject
         }
         public IEnumerable<UserBO> LoadAll()  //из DataObj в BusinessObj
         {
-            var users = unitOfWork.Users .GetAll();
+            var users = unitOfWork.Users .GetAll().ToList();
+            if (mapper == null)
+                System.Diagnostics.Debug.WriteLine("users[1]: " + users[1].FullName);
             var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
             return res;
         }

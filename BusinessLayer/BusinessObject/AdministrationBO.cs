@@ -28,6 +28,7 @@ namespace BusinessLayer.BusinessObject
         //------------------------------------------------------------------------------------------
 
         readonly IUnityContainer unityContainer;
+        public AdministrationBO() { }
         public AdministrationBO(IMapper mapper, UnitOfWork unitOfWork, IUnityContainer container)
             : base(mapper, unitOfWork)
         {
