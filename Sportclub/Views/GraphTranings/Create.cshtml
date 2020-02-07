@@ -1,10 +1,15 @@
-﻿@model Sportclub.Entities.GraphTraning
+﻿@model Sportclub.ViewModel.GraphTraningVM
 
 @{
     ViewBag.Title = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <script type="text/javascript">
+    $(document).ready(function () {
+        //4)-----set select option on id = 999------------
+        $('select[name=CoacheId]').val(999)
+        $('select[name=SpecializationId]').val(888)
+    })
     $(function () {
         //1 - взаимодейств. select option м/у собой
         $('#coaches').change(function (e) {
@@ -77,6 +82,7 @@
                 }
             })
         });
+        
  //---------------------service func------------------------
         function sendQueryTime() {
             var intDay = $('#DayOfWeek').val()
@@ -122,14 +128,14 @@
             <div class="form-group col-md-5">
                 @Html.LabelFor(model => model.CoacheId, "CoacheId", htmlAttributes: new { @class = "control-label" })
                 <div>
-                    @Html.DropDownList("CoacheId", null, htmlAttributes: new { @class = "form-control", id = "coaches" })
+                    @Html.DropDownList("CoacheId", null, htmlAttributes: new { @class = "form-control", id = "coaches", @Value = 999 })
                     @Html.ValidationMessageFor(model => model.CoacheId, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group col-md-5">
                 @Html.LabelFor(model => model.CoacheId, "Specialist", htmlAttributes: new { @class = "control-label" })
                 <div>
-                    @Html.DropDownList("SpecializationId", null, htmlAttributes: new { @class = "form-control", id = "specializations" })
+                    @Html.DropDownList("SpecializationId", null, htmlAttributes: new { @class = "form-control", id = "specializations", @Value = 888 })
                     @Html.ValidationMessageFor(model => model.CoacheId, "", new { @class = "text-danger" })
                 </div>
             </div>

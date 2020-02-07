@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Sportclub.Entities.GraphTraning>
+﻿@model IEnumerable<Sportclub.ViewModel.GraphTraningVM>
 
 @{
     ViewBag.Title = "Index";
@@ -58,7 +58,7 @@
             <td>
                 @foreach (var client in item) {
                     @Html.DisplayFor(m => client.User.FullName)
-                    <span>, </span>
+                    <span></span>
                 }
 
             </td>

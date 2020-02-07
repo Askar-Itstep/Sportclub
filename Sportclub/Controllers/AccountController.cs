@@ -99,8 +99,8 @@ namespace Sportclub.Controllers
             {
                 userBO.Role = roleBO;
                 userBO.RoleId = roleBO.Id;
-                userBO.Save(userBO);
-                userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.FullName == model.FullName).FirstOrDefault();
+                //userBO.Save(userBO);
+                //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.FullName == model.FullName).FirstOrDefault();
 
                 var clientBO = DependencyResolver.Current.GetService<ClientsBO>();
                 clientBO.User = userBO;
@@ -118,7 +118,7 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "manager1";
-                    userBO.Save(userBO);    //если надо - проапдейт-ся
+                    //userBO.Save(userBO);    //если надо - проапдейт-ся
                     admin.User = userBO;
                     admin.Status = AdministrationBO.StatusManager.MANAGER;
                 }
@@ -128,8 +128,8 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "top_manager";
-                    userBO.Save(userBO);
-                    userBO = userBO.LoadAll().Where(u=>u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    //userBO.Save(userBO);
+                    //userBO = userBO.LoadAll().Where(u=>u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     admin.User = userBO;
                     admin.UserId = userBO.Id;
                     admin.Status = AdministrationBO.StatusManager.TOP_MANAGER;
@@ -149,8 +149,8 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;                 
                     userBO.Token = "coache1";
-                    userBO.Save(userBO); 
-                    userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    //userBO.Save(userBO); 
+                    //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     coache.User = userBO;
                     coache.UserId = userBO.Id;
                     coache.Status = CoachesBO.StatusCoach.COACHE;
@@ -163,8 +163,8 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache2";
-                    userBO.Save(userBO);  
-                    userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    //userBO.Save(userBO);  
+                    //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     coache.User = userBO;
                     coache.UserId = userBO.Id;
                     coache.Status = CoachesBO.StatusCoach.HEAD_COACHE_HALL;
@@ -176,8 +176,8 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache3";
-                    userBO.Save(userBO);
-                    userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
+                    //userBO.Save(userBO);
+                    //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     coache.User = userBO;
                     coache.UserId = userBO.Id;
                     coache.Status = CoachesBO.StatusCoach.TOP_COACHE;

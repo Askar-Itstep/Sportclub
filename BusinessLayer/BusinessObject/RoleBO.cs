@@ -30,10 +30,10 @@ namespace BusinessLayer.BusinessObject
             var res = roles.AsEnumerable().Select(a => mapper.Map<RoleBO>(a)).ToList();
             return res;
         }
-        public void Load(int id)
+        public RoleBO Load(int id)
         {
             var role = unitOfWork.Roles.GetById(id);
-            mapper.Map(role, this);
+            return mapper.Map(role, this);
         }
         public void Save(RoleBO roleBO)
         {

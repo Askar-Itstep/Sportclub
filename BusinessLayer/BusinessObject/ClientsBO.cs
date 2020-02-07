@@ -31,25 +31,29 @@ namespace BusinessLayer.BusinessObject
         {
             var clients = unitOfWork.Clients.GetAll();
             var res = clients.AsEnumerable().Select(c => mapper.Map<ClientsBO>(c)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.Login));
             return res;
         }
-
-        public void Load(int id)
+        public IEnumerable<ClientsBO> LoadAllWithInclude(params string[] parametrs)  //из DataObj в BusinessObj
+        {
+            var clients = unitOfWork.Clients.Include(parametrs);
+            var res = clients.AsEnumerable().Select(c => mapper.Map<ClientsBO>(c)).ToList();
+            return res;
+        }
+        public ClientsBO Load(int id)
         {
             var client = unitOfWork.Administration.GetById(id);
-            mapper.Map(client, this);
+            return mapper.Map(client, this);
         }
-        public void Save(ClientsBO adminBO)
+        public void Save(ClientsBO clientBO)
         {
-            var client = mapper.Map<Clients>(adminBO);
-            if (adminBO.Id == 0) {
+            var client = mapper.Map<Clients>(clientBO);
+            if (clientBO.Id == 0) {
                 Add(client);
             }
             else {
                 Update(client);
             }
-            unitOfWork.Administration.Save();
+            unitOfWork.Clients.Save();
         }
         private void Add(Clients client)
         {

@@ -1,7 +1,7 @@
 ﻿@*@model IEnumerable<Sportclub.Entities.Specialization>*@
-@model IEnumerable<Sportclub.Entities.Coaches>
+@model IEnumerable<Sportclub.ViewModel.CoachesVM>
 
-
+@*DropDownList("SpecializationId"*@
 <select id="specializations">
     @foreach (var item in Model) {
         <option value="@item.SpecializationId">@item.Specialization.Title</option>

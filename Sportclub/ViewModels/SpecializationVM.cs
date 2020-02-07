@@ -8,6 +8,8 @@ namespace Sportclub.ViewModel
 {
     public class SpecializationVM
     {
+        internal int IdEmptySpecialization;
+
         public int Id { get; set; }
 
         public string Title { get; set; }

@@ -1,16 +1,17 @@
-﻿@model Sportclub.Entities.Clients
+﻿@*@model Sportclub.Entities.Clients*@
+@model Sportclub.ViewModel.ClientsVM
 
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    //var roleBO = ViewBag.Role;
 }
 
 <h2>Edit</h2>
 
-@using (Html.BeginForm())
-{
+@using (Html.BeginForm()) {
     @Html.AntiForgeryToken()
-    
+
 <div class="form-horizontal">
     <h4>Clients</h4>
     <hr />
@@ -20,7 +21,6 @@
     @Html.HiddenFor(model => model.User.Id)
     @Html.HiddenFor(model => model.User.Login)
     @Html.HiddenFor(model => model.User.RoleId)
-    @Html.HiddenFor(model => model.User.Token)
 
     <div class="form-group">
         @Html.LabelFor(model => model.User.FullName, htmlAttributes: new { @class = "control-label col-md-2" })

@@ -6,118 +6,132 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using BusinessLayer.BusinessObject;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.ViewModel;
 
 namespace DataLayer.Controllers
 {
     public class ClientsController : Controller
     {
-        private UnitOfWork unitOfWork = new UnitOfWork();
-    
+        //private UnitOfWork unitOfWork = new UnitOfWork();
+        IMapper mapper;
+        public ClientsController() { }
+        public ClientsController(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
         public ActionResult Index()
         {
-            var clients = unitOfWork.Clients.GetAll();
-            return View(clients.ToList());
+            var clientsBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User));
+            List<ClientsVM> clientsVM = mapper.Map<List<ClientsVM>>(clientsBO);
+            return View(clientsVM);
         }
 
-       
+
         public ActionResult Details(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c=>c.Id==id);
-            if (clients == null)
-            {
+
+            var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User));
+            var clientVM = mapper.Map<ClientsVM>(clientBO.FirstOrDefault(c => c.Id == id));
+
+            if (clientVM == null)
                 return HttpNotFound();
-            }
-            return View(clients);
+
+            return View(clientVM);
         }
 
-       [Authorize(Roles ="admin, top_manager, manager")]
-        public ActionResult Create()
+        [Authorize(Roles = "admin, top_manager, manager")]
+        public ActionResult Create() //Добав. возм. админу добавл. нов. клиента..
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Clients clients)
+        public ActionResult Create(ClientsVM clientVM)
         {
-            if (clients.UserId != 0) {              //Добав. возм. админу добавл. нов. клиента..
-                if (ModelState.IsValid) {
-                    unitOfWork.Clients.Create(clients);
-                    unitOfWork.Clients.Save();
-                    return RedirectToAction("Index");
-                }
+            if (ModelState.IsValid) {
+                var userBO = mapper.Map<UserBO>(clientVM.User);
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().FirstOrDefault(r => r.RoleName == "client");
+                //userBO.Role = roleBO;     //добавляет еще одну роль "client???"
+                userBO.RoleId = roleBO.Id;
+                userBO.Login = clientVM.User.Email.Split('@')[0];
+                userBO.Gender = GenderBO.MEN;   //default
+                var clientBO = mapper.Map<ClientsBO>(clientVM);
+                clientBO.User = userBO;
+                clientBO.UserId = userBO.Id;
+                clientBO.Save(clientBO);
+                return RedirectToAction("Index");
+
             }
-            clients.User.Role = new Role { RoleName = "client" };//.. (т.к. нов. клиент ~ нов. юзер)
-            unitOfWork.Users.Create(clients.User);
-            unitOfWork.Clients.Create(clients);
-            unitOfWork.Clients.Save();
-            //return View(clients);
-            return RedirectToAction("Index");
+            return View(clientVM);
         }
 
-       
+        [HttpGet]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
+            if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c=>c.Id==id);
-            if (clients == null)
-            {
+            var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id);
+
+            if (clientBO == null) {
                 return HttpNotFound();
             }
-            return View(clients);
+            var clientVM = mapper.Map<ClientsVM>(clientBO);
+            return View(clientVM);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(
-            //[Bind(Include = "Id,FullName,BirthDay,Phone,Email,Login,Password")]
-        Clients clients)
+        public ActionResult Edit(ClientsVM clientVM)
         {
-            if (ModelState.IsValid)
-            {
-                unitOfWork.Clients.Update(clients);
-                unitOfWork.Clients.Save();
+            if (ModelState.IsValid) {
+                var clientBO = mapper.Map<ClientsBO>(clientVM);
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().Load(clientVM.User.RoleId);
+                clientBO.User.Role = roleBO;   //роль не меняется! 
+                UserBO userBO = clientBO.User;
+                userBO.Save(userBO);
+                clientBO.Save(clientBO);
+
                 return RedirectToAction("Index");
             }
-            return View(clients);
+            return View(clientVM);
         }
-
-        
+        //-------------------------------------------------------------------------------
+        [HttpGet]
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
+            if (id == null) 
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c=>c.Id==id);
-            if (clients == null)
-            {
+
+            var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id);
+
+            if (clientBO == null) 
                 return HttpNotFound();
-            }
-            return View(clients);
+
+            var clientVM = mapper.Map<ClientsVM>(clientBO);
+            return View(clientVM);
         }
 
-       
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Clients clients = unitOfWork.Clients.Include("User").ToList().Find(c => c.Id == id);
-            unitOfWork.Clients.Delete(clients.Id);
-            unitOfWork.Clients.Save();
+            var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id);
+            var userBO = clientBO.User;
+            clientBO.DeleteSave(clientBO);
+            userBO.DeleteSave(userBO);
             return RedirectToAction("Index");
         }
 
-        
+
     }
 }

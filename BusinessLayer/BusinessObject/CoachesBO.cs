@@ -28,6 +28,8 @@ namespace BusinessLayer.BusinessObject
         {
             COACHE, HEAD_COACHE_HALL, TOP_COACHE
         }
+
+
         //------------------------------------------------------------------------------------
         readonly IUnityContainer unityContainer;
         public CoachesBO(IMapper mapper, UnitOfWork unitOfWork, IUnityContainer container)
@@ -37,12 +39,18 @@ namespace BusinessLayer.BusinessObject
         }
         public IEnumerable<CoachesBO> LoadAll()  //из DataObj в BusinessObj
         {
-            var managers = unitOfWork.Coaches.GetAll();
-            var res = managers.AsEnumerable().Select(a => mapper.Map<CoachesBO>(a)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.Login));
+            var coaches = unitOfWork.Coaches.GetAll();
+            var res = coaches.AsEnumerable().Select(a => mapper.Map<CoachesBO>(a)).ToList();
             return res;
         }
 
+        public IEnumerable<CoachesBO> LoadAllWithInclude(params string[] values)
+        {
+            var coaches = unitOfWork.Coaches.Include(values);
+            //var coachesBO = mapper.Map<IEnumerable<CoachesBO>>(coaches);
+            var coachesBO = coaches.AsEnumerable().Select(a => mapper.Map<CoachesBO>(a)).ToList();
+            return coachesBO;
+        }
         public void Load(int id)
         {
             var managers = unitOfWork.Coaches.GetById(id);

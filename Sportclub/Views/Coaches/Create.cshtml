@@ -1,53 +1,58 @@
-﻿@using DataLayer.Entities
-@model DataLayer.Entities.Coaches
+﻿@using Sportclub.ViewModel
+@model Sportclub.ViewModel.CoachesVM
 @{
     ViewBag.Title = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <script>
     $(document).ready(function () {
+        //---------добавл. спец. тренеру по клику <-Добавь специальность->
         var formCreateSpec = document.forms["formCreateSpec"];
-
         $('#selSpec').on('change', function (e) {
             console.log($(this).val())
             if ($(this).val() == 0) {
                 $('#exampleModalScrollable').modal('show');
-
             }
         });
-        
-        $('#btnCreateSpec').on('click', function (e) {
+        $('#btnCreateSpec').on('click', function (e) {  
             $('#exampleModalScrollable').modal('hide');
             $('#formCreateCpec').triggerHandler('submit');
         });
-        $(formCreateSpec).on('submit', function (e) {//пусть работает Microsoft Ajax (_CreateSpec.)
-            //e.preventDefault();   
-            //console.log(this)
-            //$.ajax({
-            //    method: "POST",
-            //    //dataType: "json",
-            //    url: "CreateSpec",
-            //    data: $(this).serialize(),
-            //    success: function (data) {
-            //        if (Array.isArray(data)) {
-            //            console.log("array")
-            //            var arr = JSON.parse(data)
-            //            console.log(arr)
-            //        }
-            //        else
-            //            console.log("noArr!")
-            //    },
-            //    error: function (xhr, status) {
-            //        alert(xhr.statusCode, + status)
-            //    }
-            //});
+        $(formCreateSpec).on('submit', function (e) {//пусть работает Microsoft Ajax (Partial_CreateSpec.page)
+            {
+                //e.preventDefault();
+                //console.log(this)
+                //$.ajax({
+                //    method: "POST",
+                //    //dataType: "json",
+                //    url: "CreateSpec",
+                //    data: $(this).serialize(),
+                //    success: function (data) {
+                //        if (Array.isArray(data)) {
+                //            console.log("array")
+                //            var arr = JSON.parse(data)
+                //            console.log(arr)
+                //        }
+                //        else
+                //            console.log("noArr!")
+                //    },
+                //    error: function (xhr, status) {
+                //        alert(xhr.statusCode, + status)
+                //    }
+                //});
+            }
         });
+        //------контроль за полем времени--------
+        $('#TimeWork').change(function (e) {
+            if ($(this).val() <= 0) {
+                $(this).val(2); //default
+            }
+        })
     });
 </script>
 <h2>Create</h2>
 
-@using (Html.BeginForm())
-{
+@using (Html.BeginForm()) {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
@@ -57,7 +62,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.User, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.UserId,  ViewBag.UserList as SelectList, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DropDownListFor(model => model.UserId, ViewBag.UserList as SelectList, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.User, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -73,7 +78,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.TimeWork, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.TimeWork, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.TimeWork, new { htmlAttributes = new { @class = "form-control", @Value = 2 } })
                 @Html.ValidationMessageFor(model => model.TimeWork, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -101,7 +106,7 @@
                 </button>
             </div>
             <div class="modal-body" id="modal-body">
-                @Html.Partial("Partial/_CreateSpecialization", new Specialization())
+                @Html.Partial("Partial/_CreateSpecialization", new SpecializationVM())
             </div>
         </div>
     </div>

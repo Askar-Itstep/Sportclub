@@ -13,7 +13,6 @@ namespace BusinessLayer.BusinessObject
 {
     public class GraphTraningBO: BaseBusinessObject
     {
-        #region Simple Fields
         public int Id { get; set; }
 
         public int? CoacheId { get; set; }
@@ -25,15 +24,15 @@ namespace BusinessLayer.BusinessObject
 
         public List<ClientsBO> Clients { get; set; }
 
-
         [Required]
-        [RegularExpression(@"(^(([0,1][0-9])|(2[0-3])):[0-5][0-9]$)", ErrorMessage = "Некорректное значение!")]
+        //[RegularExpression(@"(^(([0,1][0-9])|(2[0-3])):[0-5][0-9]$)", ErrorMessage = "Некорректное значение!")]
         public DateTime TimeBegin { get; set; }
 
         [Required]
-        [RegularExpression(@"(^([0-1]\d|2[0-3])(:[0-5]\d){2}$) ", ErrorMessage = "Некорректное значение!")]
+        //[RegularExpression(@"(^([0-1]\d|2[0-3])(:[0-5]\d){2}$) ", ErrorMessage = "Некорректное значение!")]
         public DateTime TimeEnd { get; set; }
 
+        #region Del Fields
         //public GraphTraningBO()
         //{
         //    this.ClientsBO = new List<ClientsBO>();
@@ -54,10 +53,16 @@ namespace BusinessLayer.BusinessObject
         {
             var graphics = unitOfWork.GraphTranings.GetAll();
             var res = graphics.AsEnumerable().Select(g => mapper.Map<GraphTraningBO>(g)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.Login));
             return res;
         }
 
+        public IEnumerable<GraphTraningBO> LoadAllWithInclude(params string[] values)
+        {
+            var graphics = unitOfWork.GraphTranings.Include(values).ToList();
+            var graphicsBO = graphics.Select(g => mapper.Map<GraphTraningBO>(g)).ToList();
+            
+            return graphicsBO;
+        }
         public void Load(int id)
         {
             var graphic = unitOfWork.GraphTranings.GetById(id);
@@ -72,7 +77,7 @@ namespace BusinessLayer.BusinessObject
             else {
                 Update(graphic);
             }
-            unitOfWork.Users.Save();
+            unitOfWork.GraphTranings.Save();
         }
         private void Add(GraphTraning graphic)
         {
@@ -88,5 +93,6 @@ namespace BusinessLayer.BusinessObject
             unitOfWork.GraphTranings.Delete(graphicBO.Id);
             unitOfWork.GraphTranings.Save();
         }
+        
     }
 }

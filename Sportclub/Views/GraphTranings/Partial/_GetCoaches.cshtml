@@ -1,9 +1,9 @@
-﻿@model IEnumerable<Sportclub.Entities.Coaches>
+﻿@model IEnumerable<Sportclub.ViewModel.CoachesVM>
 
 
 <select id="coaches">
     @foreach (var item in Model) {
-        <option value="@item.Id">@item.User.FullName</option>
+        <option value="item.Id">@item.User.FullName</option>
     }
 
 </select>

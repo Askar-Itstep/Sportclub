@@ -1,8 +1,8 @@
-﻿@model DataLayer.Entities.Specialization
+﻿@model Sportclub.ViewModel.SpecializationVM
 
 <script>
     function onSuccess(data) {
-        $('#exampleModalScrollable').modal('hide'); 
+        $('#exampleModalScrollable').modal('hide');
         if (Array.isArray(data)) {
             $(data).each(function (i, item) {
                 $('#selSpec').append("<option>" + item["Title"] + "</option>")
@@ -20,14 +20,15 @@
 
 
 @*@using (Html.BeginForm("CreateSpec", "Coaches", FormMethod.Post, new { name = "formCreateSpec" }))*@
-@using(Ajax.BeginForm("CreateSpec", new AjaxOptions
+@using (Ajax.BeginForm("CreateSpec", new AjaxOptions
 {
-    UpdateTargetId = "selSpec", HttpMethod = "Post",
-    Url = "/Coaches/CreateSpec", OnSuccess = "onSuccess"
-}))
-{
+    UpdateTargetId = "selSpec",
+    HttpMethod = "Post",
+    Url = "/Coaches/CreateSpec",
+    OnSuccess = "onSuccess"
+})) {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Specialization</h4>
         <hr />

@@ -6,47 +6,62 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using BusinessLayer.BusinessObject;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.ViewModel;
 
 namespace DataLayer.Controllers
 {
     public class CoachesController : Controller
     {
-        private UnitOfWork unitOfWork = new UnitOfWork();
+        //private UnitOfWork unitOfWork = new UnitOfWork();
+        IMapper mapper;
+        public CoachesController() { }
+        public CoachesController(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
 
-        
         public ActionResult Index()
         {
-            var coaches = unitOfWork.Coaches.Include(nameof(User)).Include(nameof(Specialization));
-            return View(coaches.ToList());
+            var coachesBO = DependencyResolver.Current.GetService<CoachesBO>().LoadAllWithInclude(nameof(User), nameof(Specialization));
+            var coachesVM = coachesBO.Select(co => mapper.Map<CoachesVM>(co));
+            return View(coachesVM.ToList());
         }
 
-        
+
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
+            if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
-            if (coaches == null)
-            {
-                return HttpNotFound();
-            }
-            return View(coaches);
-        }
+            var coacheBO = DependencyResolver.Current.GetService<CoachesBO>()
+                                    .LoadAllWithInclude(nameof(User), nameof(Specialization)).FirstOrDefault(c => c.Id == id);
 
-       
+            if (coacheBO == null)
+                return HttpNotFound();
+
+            var coacheVM = mapper.Map<CoachesVM>(coacheBO);
+            return View(coacheVM);
+        }
+        //----------------------------------------------------------------------------------------------------
+        [HttpGet]
+
         public ActionResult Create()
         {
-                var specializations = unitOfWork.Specialization.GetAll().ToList();
-                specializations.Add(new Specialization { Title = "-- Добавить специализацию --" });
-                ViewBag.Specializations = new SelectList(specializations, "Id", "Title");
-                ViewBag.UserList = new SelectList(unitOfWork.Users.GetAll().Where(u=>u.Token.Contains("coache")).ToList(), "Id", "FullName");
-                return View();
-                      
+            var specializationsBO = DependencyResolver.Current.GetService<SpecializationBO>().LoadAll().ToList();
+            specializationsBO.Add(new SpecializationBO { Title = "-- Добавить специализацию --" });
+            var specializationsVM = specializationsBO.Select(s => mapper.Map<SpecializationVM>(s));
+            ViewBag.Specializations = new SelectList(specializationsVM, "Id", "Title");
+
+            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u =>u.Token != null && u.Token.Contains("coache"));
+            var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u));
+            ViewBag.UserList = new SelectList(usersVM, "Id", "FullName");
+            return View();
+
         }
         //[HttpPost]
         //public ActionResult CreateSpec()
@@ -69,98 +84,100 @@ namespace DataLayer.Controllers
         //    return RedirectToAction("Index", unitOfWork.Coaches.Include(nameof(User)).ToList());
         //}
 
-        [HttpPost]
-        public ActionResult CreateSpec(Specialization specialization)
+        [HttpPost]          //добавить специальн. тренеру
+        public ActionResult CreateSpec(SpecializationVM specializationVM)   //обработ. ajax
         {
-            if (specialization == null)
+            if (specializationVM == null)
                 return HttpNotFound();
-            if (ModelState.IsValid)
-            {
-               
-                    unitOfWork.Specialization.Create(specialization);
-                    unitOfWork.Specialization.Save();
-                    var specializations = unitOfWork.Specialization.GetAll().ToList();
-                    ViewBag.Specializations = new SelectList(specializations, "Id", "Title");
-                    return new JsonResult  {
-                        Data = specializations,
-                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                    };
-                
+            if (ModelState.IsValid) {
+                var specBO = mapper.Map<SpecializationBO>(specializationVM);
+                specBO.Save(specBO);
+                var specVM = specBO.LoadAll().Select(s => mapper.Map<SpecializationVM>(s));
+                ViewBag.Specializations = new SelectList(specVM, "Id", "Title");
+                return new JsonResult
+                {
+                    Data = specVM,
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                };
+
             }
-            return RedirectToAction("Index", unitOfWork.Coaches.Include(nameof(User)).ToList());
+            var coachesBO = DependencyResolver.Current.GetService<CoachesBO>()
+                                    .LoadAllWithInclude(nameof(User), nameof(Specialization));
+            var coachesVM = coachesBO.Select(co => mapper.Map<CoachesVM>(co));
+            return RedirectToAction("Index", coachesVM.ToList());
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Coaches coaches)
-        {
-            if (coaches == null)
+        public ActionResult Create(Coaches coacheVM)    //админ может созд. нов. тренера т/о из существ.!
+        {                                               
+            if (coacheVM == null)
                 return HttpNotFound();
-            if(coaches.UserId == 0) {
-                return new HttpNotFoundResult ("User is null!");
+            if (coacheVM.UserId == 0) {
+                return new HttpNotFoundResult("User is null!");
             }
-            if (ModelState.IsValid)
-            {
-                unitOfWork.Coaches.Create(coaches);
-                unitOfWork.Coaches.Save();
+            if (ModelState.IsValid) {
+                var coacheBO = mapper.Map<CoachesBO>(coacheVM);
+                coacheBO.Save(coacheBO);
                 return RedirectToAction("Index");
             }
-
-            return View(coaches);
+            return View(coacheVM);
         }
-
+        //-------------------------------------------------------------------------------------------------
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
+            if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ViewBag.SpecList = new SelectList(unitOfWork.Specialization.GetAll().ToList(), "Id", "Title");
-            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
-            if (coaches == null)
-            {
+            var coacheBO = DependencyResolver.Current.GetService<CoachesBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id); 
+            if (coacheBO == null) {
                 return HttpNotFound();
             }
-            return View(coaches);
+            var coacheVM = mapper.Map<CoachesVM>(coacheBO);
+            ViewBag.SpecList = new SelectList(DependencyResolver.Current.GetService<SpecializationBO>().LoadAll(), "Id", "Title");
+            return View(coacheVM);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Coaches coaches)  //в форму добавл. скрыт. поля model.UserId + model.User.Id
+        public ActionResult Edit(CoachesVM coacheVM)  //в форму добавл. скрыт. поля model.UserId + model.User.Id
         {
-            if (ModelState.IsValid)
-            {
-                unitOfWork.Coaches.Update(coaches); //здесь coaches.UserId == coaches.User.Id
-                unitOfWork.Coaches.Save();
+            if (ModelState.IsValid) {
+                var coacheBO = mapper.Map<CoachesBO>(coacheVM);
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().Where(r => r.RoleName.Contains("coache")).FirstOrDefault();
+                coacheBO.User.RoleId = roleBO.Id;
+                coacheBO.User.Role = roleBO;
+                coacheBO.User.Token = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Id == coacheBO.UserId).FirstOrDefault().Token;
+                var userBO = coacheBO.User;
+                userBO.Save(userBO);
+                coacheBO.Save(coacheBO);
                 return RedirectToAction("Index");
             }
-            return View(coaches);
+            return View(coacheVM);
         }
-
+        //-----------------------------------------------------------------------------------------
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
+            if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c => c.Id == id);
-            if (coaches == null)
-            {
+            var coacheBO = DependencyResolver.Current.GetService<CoachesBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id);
+            if (coacheBO == null) {
                 return HttpNotFound();
             }
-            return View(coaches);
+            var coacheVM = mapper.Map<CoachesVM>(coacheBO);
+            return View(coacheVM);
         }
 
-        
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Coaches coaches = unitOfWork.Coaches.Include(nameof(User)).ToList().Find(c=>c.Id==id);
-            unitOfWork.Coaches.Delete(coaches.Id);
-            unitOfWork.Coaches.Save();
+            var coacheBO = DependencyResolver.Current.GetService<CoachesBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id);
+            coacheBO.DeleteSave(coacheBO);
             return RedirectToAction("Index");
         }
 
-       
+
     }
 }

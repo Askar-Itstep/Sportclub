@@ -1,5 +1,5 @@
-﻿@model Sportclub.Entities.GraphTraning
-@using Sportclub.Entities
+﻿@model Sportclub.ViewModel.GraphTraningVM
+@using Sportclub.ViewModel
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -58,8 +58,6 @@
             var param = $(this).val()
             setLabelSpec(param)
         })      
-
-
    //------------------service func------------------------
         function setLabelSpec(data) {
             console.log(data)

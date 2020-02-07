@@ -15,7 +15,7 @@ namespace DataLayer.Controllers
 {
     public class AdminController : Controller
     {
-        private UnitOfWork unitOfWork = new UnitOfWork();
+        //private UnitOfWork unitOfWork = new UnitOfWork();
         IMapper mapper;
         public AdminController()
         { }
@@ -28,11 +28,12 @@ namespace DataLayer.Controllers
         public ActionResult Index()
         {
             var managers = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User)).ToList();
-            //var users = DependencyResolver.Current.GetService<UserBO>().LoadAllWithInclude(nameof(Role)).ToList();
-            //var res = managers.Join(users, m => m.UserBOId, u => u.Id, (m, u) => new AdministrationBO {   //для отображ. не нужно
-            //    Id = m.Id, Status = m.Status, UserBOId = m.UserBOId, UserBO = u
-            //}).ToList();
-
+            { //the good code
+                //var users = DependencyResolver.Current.GetService<UserBO>().LoadAllWithInclude(nameof(Role)).ToList();
+                //var res = managers.Join(users, m => m.UserBOId, u => u.Id, (m, u) => new AdministrationBO {   //для отображ. не нужно
+                //    Id = m.Id, Status = m.Status, UserBOId = m.UserBOId, UserBO = u
+                //}).ToList();
+            }
             var managersVM = managers.Select(m => mapper.Map<AdministrationVM>(m)).ToList();
             //var managersVM = res.Select(m => mapper.Map<AdministrationVM>(m)).ToList();
             return View(managersVM);
@@ -48,18 +49,13 @@ namespace DataLayer.Controllers
         [HttpPost]
         public ActionResult Create(AdministrationVM manager)
         {
-            //добор значений не вошедшю в форму
+            //---------добор значений не вошед. в форму---------------
             manager.User.Token = "manager";
             manager.User.RoleId = 3;
-            manager.User.Role = new RoleVM { Id = 3, RoleName = "manager" };
-            int lenUsers = DependencyResolver.Current.GetService<UserBO>().LoadAll().Count();
 
             if(ModelState.IsValid)
             {
-                var userBO = mapper.Map<UserBO>(manager.User);
-                userBO.Save(userBO);
-                userBO = userBO.LoadAll().Where(u => u.Email == manager.User.Email && u.Password == manager.User.Password).FirstOrDefault();
-              
+                var userBO = mapper.Map<UserBO>(manager.User);              
                 var managerBO = mapper.Map<AdministrationBO>(manager);
                 managerBO.User.Id = userBO.Id;
                 managerBO.UserId = userBO.Id;
@@ -91,7 +87,7 @@ namespace DataLayer.Controllers
             if(ModelState.IsValid)
             {
                 var userBO = mapper.Map<UserBO>(managerVM.User);
-                userBO.Save(userBO);
+                userBO.Save(userBO);     
                 userBO = userBO.LoadAll().Where(u => u.Email == managerVM.User.Email && u.Password == managerVM.User.Password).FirstOrDefault();
 
                 var managerBO = mapper.Map<AdministrationBO>(managerVM);

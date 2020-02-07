@@ -60,7 +60,6 @@ namespace DataLayer.Repository
             dbSet.Attach(item);
             db.Entry(item).State = EntityState.Modified;
         }
-       
         public IQueryable<T> GetAllNoTracking()
         {
             return dbSet.AsNoTracking();

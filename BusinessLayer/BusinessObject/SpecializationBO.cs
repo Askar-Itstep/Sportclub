@@ -10,7 +10,7 @@ using Unity;
 
 namespace BusinessLayer.BusinessObject
 {
-    public class SpecializationBO: BaseBusinessObject
+    public class SpecializationBO : BaseBusinessObject
     {
         public int Id { get; set; }
 
@@ -18,6 +18,7 @@ namespace BusinessLayer.BusinessObject
         //------------------------------------------------------------------------------------------
 
         readonly IUnityContainer unityContainer;
+        public SpecializationBO() { }
         public SpecializationBO(IMapper mapper, UnitOfWork unitOfWork, IUnityContainer container)
             : base(mapper, unitOfWork)
         {
@@ -27,7 +28,6 @@ namespace BusinessLayer.BusinessObject
         {
             var specials = unitOfWork.Specialization.GetAll();
             var res = specials.AsEnumerable().Select(a => mapper.Map<SpecializationBO>(a)).ToList();
-            //res.ForEach(r => System.Diagnostics.Debug.WriteLine(r.Login));
             return res;
         }
 
