@@ -33,7 +33,6 @@ namespace Sportclub.Controllers
             var times = graphics.Select(g => new { TimeBegin = g.TimeBegin, TimeEnd = g.TimeEnd }).ToList();
             times.Add(new { TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0)
                 , TimeEnd= new DateTime(today.Year, today.Month, today.Day, 8, 30, 0) });
-            //times.ForEach(t => System.Diagnostics.Debug.WriteLine("timeBegin: " + t.TimeBegin.GetType() + "; "+ "timeEnd: "+t.TimeEnd.GetType()));
 
             List<Tuple<DateTime, DateTime>> freeTimes = new List<Tuple<DateTime, DateTime>>();
             for (int i = 0; i < times.Count()-1; i++) {
