@@ -39,7 +39,7 @@ namespace DataLayer.Controllers
                 }
             }
             var clientsVM = mapper.Map<List<ClientsVM>>(clientsBO);
-            //нужнa синтетич. вьюхa из GrapgBO + GymsBO (или добав. навигац. св. gymId в GraphTran. 
+            //нужнo добав. навигац. св. gymId в GraphTran. 
             var gymsBO = DependencyResolver.Current.GetService<GymsBO>().LoadAll();
             var gymsVM = gymsBO.Select(g => mapper.Map<GymsVM>(g));
             ViewBag.GymList = gymsVM.ToList();
@@ -95,7 +95,7 @@ namespace DataLayer.Controllers
                 User = new UserVM { FullName = "<--Select Name-->" },
                 SpecializationId = idEmptySpecializ,
                 Specialization
-                = new SpecializationVM { Id = 888, Title = "<--Select Specialization-->" }
+                = new SpecializationVM { Id = idEmptySpecializ, Title = "<--Select Specialization-->" }
             });
             ViewBag.CoacheId = new SelectList(coachesVM, "Id", "User.FullName");
             ViewBag.SpecializationId = new SelectList(coachesVM, "SpecializationId", "Specialization.Title");

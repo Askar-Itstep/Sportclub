@@ -65,7 +65,8 @@
             </td>
             <td>
                 @foreach (var gym in gyms) {
-                    if (item.Coache.Specialization.Title.Contains(gym.GymName)) {
+                    if (item.Coache.Specialization.Title.Contains(gym.GymName) ||
+                        item.Coache.Specialization.Title.Contains("individ") && gym.GymName.Equals("vip")) {
                         @Html.DisplayFor(m => gym.GymName)
                     }
                 }
