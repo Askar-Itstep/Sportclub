@@ -58,9 +58,7 @@
     <Compile Include="Entities\Gender.cs" />
     <Compile Include="Entities\GraphTraning.cs" />
     <Compile Include="Entities\Gyms.cs" />
-    <Compile Include="Entities\LoginModel.cs" />
     <Compile Include="Entities\Model1.cs" />
-    <Compile Include="Entities\RegisterModel.cs" />
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\Specialization.cs" />
     <Compile Include="Entities\User.cs" />

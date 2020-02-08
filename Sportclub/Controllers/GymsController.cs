@@ -6,38 +6,47 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using BusinessLayer.BusinessObject;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.ViewModel;
 
 namespace DataLayer.Controllers
 {
+    [Authorize(Roles ="admin, top_manager, manager")]
     public class GymsController : Controller
     {
         private UnitOfWork unitOfWork = new UnitOfWork();
-
+        private IMapper mapper;
+        public GymsController (IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
        
         public ActionResult Index()
         {
-            return View(unitOfWork.Gyms.GetAll().ToList());
+            var gymsBO = DependencyResolver.Current.GetService<GymsBO>().LoadAll().ToList();
+            var gymsVM = gymsBO.Select(g => mapper.Map<GymsVM>(g));
+            return View(gymsVM);
         }
-
-        // GET: Gyms/Details/5
+        
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
+            if (id == null)            
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Gyms gyms = unitOfWork.Gyms.GetById(id);
-            if (gyms == null)
-            {
+            
+            GymsBO gymsBO = DependencyResolver.Current.GetService<GymsBO>();
+            gymsBO.Load((int)id);
+
+            if (gymsBO == null)            
                 return HttpNotFound();
-            }
-            return View(gyms);
+
+            var gymsVM = mapper.Map<List<GymsVM>>(gymsBO);
+            return View(gymsVM);
         }
 
-        // GET: Gyms/Create
         public ActionResult Create()
         {
             return View();
@@ -45,58 +54,55 @@ namespace DataLayer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,GymName")] Gyms gyms)
+        public ActionResult Create([Bind(Include = "Id,GymName")] GymsVM gymsVM)
         {
             if (ModelState.IsValid)
             {
-                unitOfWork.Gyms.Create(gyms);
-                unitOfWork.Gyms.Save();
+                var gymsBO = mapper.Map<GymsBO>(gymsVM);
+                gymsBO.Save(gymsBO);
                 return RedirectToAction("Index");
             }
-
-            return View(gyms);
+            return View(gymsVM);
         }
 
-        // GET: Gyms/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Gyms gyms = unitOfWork.Gyms.GetById(id);
-            if (gyms == null)
-            {
+            
+            GymsBO gymsBO = DependencyResolver.Current.GetService<GymsBO>().Load((int)id);
+
+            if (gymsBO == null)
                 return HttpNotFound();
-            }
-            return View(gyms);
+
+            var gymsVM = mapper.Map<GymsVM>(gymsBO);
+            return View(gymsVM);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,GymName")] Gyms gyms)
+        public ActionResult Edit([Bind(Include = "Id,GymName")] GymsVM gymsVM)
         {
             if (ModelState.IsValid)
             {
-                unitOfWork.Gyms.Update(gyms);
-                unitOfWork.Gyms.Save();
+                var gymsBO = mapper.Map<GymsBO>(gymsVM);
+                gymsBO.Save(gymsBO);
                 return RedirectToAction("Index");
             }
-            return View(gyms);
+            return View(gymsVM);
         }
 
         public ActionResult Delete(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Gyms gyms = unitOfWork.Gyms.GetById(id);
-            if (gyms == null)
-            {
+
+            GymsBO gymsBO = DependencyResolver.Current.GetService<GymsBO>().Load((int)id);
+
+            if (gymsBO == null)
                 return HttpNotFound();
-            }
-            return View(gyms);
+            var gymsVM = mapper.Map<GymsVM>(gymsBO);
+            return View(gymsVM);
         }
 
       
@@ -104,9 +110,8 @@ namespace DataLayer.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Gyms gyms = unitOfWork.Gyms.GetById(id);
-            unitOfWork.Gyms.Delete(gyms.Id);
-            unitOfWork.Gyms.Save();
+            GymsBO gymsBO = DependencyResolver.Current.GetService<GymsBO>().Load((int)id);
+            gymsBO.DeleteSave(gymsBO);
             return RedirectToAction("Index");
         }
 

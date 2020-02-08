@@ -30,10 +30,10 @@ namespace BusinessLayer.BusinessObject
             return res;
         }
 
-        public void Load(int id)
+        public GymsBO Load(int id)
         {
             var managers = unitOfWork.Gyms.GetById(id);
-            mapper.Map(managers, this);
+            return mapper.Map(managers, this);
         }
         public void Save(GymsBO coacheBO)
         {

@@ -111,6 +111,14 @@ namespace DataLayer
                 mpr.CreateMap<IEnumerable<Gyms>, List<GymsBO>>()
                .ConstructUsing(c => DependencyResolver.Current.GetService<List<GymsBO>>());
 
+                mpr.CreateMap<GymsVM, GymsBO>()
+              .ConstructUsing(c => DependencyResolver.Current.GetService<GymsBO>());
+
+                mpr.CreateMap<GymsBO, GymsVM>()
+                .ConstructUsing(c => DependencyResolver.Current.GetService<GymsVM>());
+
+              //  mpr.CreateMap<IEnumerable<GymsBO>, List<GymsVM>>()
+              //.ConstructUsing(c => DependencyResolver.Current.GetService<List<GymsVM>>());
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Role, RoleBO>()

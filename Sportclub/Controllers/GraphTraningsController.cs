@@ -28,10 +28,10 @@ namespace DataLayer.Controllers
         public ActionResult Index()
         {
             var graphicsBO = DependencyResolver.Current.GetService<GraphTraningBO>().LoadAllWithInclude("Coache.User", nameof(Clients));
-            var graphicsVM = graphicsBO.Select(g => mapper.Map<GraphTraningVM>(g)); //пока нет списка клиентов - нет навигац.
+            var graphicsVM = graphicsBO.Select(g => mapper.Map<GraphTraningVM>(g)); //пока нет списка клиентов - no many-to-many
 
             var clientsBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User));
-            foreach (var graphic in graphicsBO) {
+            foreach (var graphic in graphicsBO) {   // no good - need many-to-many
                 foreach (var client in clientsBO) {
                     if (graphic.Id == client.GraphicId) {
                         graphic.Clients.Add(client);
@@ -39,6 +39,10 @@ namespace DataLayer.Controllers
                 }
             }
             var clientsVM = mapper.Map<List<ClientsVM>>(clientsBO);
+            //нужнa синтетич. вьюхa из GrapgBO + GymsBO (или добав. навигац. св. gymId в GraphTran. 
+            var gymsBO = DependencyResolver.Current.GetService<GymsBO>().LoadAll();
+            var gymsVM = gymsBO.Select(g => mapper.Map<GymsVM>(g));
+            ViewBag.GymList = gymsVM.ToList();
             return View(graphicsVM);
         }
 

@@ -1,9 +1,10 @@
 ﻿@model IEnumerable<Sportclub.ViewModel.GraphTraningVM>
-
+@using Sportclub.ViewModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var currentUser = this.ViewContext.HttpContext.User;
+    //var currentUser = this.ViewContext.HttpContext.User;
+    List<GymsVM> gyms = ViewBag.GymList;
 }
 
 <h2>Расписание тренировок</h2>
@@ -33,6 +34,7 @@
             Окончание
         </th>
         <th>Участники</th>
+        <th>Зал</th>
         <th>
             Прочее
         </th>
@@ -60,7 +62,13 @@
                     @Html.DisplayFor(m => client.User.FullName)
                     <span></span>
                 }
-
+            </td>
+            <td>
+                @foreach (var gym in gyms) {
+                    if (item.Coache.Specialization.Title.Contains(gym.GymName)) {
+                        @Html.DisplayFor(m => gym.GymName)
+                    }
+                }
             </td>
             @{
                 if (User.IsInRole("coache") == false && User.IsInRole("top_coache") == false && User.IsInRole("head_coache") == false) {

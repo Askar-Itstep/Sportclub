@@ -27,9 +27,9 @@ namespace DataLayer
         }
         
     }
-    public class MyContextInitializer : DropCreateDatabaseIfModelChanges<Model1>    //Always //
+    public class MyContextInitializer : DropCreateDatabaseIfModelChanges<Model1>    
     {
-        protected override void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login - ?
+        protected override void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login 
         {
             //1) Roles
             Role adminRole = new Role { RoleName = "admin" };
@@ -60,6 +60,15 @@ namespace DataLayer
             };
             context.Specializations.AddRange(specializations);
 
+            //5
+            Gyms[] gyms = new Gyms[]
+            {
+                new Gyms{ GymName="vip"},
+                new Gyms{GymName="boxing"},
+                new Gyms{GymName = "dance"}
+            };
+            context.Gyms.AddRange(gyms);
+            //--------------------
             context.SaveChanges();
             base.Seed(context);
         }
