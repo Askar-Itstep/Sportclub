@@ -34,13 +34,16 @@ namespace DataLayer
             //1) Roles
             Role adminRole = new Role { RoleName = "admin" };
             Role clientRole = new Role { RoleName = "client" };
+            Role coacheRole = new Role { RoleName = "coache" };
             context.Roles.Add(adminRole);
             context.Roles.Add(clientRole);
+            context.Roles.Add(coacheRole);
 
-           //2) Users
+            //2) Users
             User userAdmin = new User {
                 BirthDay = new DateTime(1900, 1, 1), Gender = Gender.MEN, Role = adminRole, Login = "admin", Password = "admin" };
             context.Users.Add(userAdmin);
+
             //3)Administrations
             Administration admin = new Administration
             {
@@ -52,7 +55,6 @@ namespace DataLayer
             //4 Specializations
             Specialization[] specializations = new Specialization[]{
                 new Specialization{ Title = "individual" },
-                //new Specialization{Title = "box"},
                 new Specialization{ Title = "dance" },
                 new Specialization{Title = "boxing"}
             };

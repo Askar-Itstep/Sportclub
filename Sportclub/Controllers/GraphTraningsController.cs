@@ -175,27 +175,12 @@ namespace DataLayer.Controllers
             return View(graphicVM);
         }
 
-        //[HttpGet] //клиентов не надо передавать (автопоставка по навигац.)
-        //public ActionResult PreEdit(int? id)
-        //{
-        //    if (id == null) {
-        //        return HttpNotFound("Такoй график не найден!");
-        //    }
-
-        //    var clients = unitOfWork.Clients.Include(nameof(User)).Where(c => c.GraphicId == id).Select(c => c.Id).ToList();
-        //    //System.Diagnostics.Debug.WriteLine("clients[0]: " + clients[0].User.FullName);
-        //    return new JsonResult { Data = clients, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-
-        //}
-
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(GraphTraningVM graphTraningVM)
         {
-            //var form = Request.Form;
             if (ModelState.IsValid) {
-                //unitOfWork.GraphTranings.Update(graphTraning);
-                //unitOfWork.GraphTranings.Save();
                 var graphicBO = mapper.Map<GraphTraningBO>(graphTraningVM);
                 graphicBO.Save(graphicBO);
                 return RedirectToAction("Index");
@@ -214,8 +199,7 @@ namespace DataLayer.Controllers
             var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User))
                                                                              .Where(c => c.User.Login.Equals(User.Identity.Name)).FirstOrDefault();
             graphicBO.Clients.Add(clientBO);
-            clientBO.GraphicId = graphicBO.Id;
-            //clientBO.Graphic = graphicBO;
+            clientBO.GraphicId = graphicBO.Id; //пока 1 юзер - 1 запись (no many-to-many)
             clientBO.Save(clientBO);
             return RedirectToAction("Index");
         }

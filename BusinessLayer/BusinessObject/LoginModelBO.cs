@@ -9,13 +9,13 @@ namespace BusinessLayer.BusinessObject
 {
     public class LoginModelBO
     {
-        public int Id { get; set; }
-        [Required]
-        public string Login { get; set; }
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        //public int Id { get; set; }
+        //[Required]
+        //public string Login { get; set; }
+        //[Required]
+        //[DataType(DataType.Password)]
+        //public string Password { get; set; }
 
-        public string Token { get; set; }
+        //public string Token { get; set; }
     }
 }

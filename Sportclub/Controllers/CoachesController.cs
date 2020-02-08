@@ -15,9 +15,10 @@ using Sportclub.ViewModel;
 
 namespace DataLayer.Controllers
 {
+    [Authorize(Roles ="admin, top_manager, manager, top_coache, head_coache")]
     public class CoachesController : Controller
     {
-        //private UnitOfWork unitOfWork = new UnitOfWork();
+        
         IMapper mapper;
         public CoachesController() { }
         public CoachesController(IMapper mapper)
@@ -56,34 +57,13 @@ namespace DataLayer.Controllers
             specializationsBO.Add(new SpecializationBO { Title = "-- Добавить специализацию --" });
             var specializationsVM = specializationsBO.Select(s => mapper.Map<SpecializationVM>(s));
             ViewBag.Specializations = new SelectList(specializationsVM, "Id", "Title");
-
-            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u =>u.Token != null && u.Token.Contains("coache"));
+                                                                                 //произвести юзера  - в тренеры
+            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null);
             var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u));
             ViewBag.UserList = new SelectList(usersVM, "Id", "FullName");
             return View();
 
         }
-        //[HttpPost]
-        //public ActionResult CreateSpec()
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        using (Model1 unitOfWork = new Model1())
-        //        {
-        //            Specialization specialization = new Specialization { Title = form["Title"] };
-        //            unitOfWork.Specializations.Create(specialization);
-        //            unitOfWork.Save();
-        //            var specializations = unitOfWork.Specializations.ToList();
-        //            ViewBag.Specializations = new SelectList(specializations, "Id", "Title");
-        //            return new JsonResult {
-        //                Data = specialization,
-        //                JsonRequestBehavior = JsonRequestBehavior.AllowGet
-        //            };
-        //        }
-        //    }
-        //    return RedirectToAction("Index", unitOfWork.Coaches.Include(nameof(User)).ToList());
-        //}
-
         [HttpPost]          //добавить специальн. тренеру
         public ActionResult CreateSpec(SpecializationVM specializationVM)   //обработ. ajax
         {
@@ -108,7 +88,7 @@ namespace DataLayer.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Coaches coacheVM)    //админ может созд. нов. тренера т/о из существ.!
+        public ActionResult Create(CoachesVM coacheVM)    //нов. тренера только из существ. юзера!
         {                                               
             if (coacheVM == null)
                 return HttpNotFound();

@@ -24,25 +24,18 @@ namespace DataLayer.Controllers
             this.mapper = mapper;
         }
 
-        [Authorize(Roles = "admin, top_manager, manager")]          //из CustomRoleProvider!
+        [Authorize(Roles = "admin, top_manager, manager, ")]          //из CustomRoleProvider!
         public ActionResult Index()
         {
             var managers = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User)).ToList();
-            { //the good code
-                //var users = DependencyResolver.Current.GetService<UserBO>().LoadAllWithInclude(nameof(Role)).ToList();
-                //var res = managers.Join(users, m => m.UserBOId, u => u.Id, (m, u) => new AdministrationBO {   //для отображ. не нужно
-                //    Id = m.Id, Status = m.Status, UserBOId = m.UserBOId, UserBO = u
-                //}).ToList();
-            }
             var managersVM = managers.Select(m => mapper.Map<AdministrationVM>(m)).ToList();
-            //var managersVM = res.Select(m => mapper.Map<AdministrationVM>(m)).ToList();
             return View(managersVM);
         }
         //--------------------------------------------------------------------------------------------------------------
         [HttpGet]
         [Authorize(Roles ="admin, top_manager")]
         public ActionResult Create()
-        {
+        {                   //дать топам право созд. помощн. из возд.
             return View();
         }
        

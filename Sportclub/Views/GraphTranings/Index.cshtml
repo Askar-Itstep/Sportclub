@@ -63,12 +63,12 @@
 
             </td>
             @{
-                if (User.IsInRole("coache") == false && User.IsInRole("top_coache") == false &&
-                   User.IsInRole("head_coache") == false) {
+                if (User.IsInRole("coache") == false && User.IsInRole("top_coache") == false && User.IsInRole("head_coache") == false) {
+                    if (User.IsInRole("manager") == false && User.IsInRole("top_manager") == false && User.IsInRole("admin") == false) {
                     <td>
                         @Html.ActionLink("Записаться", "SignUp", new { id = item.Id }) |
                     </td>
-
+                    }
                     if (User.IsInRole("client") == false) {
                         <td>
                             @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
@@ -79,7 +79,6 @@
 
                 }
             }
-
         </tr>
     }
 

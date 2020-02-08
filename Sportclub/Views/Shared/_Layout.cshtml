@@ -10,8 +10,9 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/modernizr")
 </head>
+
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top" style="background-color:yellowgreen;">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -19,19 +20,23 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+
                 @Html.ActionLink("Sportclub", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
-            <div class="navbar-collapse collapse">
+            <div class="navbar-collapse collapse text-danger">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Домашняя страница", "Index", "Home")</li>
-                    @*<li>@Html.ActionLink("О программе", "About", "Home")</li>
-                    <li>@Html.ActionLink("Контакт", "Contact", "Home")</li>*@
                     <li>@Html.ActionLink("Тренеры", "Index", "Coaches")</li>
                     <li>@Html.ActionLink("Администрация", "Index", "Admin")</li>
                     <li>@Html.ActionLink("Клиенты", "Index", "Clients")</li>
                     <li>@Html.ActionLink("График тренировок", "Index", "GraphTranings")</li>
                     <li>@Html.ActionLink("Залы", "Index", "Gyms")</li>
                     <li>@Html.ActionLink("Выход", "Logoff", "Account", new { area = "" }, new { @class = "navbar-brand" })</li>
+                    <li>@Html.Label("Hello, "+ @User.Identity.Name)
+                        <div>
+                            <img src="~/Files/men.png" class="img-responsive" width="40"/>                           
+                        </div>
+                    </li>
                 </ul>
 
             </div>

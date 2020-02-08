@@ -40,16 +40,14 @@ namespace Sportclub.Controllers
                 else nick = model.Login;
                 var userBO = DependencyResolver.Current.GetService<UserBO>();
                 var userBOList = userBO.LoadAll();
-                //var userBOList = userBO.LoadAllWithInclude(nameof(Role));
                 userBO = userBOList.FirstOrDefault(u=>(u.Login.Equals(model.Login) || u.Login.Equals(nick)) && u.Password.Equals(model.Password));
                 
                 if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {
                     FormsAuthentication.SetAuthCookie(model.Login, true); //куки-набор (.AUTHPATH)
                     return RedirectToAction("Index", "Home");
                 }
-                else {
-                    ModelState.AddModelError("", "Пользователя с таким логином и паролем нет"); //error validat.
-                }
+                else 
+                    ModelState.AddModelError("", "Пользователя с таким логином и паролем нет"); //error validat.                
             }
             return View(model);
         }
@@ -61,7 +59,7 @@ namespace Sportclub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Registration(RegisterModel model)
+        public ActionResult Registration(RegisterModelVM model)
         {
             if (ModelState.IsValid) {
                 var userBO = DependencyResolver.Current.GetService<UserBO>();
@@ -73,14 +71,13 @@ namespace Sportclub.Controllers
                         return RedirectToAction("Index", "Home");
                     }
                 }
-                else {
-                    ModelState.AddModelError("", "Пользователь с таким логином или именем уже существует");
-                }
+                else 
+                    ModelState.AddModelError("", "Пользователь с таким логином или именем уже существует");                
             }
             return View(model);
         }
 
-        private UserBO CreateUser(RegisterModel model)
+        private UserBO CreateUser(RegisterModelVM model)
         {
             UserBO userBO = DependencyResolver.Current.GetService<UserBO>();
             string login = model.Email.Split('@')[0];
@@ -99,8 +96,6 @@ namespace Sportclub.Controllers
             {
                 userBO.Role = roleBO;
                 userBO.RoleId = roleBO.Id;
-                //userBO.Save(userBO);
-                //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.FullName == model.FullName).FirstOrDefault();
 
                 var clientBO = DependencyResolver.Current.GetService<ClientsBO>();
                 clientBO.User = userBO;
@@ -111,14 +106,12 @@ namespace Sportclub.Controllers
             else if (model.Token.Contains("manager"))           //может быть и 1234-ABCD-..
             {
                 var admin = DependencyResolver.Current.GetService<AdministrationBO>();
-                //int key = int.Parse(new Regex(@"\d").Match(model.Token).Value);
                 if (!model.Token.Contains("top") && !model.Token.Contains("2")) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("manager")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "manager"); //может быть и NULL
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "manager1";
-                    //userBO.Save(userBO);    //если надо - проапдейт-ся
                     admin.User = userBO;
                     admin.Status = AdministrationBO.StatusManager.MANAGER;
                 }
@@ -128,8 +121,6 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "top_manager";
-                    //userBO.Save(userBO);
-                    //userBO = userBO.LoadAll().Where(u=>u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     admin.User = userBO;
                     admin.UserId = userBO.Id;
                     admin.Status = AdministrationBO.StatusManager.TOP_MANAGER;
@@ -149,8 +140,6 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;                 
                     userBO.Token = "coache1";
-                    //userBO.Save(userBO); 
-                    //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     coache.User = userBO;
                     coache.UserId = userBO.Id;
                     coache.Status = CoachesBO.StatusCoach.COACHE;
@@ -163,8 +152,6 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache2";
-                    //userBO.Save(userBO);  
-                    //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     coache.User = userBO;
                     coache.UserId = userBO.Id;
                     coache.Status = CoachesBO.StatusCoach.HEAD_COACHE_HALL;
@@ -176,8 +163,6 @@ namespace Sportclub.Controllers
                     userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache3";
-                    //userBO.Save(userBO);
-                    //userBO = userBO.LoadAll().Where(u => u.Email == model.Email && u.Password == model.Password).FirstOrDefault();
                     coache.User = userBO;
                     coache.UserId = userBO.Id;
                     coache.Status = CoachesBO.StatusCoach.TOP_COACHE;

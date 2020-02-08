@@ -1,6 +1,4 @@
-﻿@*@using Sportclub.Entities
-    @model Sportclub.Entities.Administration*@
-@using Sportclub.ViewModel
+﻿@using Sportclub.ViewModel
 @model Sportclub.ViewModel.AdministrationVM
 
 
@@ -18,8 +16,6 @@
     <h4>Administration</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @*@Html.HiddenFor(m => m.User.RoleVMId, new { value = 0 })
-    @Html.HiddenFor(m => m.User.Token, new { value = "manager" })*@
     <div class="form-group">
         @Html.LabelFor(model => model.User.FullName, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
