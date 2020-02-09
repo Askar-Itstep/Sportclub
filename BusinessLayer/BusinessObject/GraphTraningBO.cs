@@ -17,19 +17,18 @@ namespace BusinessLayer.BusinessObject
 
         public int? CoacheId { get; set; }
         public CoachesBO Coache { get; set; }
-
+        public int? GymsId { get; set; }
+        public GymsBO Gyms { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
-        //--------------------------
 
+        //----------------------------------------
 
         public List<ClientsBO> Clients { get; set; }
 
         [Required]
-        //[RegularExpression(@"(^(([0,1][0-9])|(2[0-3])):[0-5][0-9]$)", ErrorMessage = "Некорректное значение!")]
         public DateTime TimeBegin { get; set; }
 
         [Required]
-        //[RegularExpression(@"(^([0-1]\d|2[0-3])(:[0-5]\d){2}$) ", ErrorMessage = "Некорректное значение!")]
         public DateTime TimeEnd { get; set; }
 
         #region Del Fields

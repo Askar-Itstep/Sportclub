@@ -64,12 +64,13 @@
                 }
             </td>
             <td>
-                @foreach (var gym in gyms) {
+                @Html.DisplayFor(m=>item.Gyms.GymName)
+                @*@foreach (var gym in gyms) {
                     if (item.Coache.Specialization.Title.Contains(gym.GymName) ||
                         item.Coache.Specialization.Title.Contains("individ") && gym.GymName.Equals("vip")) {
                         @Html.DisplayFor(m => gym.GymName)
                     }
-                }
+                }*@
             </td>
             @{
                 if (User.IsInRole("coache") == false && User.IsInRole("top_coache") == false && User.IsInRole("head_coache") == false) {

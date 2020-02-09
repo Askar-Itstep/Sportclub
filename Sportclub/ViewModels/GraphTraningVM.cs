@@ -15,8 +15,10 @@ namespace Sportclub.ViewModel
         public CoachesVM Coache { get; set; }
 
         public DayOfWeek DayOfWeek { get; set; }
-        //--------------------------
+        public int? GymsId { get; set; }
+        public GymsVM Gyms { get; set; }
 
+        //--------------------------
 
         public List<ClientsVM> Clients { get; set; }
 

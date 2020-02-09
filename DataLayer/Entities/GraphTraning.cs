@@ -15,9 +15,10 @@ namespace DataLayer.Entities
         public int? CoacheId { get; set; }
         public Coaches Coache { get; set; }
 
+        public int? GymsId { get; set; }
+        public Gyms Gyms { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
         //--------------------------
-
       
         public List<Clients> Clients { get; set; } 
 
