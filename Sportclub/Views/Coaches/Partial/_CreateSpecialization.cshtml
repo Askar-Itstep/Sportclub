@@ -3,9 +3,10 @@
 <script>
     function onSuccess(data) {
         $('#exampleModalScrollable').modal('hide');
+        console.log(data)
         if (Array.isArray(data)) {
             $(data).each(function (i, item) {
-                $('#selSpec').append("<option>" + item["Title"] + "</option>")
+                $('#selSpec').append("<option value="+item["Id"]+">" + item["Title"] + "</option>")
             })
         }
         else {
@@ -18,8 +19,6 @@
 
 
 
-
-@*@using (Html.BeginForm("CreateSpec", "Coaches", FormMethod.Post, new { name = "formCreateSpec" }))*@
 @using (Ajax.BeginForm("CreateSpec", new AjaxOptions
 {
     UpdateTargetId = "selSpec",

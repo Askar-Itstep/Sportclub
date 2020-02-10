@@ -25,7 +25,8 @@ namespace DataLayer
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
-        
+
+        //public System.Data.Entity.DbSet<Sportclub.ViewModel.GymsVM> GymsVMs { get; set; }
     }
     public class MyContextInitializer : DropCreateDatabaseIfModelChanges<Model1>    
     {

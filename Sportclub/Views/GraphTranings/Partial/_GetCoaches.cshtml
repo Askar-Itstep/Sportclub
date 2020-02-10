@@ -3,7 +3,7 @@
 
 <select id="coaches">
     @foreach (var item in Model) {
-        <option value="item.Id">@item.User.FullName</option>
+        <option value="@item.Id">@item.User.FullName</option>
     }
 
 </select>

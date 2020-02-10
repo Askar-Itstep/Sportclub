@@ -11,6 +11,7 @@ namespace Sportclub.ViewModel
     {
         public int Id { get; set; }
 
+        [Required]
         public int? CoacheId { get; set; }
         public CoachesVM Coache { get; set; }
 

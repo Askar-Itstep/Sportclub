@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Sportclub.ViewModel.GymsVM>
+
+<select id="GymsId">
+    @foreach (var item in Model) {
+        <option value=@item.Id>@item.GymName</option>
+    }
+
+</select>
+
+

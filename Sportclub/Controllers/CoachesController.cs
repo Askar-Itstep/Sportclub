@@ -50,7 +50,6 @@ namespace DataLayer.Controllers
         }
         //----------------------------------------------------------------------------------------------------
         [HttpGet]
-
         public ActionResult Create()
         {
             var specializationsBO = DependencyResolver.Current.GetService<SpecializationBO>().LoadAll().ToList();
@@ -58,8 +57,8 @@ namespace DataLayer.Controllers
             var specializationsVM = specializationsBO.Select(s => mapper.Map<SpecializationVM>(s));
             ViewBag.Specializations = new SelectList(specializationsVM, "Id", "Title");
                                                                                  //произвести юзера  - в тренеры
-            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null);
-            var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u));
+            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null).ToList();
+            var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u)).ToList();
             ViewBag.UserList = new SelectList(usersVM, "Id", "FullName");
             return View();
 
@@ -79,7 +78,6 @@ namespace DataLayer.Controllers
                     Data = specVM,
                     JsonRequestBehavior = JsonRequestBehavior.AllowGet
                 };
-
             }
             var coachesBO = DependencyResolver.Current.GetService<CoachesBO>()
                                     .LoadAllWithInclude(nameof(User), nameof(Specialization));
@@ -97,6 +95,7 @@ namespace DataLayer.Controllers
             }
             if (ModelState.IsValid) {
                 var coacheBO = mapper.Map<CoachesBO>(coacheVM);
+                coacheBO.User.Token = "coache1";
                 coacheBO.Save(coacheBO);
                 return RedirectToAction("Index");
             }

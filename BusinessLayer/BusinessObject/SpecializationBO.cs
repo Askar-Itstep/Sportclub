@@ -31,10 +31,10 @@ namespace BusinessLayer.BusinessObject
             return res;
         }
 
-        public void Load(int id)
+        public SpecializationBO Load(int id)
         {
             var specials = unitOfWork.Specialization.GetById(id);
-            mapper.Map(specials, this);
+            return mapper.Map(specials, this);
         }
         public void Save(SpecializationBO specialBO)
         {

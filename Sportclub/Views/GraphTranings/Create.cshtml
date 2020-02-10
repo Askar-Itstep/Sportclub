@@ -11,62 +11,107 @@
         $('select[name=SpecializationId]').val(888)
     })
     $(function () {
-        //1 - взаимодейств. select option м/у собой
+        //1а) - взаимодейств. select Coache - select Specializ м/у собой
         $('#coaches').change(function (e) {
             var id = $(this).val();
-            console.log("coache change!")
-            console.log($(this).val())
+            var listIdSpec = []
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("GetSpecialists")/' + id,
                 success: function (data) {
-                    $('#specializations').replaceWith(data)
+                    $('#specializations').replaceWith(data); // в PartialView "_GetSpecialization"
                     $('#specializations').addClass('form-control')
-                    console.log(data)
+                    $('#specializations').children().each(function (i, item) {
+                        listIdSpec.push($(item).val()); //загруз. список специальностей выбранн. тренера
+                    })
+                },
+                complete: function () {
+                    $.ajax({    //1b)дополн. подобрать соотв. залы
+                        type: "GET",
+                        url: '@Url.Action("GetGyms")/',
+                        data: { listIdSpec: JSON.stringify(listIdSpec) },
+                        success: function (data) {
+                            $('#GymsId').replaceWith(data);
+                            $('#GymsId').addClass('form-control');
+                        },
+                        error: function (xhr, status) {
+                            alert(status)
+                        }
+                    });
                 },
                 error: function (xhr, status) {
                     alert(status)
                 }
             });
-        });
-
-        $('#specializations').change(function (e) {
+            //1c) при изм. специальн. (после изм. списка тренров)- изм. на соотв. тренеров
+             $('#specializations').change(function (e) {
             var id = $(this).val();
-            console.log("spec change!")
-            console.log($(this).val())
+            console.log("specialze: " + id)
             $.ajax({
                 type: "GET",
                 url: '@Url.Action("GetCoaches")/' + id,
                 success: function (data) {
-                    $('#coaches').replaceWith(data);
-                    $('#coaches').addClass('form-control')                    
+                    $('#coaches').replaceWith(data);    //загруз. список тренеров
+                    $('#coaches').addClass('form-control');
+
                 },
                 error: function (xhr, status) {
                     alert(status)
                 }
             })
         });
-        //2------выставл. возм-го. времени занятий----------------
-        sendQueryTime();
-        $('#DayOfWeek').change(function (e) {
-            sendQueryTime()
-        })
-        
+
+        });
+        //1d) при изм. специальн. - изм. на соотв. тренеров
+        $('#specializations').change(function (e) {
+            var id = $(this).val();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCoaches")/' + id,
+                success: function (data) {
+                    $('#coaches').replaceWith(data);
+                    $('#coaches').addClass('form-control');
+                },
+                error: function (xhr, status) {
+                    alert(status)
+                }
+            })
+        });
+        //2a)------выставл. возм-го. времени занятий----------------
+        setTime();  //а)- сразу при загруз. докум.
+        $('#DayOfWeek').change(function (e) {   //при изм. дня недели
+            setTime()
+        });
+        //2b)------коррект. времени оконч. при выборе времени начала------
+        $('#selectTimeBegin').change(function (e) {
+            var timeBegin = $(this).val();
+            console.log(timeBegin)
+            var arrTimes = timeBegin.split(':');
+            var hourEnd = +arrTimes[0] + 1;
+            var minEnd = +arrTimes[1] + 30;
+            //var timeEnd = hourEnd + ":" + minEnd + ":" + arrTimes[2];
+            $('#selectTimeEnd').attr("disabled", false);
+            $('#selectTimeEnd').val(hourEnd + ":" + minEnd + ":" + arrTimes[2])
+            $('#selectTimeEnd').attr("disabled", true);
+        });
+
         //3 --------- submit--------------------------------------------
         var myForm = document.forms[0];
         $('input[type=submit]').click(function (e) {
-            $(this).attr('disabled', true)
+            $(this).attr('disabled', true);
+            //setTime();
             $(myForm).triggerHandler('submit');
         });
         $(myForm).submit(function(e) {
             event.preventDefault();
-            var specId = $('#specializations').val()
+            var specId = $('#specializations').val();
+            var gymsId = $('#GymsId').val();
             var formData = new FormData(this);
-            
-            formData.append("specId", specId)
-            //for (key of formData.keys()) 
-            //    console.log(`${key}: ${formData.get(key)}`);  //!-specId
-            
+            formData.append("specId", specId);
+            formData.append("GymsId", gymsId);
+            for (key of formData.keys())
+                console.log(`${key}: ${formData.get(key)}`);  
+
             $.ajax({
                 method: "POST",
                 processData: false,
@@ -82,30 +127,33 @@
                 }
             })
         });
-        
- //---------------------service func------------------------
-        function sendQueryTime() {
+
+ //---------------------service func GetTime------------------------
+        function setTime() {
             var intDay = $('#DayOfWeek').val()
             $.ajax({
                 method: "GET",
                 data: { intDay: intDay },
                 url: "GetTime",
-                success: function (data) {                    
+                success: function (data) {
                     var res = JSON.parse(data);
                     if (res != null && res != undefined && res != "") {
-                        console.log("res Undef!")
-                        var timeBeginFull = res[0]["Item1"];
-                        var timeEndFull = res[0]["Item2"];
-                        console.log(timeBeginFull)
-                        var indexSplit = timeBeginFull.indexOf('T');
-                        var timeBegin = timeBeginFull.slice(indexSplit + 1)
-                        var timeEnd = timeEndFull.slice(indexSplit + 1)
-                        $('#TimeBegin').val(timeBegin)    //insert
-                        $('#TimeEnd').val(timeEnd)
+                        $(res).each(function (ind, item) {
+                            var timeBeginFull = res[ind]["Item1"];
+                            var timeEndFull = res[ind]["Item2"];
+
+                            //var indexSplit = timeBeginFull.indexOf('T');
+                            var timeBegin = timeBeginFull.split('T')[1];   //.slice(indexSplit + 1)
+                            var timeEnd = timeEndFull.split('T')[1]//.slice(indexSplit + 1);
+                            $('#selectTimeBegin').append('<option value=' + timeBegin + '>' + timeBegin + '</option>')
+                            $('#selectTimeEnd').append('<option value=' + timeEnd + '>' + timeEnd + '</option>')
+                            $('#selectTimeEnd').attr("disabled", true);
+                        })
                     }
-                    else {
-                        $('#TimeBegin').val("09:00")    //insert
-                        $('#TimeEnd').val("10:30")
+                    else {  
+                        $('#selectTimeBegin').append('<option value=' + "09:00" + '>' + "09:00" + '</option>');
+                        $('#selectTimeEnd').append('<option value=' + "10:30" + '>' + "10:30" + '</option>');
+                        $('#selectTimeEnd').attr("disabled", true);
                     }
                 },
                 error: function (xhr, status) {
@@ -113,6 +161,7 @@
                 }
             })
         }
+
     })
 </script>
 <h2>Create</h2>
@@ -151,7 +200,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.TimeBegin, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.TimeBegin, new { htmlAttributes = new { @class = "form-control", @placeholder = "09:00"} })
+                @*@Html.EditorFor(model => model.TimeBegin, new { htmlAttributes = new { @class = "form-control", @placeholder = "09:00" } })*@
+                <select class = "form-control" id="selectTimeBegin"></select>
                 @Html.ValidationMessageFor(model => model.TimeBegin, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -159,11 +209,19 @@
         <div class="form-group">
             @Html.LabelFor(model => model.TimeEnd, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.TimeEnd, new { htmlAttributes = new { @class = "form-control", @placeholder = "10:30"} })
+                @*@Html.EditorFor(model => model.TimeEnd, new { htmlAttributes = new { @class = "form-control", @placeholder = "10:30" } })*@
+                <select class = "form-control" id="selectTimeEnd"></select>
                 @Html.ValidationMessageFor(model => model.TimeEnd, "", new { @class = "text-danger" })
             </div>
         </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.GymsId, htmlAttributes: new { @class = "control-label col-md-2" })
 
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.GymsId, ViewBag.GymList as SelectList, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.GymsId, "", new { @class = "text-danger" })
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
@@ -171,7 +229,6 @@
         </div>
     </div>
 }
-
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>

@@ -83,7 +83,7 @@ namespace Sportclub.Controllers
             string login = model.Email.Split('@')[0];
             var roleBO = DependencyResolver.Current.GetService<RoleBO>();
             roleBO = roleBO.LoadAll().FirstOrDefault(r => r.RoleName.Contains("client"));
-            roleBO = IsRole(roleBO, "client");    //проверка, если надо-установ.
+            //roleBO = IsRole(roleBO, "client");    //проверка, если надо-установ.
             userBO.FullName = model.FullName;
             userBO.BirthDay = model.BirthDay;
             userBO.Phone = model.Phone;
@@ -94,7 +94,7 @@ namespace Sportclub.Controllers
             //1-client
             if (model.Token == null || model.Token.Equals(""))  //Токен выдается административно или не выдается
             {
-                userBO.Role = roleBO;
+                //userBO.Role = roleBO; //двойное сохр. роли
                 userBO.RoleId = roleBO.Id;
 
                 var clientBO = DependencyResolver.Current.GetService<ClientsBO>();
@@ -109,7 +109,7 @@ namespace Sportclub.Controllers
                 if (!model.Token.Contains("top") && !model.Token.Contains("2")) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("manager")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "manager"); //может быть и NULL
-                    userBO.Role = roleBO;
+                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "manager1";
                     admin.User = userBO;
@@ -118,7 +118,7 @@ namespace Sportclub.Controllers
                 else {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("top_manager")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "top_manager");
-                    userBO.Role = roleBO;
+                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "top_manager";
                     admin.User = userBO;
@@ -137,7 +137,7 @@ namespace Sportclub.Controllers
                 if (key == 1) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("coache")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "coache");
-                    userBO.Role = roleBO;
+                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;                 
                     userBO.Token = "coache1";
                     coache.User = userBO;
@@ -149,7 +149,7 @@ namespace Sportclub.Controllers
                 else if (key == 2) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("coache")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "head_coache");
-                    userBO.Role = roleBO;
+                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache2";
                     coache.User = userBO;
@@ -160,7 +160,7 @@ namespace Sportclub.Controllers
                 else if (key == 3) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("top_coache")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "top_coache");
-                    userBO.Role = roleBO;
+                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache3";
                     coache.User = userBO;
@@ -170,22 +170,20 @@ namespace Sportclub.Controllers
                 }
                 coache.Save(coache);
             }
-            //юзаем юзера..
-           userBO = userBO.LoadAll().Where(u => u.FullName == model.FullName && u.Password == model.Password).FirstOrDefault();
-            return userBO;
+            return userBO.LoadAll().Where(u => u.FullName == model.FullName && u.Password == model.Password).FirstOrDefault();            
         }
 
-        private  RoleBO IsRole(RoleBO roleBO, string param)
+        private RoleBO IsRole(RoleBO roleBO, string param)
         {
             if (roleBO == null || roleBO.Id == 0)//если в БД нет роли client
             {
                 roleBO = DependencyResolver.Current.GetService<RoleBO>();
                 roleBO.RoleName = param;
                 roleBO.Save(roleBO);
-                roleBO=roleBO.LoadAll().Where(r => r.RoleName.Equals(param)).FirstOrDefault();  //получить уже с ID
+                roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals(param)).FirstOrDefault();  //получить уже с ID
             }
             return roleBO;
-           
+
         }
 
         public ActionResult Logoff()
