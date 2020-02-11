@@ -6,9 +6,10 @@
 }
 <script type="text/javascript">
     $(document).ready(function () {
-        //4)-----set select option on id = 999------------
+        //4)-----выставить selects в "режим ожидания" ------------
         $('select[name=CoacheId]').val(999)
         $('select[name=SpecializationId]').val(888)
+        $('#GymsId').val(1001)
     })
     $(function () {
         //1а) - взаимодейств. select Coache - select Specializ м/у собой
@@ -33,6 +34,15 @@
                         success: function (data) {
                             $('#GymsId').replaceWith(data);
                             $('#GymsId').addClass('form-control');
+                            setTime();
+                            $('#GymsId').change(function (ev) {
+                                console.log("gym change!")
+                                setTime();
+                                $('#DayOfWeek').change(function (e) {   //при изм. дня недели
+                                    console.log($(ev.target).val())
+                                    setTime();
+                                });
+                            })
                         },
                         error: function (xhr, status) {
                             alert(status)
@@ -42,45 +52,24 @@
                 error: function (xhr, status) {
                     alert(status)
                 }
-            });
+            })
             //1c) при изм. специальн. (после изм. списка тренров)- изм. на соотв. тренеров
-             $('#specializations').change(function (e) {
-            var id = $(this).val();
-            console.log("specialze: " + id)
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("GetCoaches")/' + id,
-                success: function (data) {
-                    $('#coaches').replaceWith(data);    //загруз. список тренеров
-                    $('#coaches').addClass('form-control');
-
-                },
-                error: function (xhr, status) {
-                    alert(status)
-                }
-            })
+            setCoaches();
         });
-
-        });
-        //1d) при изм. специальн. - изм. на соотв. тренеров
-        $('#specializations').change(function (e) {
-            var id = $(this).val();
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("GetCoaches")/' + id,
-                success: function (data) {
-                    $('#coaches').replaceWith(data);
-                    $('#coaches').addClass('form-control');
-                },
-                error: function (xhr, status) {
-                    alert(status)
-                }
-            })
-        });
+        //1d) то же (независимо)
+        setCoaches();
         //2a)------выставл. возм-го. времени занятий----------------
-        setTime();  //а)- сразу при загруз. докум.
+        $('#GymsId').change(function (ev) {
+            console.log("gym - independ change!")
+            setTime();
+            $('#DayOfWeek').change(function (e) {   //при изм. дня недели
+                console.log("gym - ev.target: " +$(ev.target).val())
+                setTime();
+            });
+        })
         $('#DayOfWeek').change(function (e) {   //при изм. дня недели
-            setTime()
+            console.log("dayOfWeek - e.target: "+$(e.target).val())
+            setTime();
         });
         //2b)------коррект. времени оконч. при выборе времени начала------
         $('#selectTimeBegin').change(function (e) {
@@ -89,7 +78,6 @@
             var arrTimes = timeBegin.split(':');
             var hourEnd = +arrTimes[0] + 1;
             var minEnd = +arrTimes[1] + 30;
-            //var timeEnd = hourEnd + ":" + minEnd + ":" + arrTimes[2];
             $('#selectTimeEnd').attr("disabled", false);
             $('#selectTimeEnd').val(hourEnd + ":" + minEnd + ":" + arrTimes[2])
             $('#selectTimeEnd').attr("disabled", true);
@@ -99,18 +87,21 @@
         var myForm = document.forms[0];
         $('input[type=submit]').click(function (e) {
             $(this).attr('disabled', true);
-            //setTime();
             $(myForm).triggerHandler('submit');
         });
         $(myForm).submit(function(e) {
             event.preventDefault();
             var specId = $('#specializations').val();
             var gymsId = $('#GymsId').val();
+            var timeBegin = $('#selectTimeBegin').val();
+            var timeEnd = $('#selectTimeEnd').val();
             var formData = new FormData(this);
             formData.append("specId", specId);
             formData.append("GymsId", gymsId);
-            for (key of formData.keys())
-                console.log(`${key}: ${formData.get(key)}`);  
+            formData.append("TimeBegin", timeBegin);
+            formData.append("TimeEnd", timeEnd);
+            //for (key of formData.keys())
+            //    console.log(`${key}: ${formData.get(key)}`);
 
             $.ajax({
                 method: "POST",
@@ -128,12 +119,15 @@
             })
         });
 
- //---------------------service func GetTime------------------------
+ //----------------service func ---------------------------
+        //----------SetTime -> GetTime------------------------
         function setTime() {
-            var intDay = $('#DayOfWeek').val()
+            var intDay = $('#DayOfWeek').val();
+            var gymId = $('#GymsId').val();
+            console.log("intro SetTime gymId: " + gymId)
             $.ajax({
                 method: "GET",
-                data: { intDay: intDay },
+                data: { intDay: intDay, gymId: gymId },
                 url: "GetTime",
                 success: function (data) {
                     var res = JSON.parse(data);
@@ -141,27 +135,52 @@
                         $(res).each(function (ind, item) {
                             var timeBeginFull = res[ind]["Item1"];
                             var timeEndFull = res[ind]["Item2"];
-
-                            //var indexSplit = timeBeginFull.indexOf('T');
-                            var timeBegin = timeBeginFull.split('T')[1];   //.slice(indexSplit + 1)
-                            var timeEnd = timeEndFull.split('T')[1]//.slice(indexSplit + 1);
+                            var timeBegin = timeBeginFull.split('T')[1];
+                            var timeEnd = timeEndFull.split('T')[1];
+                            $('#selectTimeBegin').html();
                             $('#selectTimeBegin').append('<option value=' + timeBegin + '>' + timeBegin + '</option>')
+                            $('#selectTimeEnd').html();
                             $('#selectTimeEnd').append('<option value=' + timeEnd + '>' + timeEnd + '</option>')
                             $('#selectTimeEnd').attr("disabled", true);
                         })
                     }
-                    else {  
+                    else {
+                        $('#selectTimeBegin').html();
                         $('#selectTimeBegin').append('<option value=' + "09:00" + '>' + "09:00" + '</option>');
+                        $('#selectTimeEnd').html();
                         $('#selectTimeEnd').append('<option value=' + "10:30" + '>' + "10:30" + '</option>');
                         $('#selectTimeEnd').attr("disabled", true);
                     }
+                    $('[data-toggle="tooltip"]').tooltip('disable');
                 },
                 error: function (xhr, status) {
                     alert(status)
                 }
             })
+        };
+        //-----------SetCoache -> GgetCoache----------------
+        function setCoaches() {
+            $('#specializations').change(function (e) {
+            var id = $(this).val();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetCoaches")/' + id,
+                success: function (data) {
+                    $('#coaches').replaceWith(data);
+                    $('#coaches').addClass('form-control');
+                },
+                error: function (xhr, status) {
+                    alert(status)
+                }
+            })
+        });
         }
-
+        //-------mouse over on timeBeginEnd------------
+        //function mouseOverOnTime() {
+        //}
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
     })
 </script>
 <h2>Create</h2>
@@ -201,7 +220,7 @@
             @Html.LabelFor(model => model.TimeBegin, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @*@Html.EditorFor(model => model.TimeBegin, new { htmlAttributes = new { @class = "form-control", @placeholder = "09:00" } })*@
-                <select class = "form-control" id="selectTimeBegin"></select>
+                <select class="form-control mySelectTime" id="selectTimeBegin" data-toggle="tooltip" title="сначала выберите зал и день"></select>
                 @Html.ValidationMessageFor(model => model.TimeBegin, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -210,7 +229,7 @@
             @Html.LabelFor(model => model.TimeEnd, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @*@Html.EditorFor(model => model.TimeEnd, new { htmlAttributes = new { @class = "form-control", @placeholder = "10:30" } })*@
-                <select class = "form-control" id="selectTimeEnd"></select>
+                <select class="form-control mySelectTime" id="selectTimeEnd" data-toggle="tooltip" title="будет установлено автоматически после TimeBegin"></select>
                 @Html.ValidationMessageFor(model => model.TimeEnd, "", new { @class = "text-danger" })
             </div>
         </div>

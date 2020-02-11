@@ -21,6 +21,11 @@ namespace DataLayer.Controllers
         IMapper mapper;
         private int idEmptyCoache = 999;
         private int idEmptySpecializ = 888;
+        //private static List<TimeSpan> Intervals = new List<TimeSpan>
+        //{
+        //    TimeSpan.FromHours(9), TimeSpan.FromHours(11), TimeSpan.FromHours(13), TimeSpan.FromHours(15), TimeSpan.FromHours(17), TimeSpan.FromHours(19)
+        //};
+        private static int[] Intervals = new int[] {9, 11, 13, 15, 17, 19 };
         public GraphTraningsController(IMapper mapper)
         {
             this.mapper = mapper;
@@ -39,9 +44,6 @@ namespace DataLayer.Controllers
                 }
             }
             var clientsVM = mapper.Map<List<ClientsVM>>(clientsBO);
-            //var gymsBO = DependencyResolver.Current.GetService<GymsBO>().LoadAll();   //больше не нужно
-            //var gymsVM = gymsBO.Select(g => mapper.Map<GymsVM>(g));
-            //ViewBag.GymList = gymsVM.ToList();
             return View(graphicsVM);
         }
         //=============================================================================================
@@ -63,45 +65,65 @@ namespace DataLayer.Controllers
             ViewBag.SpecializationId = new SelectList(coachesVM, "SpecializationId", "Specialization.Title");
 
             var gymsBO = DependencyResolver.Current.GetService<GymsBO>().LoadAll();   
-            var gymsVM = gymsBO.Select(g => mapper.Map<GymsVM>(g));
+            var gymsVM = gymsBO.Select(g => mapper.Map<GymsVM>(g)).ToList();
+            gymsVM.Add(new GymsVM { Id = 1001, GymName = "<-- Select Gym -->" });
             ViewBag.GymList = new SelectList(gymsVM, "Id", "GymName");
             return View();
         }
 
-        public ActionResult GetTime(int? intDay)    //ajax-отправ. самое ранее возм. время по залу
+        public ActionResult GetTime(int? intDay, int? gymId)    //ajax-отправ. список возм. времени по залу
         {
             if (intDay == null)
                 return HttpNotFound();
 
-            var graphics = DependencyResolver.Current.GetService<GraphTraningBO>().LoadAllWithInclude("Coache.User", nameof(Clients));
-            //------------занятое время-------------------
+            var graphics = DependencyResolver.Current.GetService<GraphTraningBO>().LoadAllWithInclude("Coache.User", nameof(Clients), nameof(Gyms));
+            //--------------дата выбранного дня---------
             DateTime today = DateTime.Today;
-            var times = graphics.Select(g => new { TimeBegin = g.TimeBegin, TimeEnd = g.TimeEnd }).ToList();
+            DayOfWeek dayOfWeek = today.DayOfWeek;
+            DayOfWeek selectDay = (DayOfWeek)intDay;
+            DateTime dateSelectDay = today.AddDays(selectDay - dayOfWeek);
 
-            times.Add(new
-            {
-                TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0),  //ночью не работает!
-                TimeEnd = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0)
-            });
-            times.Add(new
-            {
-                TimeBegin = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0),
-                TimeEnd = new DateTime(today.Year, today.Month, today.Day, 8, 30, 0)
-            });
-            times.Add(new
-            {
-                TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0),
-                TimeEnd = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0)
-            });
+            #region old method
+            //------------занятое время-------------------
+            //var times = graphics.Select(g => new { TimeBegin = g.TimeBegin, TimeEnd = g.TimeEnd }).ToList();
+
+            //times.Add(new
+            //{
+            //    TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0),  //ночью не работает!
+            //    TimeEnd = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0)
+            //});
+            //times.Add(new
+            //{
+            //    TimeBegin = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0),
+            //    TimeEnd = new DateTime(today.Year, today.Month, today.Day, 8, 30, 0)
+            //});
+            //times.Add(new
+            //{
+            //    TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0),
+            //    TimeEnd = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0)
+            //});
+            //---------free times---------
+            //List<Tuple<DateTime, DateTime>> freeTimes = new List<Tuple<DateTime, DateTime>>();
+            //for (int i = 0; i < times.Count() - 1; i++) {
+            //    if (times[i + 1].TimeBegin.Hour - times[i].TimeEnd.Hour >= 2
+            //                                    && times[i].TimeEnd.Hour + 1 >= 9) {
+            //        freeTimes.Add(new Tuple<DateTime, DateTime>(
+            //            new DateTime(today.Year, today.Month, today.Day, times[i].TimeEnd.Hour + 1, 0, 0)
+            //            , new DateTime(today.Year, today.Month, today.Day, times[i].TimeEnd.Hour + 2, 30, 0)));
+            //    }
+            //}
+            #endregion
+            var graphicDay = graphics.Where(g => g.DayOfWeek == selectDay).ToList();
+            //------------занятое время-------------------
+            var times = graphicDay.Select(g => new { TimeBegin = g.TimeBegin.Hour, TimeEnd = g.TimeEnd.Hour }).ToList();
+            var timeWorksExept = Intervals.Except(times.Select(t=>t.TimeBegin));
             List<Tuple<DateTime, DateTime>> freeTimes = new List<Tuple<DateTime, DateTime>>();
-            for (int i = 0; i < times.Count() - 1; i++) {
-                if (times[i + 1].TimeBegin.Hour - times[i].TimeEnd.Hour >= 2
-                                                && times[i].TimeEnd.Hour + 1 >= 9) {
-                    freeTimes.Add(new Tuple<DateTime, DateTime>(
-                        new DateTime(today.Year, today.Month, today.Day, times[i].TimeEnd.Hour + 1, 0, 0)
-                        , new DateTime(today.Year, today.Month, today.Day, times[i].TimeEnd.Hour + 2, 30, 0)));
-                }
-            }
+            timeWorksExept.ForEach(t => {
+                freeTimes.Add(new Tuple<DateTime, DateTime>(
+                          new DateTime(dateSelectDay.Year, dateSelectDay.Month, dateSelectDay.Day, t, 0, 0)
+                         , new DateTime(dateSelectDay.Year, dateSelectDay.Month, dateSelectDay.Day, t + 1, 30, 0))
+                         );
+            });
             var json = JsonConvert.SerializeObject(freeTimes);
             return new JsonResult { Data = json, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
@@ -260,20 +282,20 @@ namespace DataLayer.Controllers
             if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            GraphTraning graphTraning = unitOfWork.GraphTranings.GetById(id);
-            if (graphTraning == null) {
+            var graphTraningBO = DependencyResolver.Current.GetService<GraphTraningBO>().Load((int)id);
+            if (graphTraningBO == null) {
                 return HttpNotFound();
             }
-            return View(graphTraning);
+            var graphTraningVM = mapper.Map<GraphTraningVM>(graphTraningBO);
+            return View(graphTraningVM);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            GraphTraning graphTraning = unitOfWork.GraphTranings.GetById(id);
-            unitOfWork.GraphTranings.Delete(graphTraning.Id);
-            unitOfWork.GraphTranings.Save();
+            var graphTraningBO = DependencyResolver.Current.GetService<GraphTraningBO>().Load((int)id);
+            graphTraningBO.DeleteSave(graphTraningBO);
             return RedirectToAction("Index");
         }
 
@@ -283,11 +305,14 @@ namespace DataLayer.Controllers
             if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            GraphTraning graphTraning = unitOfWork.GraphTranings.Include("Coache.User").ToList().Find(g => g.Id == id);
-            if (graphTraning == null) {
+
+            //GraphTraning graphTraning = unitOfWork.GraphTranings.Include("Coache.User").ToList().Find(g => g.Id == id);
+            var graphTraningBO = DependencyResolver.Current.GetService<GraphTraningBO>().Load((int)id);
+            if (graphTraningBO == null) {
                 return HttpNotFound();
             }
-            return View(graphTraning);
+            var graphTraningVM = mapper.Map<GraphTraningVM>(graphTraningBO);
+            return View(graphTraningVM);
         }
 
     }

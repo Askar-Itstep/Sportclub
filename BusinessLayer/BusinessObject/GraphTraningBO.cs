@@ -62,10 +62,10 @@ namespace BusinessLayer.BusinessObject
             
             return graphicsBO;
         }
-        public void Load(int id)
+        public GraphTraningBO Load(int id)
         {
             var graphic = unitOfWork.GraphTranings.GetById(id);
-            mapper.Map(graphic, this);
+            return mapper.Map(graphic, this);
         }
         public void Save(GraphTraningBO graphicBO)
         {
