@@ -21,8 +21,8 @@ namespace Sportclub.ViewModel
 
         //--------------------------
 
-        public List<ClientsVM> Clients { get; set; }
-
+        //public List<ClientsVM> Clients { get; set; }
+        public ICollection<ClientsVM> Clients { get; set; }
 
         [Required]
         //[RegularExpression(@"(^(([0,1][0-9])|(2[0-3])):[0-5][0-9]:[0-5][0-9]$)", ErrorMessage = "Некорректное значение!")]
@@ -39,7 +39,7 @@ namespace Sportclub.ViewModel
         public IEnumerator<ClientsVM> GetEnumerator()
         {
             for (int i = 0; i < Clients.Count; i++)
-                yield return Clients[i];
+                yield return Clients.ToList()[i];
         }
     }
 }

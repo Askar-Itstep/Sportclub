@@ -16,9 +16,10 @@ namespace DataLayer.Entities
         public int UserId { get; set; }
         virtual public User User { get; set; }
 
-        [ForeignKey("Graphic")]
-        public int? GraphicId { get; set; }
+        //[ForeignKey("Graphic")]
+        //public int? GraphicId { get; set; }
         
-        virtual public GraphTraning Graphic { get; set; }
+        //virtual public GraphTraning Graphic { get; set; }
+        public ICollection<GraphTraning> GraphTraning { get; set; }
     }
 }

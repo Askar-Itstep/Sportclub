@@ -20,32 +20,14 @@ namespace DataLayer.Entities
         public DayOfWeek DayOfWeek { get; set; }
         //--------------------------
       
-        public List<Clients> Clients { get; set; } 
-
-        #region int->TimeSpan
-        //a)
-        //public int HourBeginTick { get; set; }
-        //public int MinuteBeginTick { get; set; }
-        //public int HourEndTick { get; set; }
-        //public int MinuteEndTick { get; set; }
-
-        //[NotMapped]
-        //public TimeSpan TimeBegin
-        //{
-        //    get { return new TimeSpan(HourBeginTick, MinuteBeginTick, 0); }
-        //    set {
-        //        HourBeginTick = value.Hours;
-        //        MinuteBeginTick = value.Minutes;
-        //    }
-        //}
-        #endregion
+        //public List<Clients> Clients { get; set; } 
+        public ICollection<Clients> Clients { get; set; }
+        
         
         [Required]
-        //[RegularExpression(@"(^(([0,1][0-9])|(2[0-3])):[0-5][0-9]$)", ErrorMessage = "Некорректное значение!")]
         public DateTime TimeBegin { get; set; }
 
         [Required]
-        //[RegularExpression(@"(^([0-1]\d|2[0-3])(:[0-5]\d){2}$) ", ErrorMessage = "Некорректное значение!")]
         public DateTime TimeEnd { get; set; }
 
         public GraphTraning()
@@ -55,7 +37,7 @@ namespace DataLayer.Entities
         public IEnumerator<Clients> GetEnumerator()
         {
             for (int i = 0; i < Clients.Count; i++)
-                yield return Clients[i];
+                yield return Clients.ToList()[i];
         }
     }
 }

@@ -23,7 +23,8 @@ namespace BusinessLayer.BusinessObject
 
         //----------------------------------------
 
-        public List<ClientsBO> Clients { get; set; }
+        //public List<ClientsBO> Clients { get; set; }
+        public ICollection<ClientsBO> Clients { get; set; }
 
         [Required]
         public DateTime TimeBegin { get; set; }

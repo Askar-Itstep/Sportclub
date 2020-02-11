@@ -47,7 +47,7 @@ namespace DataLayer.Controllers
         }
 
         [Authorize(Roles = "admin, top_manager, manager")]
-        public ActionResult Create() //Добав. возм. админу добавл. нов. клиента..
+        public ActionResult Create() //админ может добав. нов. клиента.
         {
             return View();
         }
@@ -59,7 +59,6 @@ namespace DataLayer.Controllers
             if (ModelState.IsValid) {
                 var userBO = mapper.Map<UserBO>(clientVM.User);
                 var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().FirstOrDefault(r => r.RoleName == "client");
-                //userBO.Role = roleBO;     //добавляет еще одну роль "client???"
                 userBO.RoleId = roleBO.Id;
                 userBO.Login = clientVM.User.Email.Split('@')[0];
                 userBO.Gender = GenderBO.MEN;   //default

@@ -33,16 +33,9 @@ namespace DataLayer.Controllers
         public ActionResult Index()
         {
             var graphicsBO = DependencyResolver.Current.GetService<GraphTraningBO>().LoadAllWithInclude("Coache.User", nameof(Clients), nameof(Gyms));
-            var graphicsVM = graphicsBO.Select(g => mapper.Map<GraphTraningVM>(g)); //пока нет списка клиентов - no many-to-many
+            var graphicsVM = graphicsBO.Select(g => mapper.Map<GraphTraningVM>(g)); 
 
-            var clientsBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User));
-            foreach (var graphic in graphicsBO) {   // no good - need many-to-many
-                foreach (var client in clientsBO) {
-                    if (graphic.Id == client.GraphicId) {
-                        graphic.Clients.Add(client);
-                    }
-                }
-            }
+            var clientsBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User), nameof(GraphTraning));
             var clientsVM = mapper.Map<List<ClientsVM>>(clientsBO);
             return View(graphicsVM);
         }
@@ -83,36 +76,6 @@ namespace DataLayer.Controllers
             DayOfWeek selectDay = (DayOfWeek)intDay;
             DateTime dateSelectDay = today.AddDays(selectDay - dayOfWeek);
 
-            #region old method
-            //------------занятое время-------------------
-            //var times = graphics.Select(g => new { TimeBegin = g.TimeBegin, TimeEnd = g.TimeEnd }).ToList();
-
-            //times.Add(new
-            //{
-            //    TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0),  //ночью не работает!
-            //    TimeEnd = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0)
-            //});
-            //times.Add(new
-            //{
-            //    TimeBegin = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0),
-            //    TimeEnd = new DateTime(today.Year, today.Month, today.Day, 8, 30, 0)
-            //});
-            //times.Add(new
-            //{
-            //    TimeBegin = new DateTime(today.Year, today.Month, today.Day, 21, 0, 0),
-            //    TimeEnd = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0)
-            //});
-            //---------free times---------
-            //List<Tuple<DateTime, DateTime>> freeTimes = new List<Tuple<DateTime, DateTime>>();
-            //for (int i = 0; i < times.Count() - 1; i++) {
-            //    if (times[i + 1].TimeBegin.Hour - times[i].TimeEnd.Hour >= 2
-            //                                    && times[i].TimeEnd.Hour + 1 >= 9) {
-            //        freeTimes.Add(new Tuple<DateTime, DateTime>(
-            //            new DateTime(today.Year, today.Month, today.Day, times[i].TimeEnd.Hour + 1, 0, 0)
-            //            , new DateTime(today.Year, today.Month, today.Day, times[i].TimeEnd.Hour + 2, 30, 0)));
-            //    }
-            //}
-            #endregion
             var graphicDay = graphics.Where(g => g.DayOfWeek == selectDay).ToList();
             //------------занятое время-------------------
             var times = graphicDay.Select(g => new { TimeBegin = g.TimeBegin.Hour, TimeEnd = g.TimeEnd.Hour }).ToList();
@@ -271,7 +234,7 @@ namespace DataLayer.Controllers
             var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User))
                                                                              .Where(c => c.User.Login.Equals(User.Identity.Name)).FirstOrDefault();
             graphicBO.Clients.Add(clientBO);
-            clientBO.GraphicId = graphicBO.Id; //пока 1 юзер - 1 запись (no many-to-many)
+            //clientBO.GraphicId = graphicBO.Id; //пока 1 юзер - 1 запись (no many-to-many)
             clientBO.Save(clientBO);
             return RedirectToAction("Index");
         }

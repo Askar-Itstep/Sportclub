@@ -12,8 +12,10 @@ namespace Sportclub.ViewModel
         public int UserId { get; set; }
         virtual public UserVM User { get; set; }
         
-        public int? GraphicId { get; set; }
+        //public int? GraphicId { get; set; }
 
-        virtual public GraphTraningVM Graphic { get; set; }
+        //virtual public GraphTraningVM Graphic { get; set; }
+
+        public ICollection<GraphTraningVM> GraphTraning { get; set; }
     }
 }
