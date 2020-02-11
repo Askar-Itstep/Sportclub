@@ -15,7 +15,7 @@ using Sportclub.ViewModel;
 
 namespace DataLayer.Controllers
 {
-    //[Authorize(Roles ="admin, top_manager, manager")]
+    [Authorize(Roles = "admin, top_manager, manager")]
     public class ClientsController : Controller
     {
         IMapper mapper;

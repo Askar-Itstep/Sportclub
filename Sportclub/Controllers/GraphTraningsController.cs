@@ -21,10 +21,6 @@ namespace DataLayer.Controllers
         IMapper mapper;
         private int idEmptyCoache = 999;
         private int idEmptySpecializ = 888;
-        //private static List<TimeSpan> Intervals = new List<TimeSpan>
-        //{
-        //    TimeSpan.FromHours(9), TimeSpan.FromHours(11), TimeSpan.FromHours(13), TimeSpan.FromHours(15), TimeSpan.FromHours(17), TimeSpan.FromHours(19)
-        //};
         private static int[] Intervals = new int[] {9, 11, 13, 15, 17, 19 };
         public GraphTraningsController(IMapper mapper)
         {
@@ -181,7 +177,8 @@ namespace DataLayer.Controllers
             var coacheVM = mapper.Map<CoachesVM>(coacheBO);
             return new JsonResult { Data = coacheVM.Specialization.Title, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
-        //[Authorize(Roles = "top_coache, head_coache")]
+
+        [Authorize(Roles = "top_coache, head_coache")]
         public ActionResult Edit(int? id)   //ID-traning
         {
             if (id == null) {
@@ -234,7 +231,6 @@ namespace DataLayer.Controllers
             var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User))
                                                                              .Where(c => c.User.Login.Equals(User.Identity.Name)).FirstOrDefault();
             graphicBO.Clients.Add(clientBO);
-            //clientBO.GraphicId = graphicBO.Id; //пока 1 юзер - 1 запись (no many-to-many)
             clientBO.Save(clientBO);
             return RedirectToAction("Index");
         }
@@ -268,8 +264,7 @@ namespace DataLayer.Controllers
             if (id == null) {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            //GraphTraning graphTraning = unitOfWork.GraphTranings.Include("Coache.User").ToList().Find(g => g.Id == id);
+            
             var graphTraningBO = DependencyResolver.Current.GetService<GraphTraningBO>().Load((int)id);
             if (graphTraningBO == null) {
                 return HttpNotFound();
