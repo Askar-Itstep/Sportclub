@@ -16,6 +16,7 @@ namespace DataLayer.Repository
         private BaseRepository<Role> roles;
         private BaseRepository<Specialization> specialization;
         private BaseRepository<User> users;
+        private BaseRepository<Image> images;
         private Model1 db;
         //public Model1 Db
         //{
@@ -103,6 +104,15 @@ namespace DataLayer.Repository
                 if (users == null)
                     users = new BaseRepository<User>();
                 return users;
+            }
+        }
+        public BaseRepository<Image> Images
+        {
+            get
+            {
+                if (images == null)
+                    images = new BaseRepository<Image>();
+                return images;
             }
         }
         //public void Save()

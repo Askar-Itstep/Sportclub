@@ -2,6 +2,7 @@
 using BusinessLayer.BusinessObject;
 using DataLayer.Entities;
 using Sportclub.ViewModel;
+using Sportclub.ViewModels;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Unity;
@@ -173,6 +174,24 @@ namespace DataLayer
 
                 mpr.CreateMap<IEnumerable<UserBO>, List<UserVM>>()
                .ConstructUsing(c => DependencyResolver.Current.GetService<List<UserVM>>());
+
+                //---------------------------------------------------------------------------------------
+
+                mpr.CreateMap<Image, ImageBO>()
+               .ConstructUsing(c => DependencyResolver.Current.GetService<ImageBO>());
+
+                mpr.CreateMap<ImageBO, Image>()
+                .ConstructUsing(c => DependencyResolver.Current.GetService<Image>());
+
+
+                mpr.CreateMap<ImageBO, ImageVM>()
+             .ConstructUsing(c => DependencyResolver.Current.GetService<ImageVM>());
+
+                mpr.CreateMap<ImageVM, ImageBO>()
+              .ConstructUsing(c => DependencyResolver.Current.GetService<ImageBO>());
+
+                mpr.CreateMap<IEnumerable<ImageBO>, List<ImageVM>>()
+               .ConstructUsing(c => DependencyResolver.Current.GetService<List<ImageVM>>());
             });
         }
 

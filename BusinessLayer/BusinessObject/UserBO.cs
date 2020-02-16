@@ -39,6 +39,9 @@ namespace BusinessLayer.BusinessObject
         public RoleBO Role { get; set; }
 
         public string Token { get; set; }   //manager, coache
+
+        public int ImageId { get; set; }
+        public virtual ImageBO Image { get; set; }
         #endregion
         //----------------------------------------------------------------------
         public UserBO() { }
@@ -60,10 +63,10 @@ namespace BusinessLayer.BusinessObject
             var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
             return res;
         }
-        public void Load(int id)
+        public UserBO Load(int id)
         {
             var user = unitOfWork.Users.GetById(id);
-            mapper.Map(user, this);
+            return mapper.Map(user, this);
         }
         public void Save(UserBO userBO)
         {
@@ -90,6 +93,7 @@ namespace BusinessLayer.BusinessObject
             unitOfWork.Users.Delete(user.Id);
             unitOfWork.Users.Save();
         }
+        
     }
 }
 

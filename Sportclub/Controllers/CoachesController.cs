@@ -12,6 +12,7 @@ using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
 using Sportclub.ViewModel;
+using Sportclub.ViewModels;
 
 namespace DataLayer.Controllers
 {
@@ -95,12 +96,41 @@ namespace DataLayer.Controllers
             }
             if (ModelState.IsValid) {
                 var coacheBO = mapper.Map<CoachesBO>(coacheVM);
-                coacheBO.User.Token = "coache1";
+                                      //userBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().FirstOrDefault(u => u.Login == userBO.Login && u.Password == userBO.Password);
+
+                //coacheBO.User = userBO;   //нельзя - дублирование!
                 coacheBO.Save(coacheBO);
-                return RedirectToAction("Index");
+
+                var userBO = DependencyResolver.Current.GetService<UserBO>().Load(coacheVM.UserId);
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().FirstOrDefault(r => r.RoleName.Contains("coache"));
+                if (roleBO != null)
+                    userBO.RoleId = roleBO.Id;
+                userBO.Token = "coache1";   //сразу в князи не получится!
+                userBO.Save(userBO);  //error-attache?
+
+                return RedirectToAction("Index");;
             }
             return View(coacheVM);
         }
+
+        private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
+        {
+            string filename = System.IO.Path.GetFileName(upload.FileName);
+            imageVM.Filename = filename;
+            byte[] myBytes = new byte[upload.ContentLength];
+            upload.InputStream.Read(myBytes, 0, upload.ContentLength);
+            imageVM.ImageData = myBytes;
+            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+            if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
+            {
+                var imageBO = mapper.Map<ImageBO>(imageVM);
+                imageBase.Save(imageBO);
+            }
+            List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+            imageBase = imageBases[0];
+            return imageBase;
+        }
+
         //-------------------------------------------------------------------------------------------------
         public ActionResult Edit(int? id)
         {
@@ -118,18 +148,38 @@ namespace DataLayer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CoachesVM coacheVM)  //в форму добавл. скрыт. поля model.UserId + model.User.Id
+        public ActionResult Edit(CoachesVM coacheVM, HttpPostedFileBase upload)  //в форму добавл. скрыт. поля model.UserId + model.User.Id
         {
+            ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
+            ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
+
             if (ModelState.IsValid) {
                 var coacheBO = mapper.Map<CoachesBO>(coacheVM);
-                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().Where(r => r.RoleName.Contains("coache")).FirstOrDefault();
-                coacheBO.User.RoleId = roleBO.Id;
-                coacheBO.User.Role = roleBO;
-                coacheBO.User.Token = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Id == coacheBO.UserId).FirstOrDefault().Token;
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
+                if (coacheBO.Status.ToString().ToUpper().Contains("TOP")) {
+                    coacheBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Contains("top")).Id;
+                    coacheBO.User.Token = "coache3";
+                }
+                if (coacheBO.Status.ToString().ToUpper().Contains("HEAD")) {
+                    coacheBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Contains("head")).Id;
+                    coacheBO.User.Token = "coache2";
+                }
+                if (coacheBO.Status.ToString().ToUpper().Equals("COACHE")) {
+                    coacheBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("coache")).Id;
+                    coacheBO.User.Token = "coache";
+                }
                 var userBO = coacheBO.User;
-                userBO.Save(userBO);
+                if (upload != null) { //with img
+                    imageBase = SetImage(upload, imageVM, imageBase);
+                    userBO.ImageId = imageBase.Id;
+                }
+                else {
+                    userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
+                }
+                userBO.Save(userBO);        //нужно!
                 coacheBO.Save(coacheBO);
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
+                return new JsonResult { Data = "Данные перезаписаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
             return View(coacheVM);
         }
@@ -153,6 +203,12 @@ namespace DataLayer.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var coacheBO = DependencyResolver.Current.GetService<CoachesBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.Id == id);
+            //var clientBO = DependencyResolver.Current.GetService<ClientsBO>().LoadAllWithInclude(nameof(User)).FirstOrDefault(c => c.UserId == coacheBO.UserId);
+            //if (clientBO.Id != 0)
+            //    clientBO.DeleteSave(clientBO);    //можно оставить
+            var graphicBO = DependencyResolver.Current.GetService<GraphTraningBO>().LoadAll().FirstOrDefault(g => g.CoacheId == coacheBO.Id);
+            if(graphicBO != null)
+                graphicBO.DeleteSave(graphicBO);
             coacheBO.DeleteSave(coacheBO);
             return RedirectToAction("Index");
         }

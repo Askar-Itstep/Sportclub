@@ -21,7 +21,7 @@ namespace DataLayer
         public virtual DbSet<GraphTraning> GraphTranings { get; set; }
         public virtual DbSet<Gyms> Gyms { get; set; }
         public virtual DbSet<Specialization> Specializations { get; set; }
-
+        public virtual DbSet<Image> Images { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
@@ -39,9 +39,11 @@ namespace DataLayer
             context.Roles.Add(clientRole);
             context.Roles.Add(coacheRole);
 
-            //2) Users
+            //2) Images
+            Image image = new Image {Id=1, Filename="", ImageData=new byte[1] { 0 } };
+            //2b)Users
             User userAdmin = new User {
-                BirthDay = new DateTime(1900, 1, 1), Gender = Gender.MEN, Role = adminRole, Login = "admin", Password = "admin" };
+                BirthDay = new DateTime(1900, 1, 1), Gender = Gender.MEN, Role = adminRole, Login = "admin", Password = "admin", ImageId=1 };
             context.Users.Add(userAdmin);
 
             //3)Administrations

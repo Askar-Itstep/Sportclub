@@ -131,9 +131,6 @@
     <div class="form-group">
         @Html.LabelFor(model => model.TimeBegin, "Время начала", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @*форма отправляет поля co врeменем во вложении "[0]"-?!*@
-            @*@Html.EditorFor(model => model.TimeBegin.GetDateTimeFormats('t')[0],  new { htmlAttributes = new { @class = "form-control", id = "timeBegin"} })*@
-
             @Html.Editor("TimeBegin", new { htmlAttributes = new { @class = "form-control", id = "timeBegin" } })
             @Html.ValidationMessageFor(model => model.TimeBegin, "", new { @class = "text-danger" })
         </div>
@@ -142,8 +139,6 @@
     <div class="form-group">
         @Html.LabelFor(model => model.TimeEnd, "Время окончания", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @*@Html.EditorFor(model => model.TimeEnd.GetDateTimeFormats('t')[0], new { htmlAttributes = new { @class = "form-control", id = "timeEnd"}})*@
-
             @Html.Editor("TimeEnd", null, new { htmlAttributes = new { @class = "form-control", id = "timeEnd" } })
             @Html.ValidationMessageFor(model => model.TimeEnd, "", new { @class = "text-danger" })
         </div>

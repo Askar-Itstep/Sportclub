@@ -66,8 +66,9 @@
                 @Html.DisplayFor(m=>item.Gyms.GymName)
             </td>
             @{
-                if (User.IsInRole("coache") == false && User.IsInRole("top_coache") == false && User.IsInRole("head_coache") == false) {
-                    if (User.IsInRole("manager") == false && User.IsInRole("top_manager") == false && User.IsInRole("admin") == false) {
+                    if ((User.IsInRole("manager") == false && User.IsInRole("top_manager") == false && User.IsInRole("admin") == false)
+                    && (User.IsInRole("coache") == false && User.IsInRole("top_coache") == false && User.IsInRole("head_coache") == false))
+                    {
                     <td>
                         @Html.ActionLink("Записаться", "SignUp", new { id = item.Id }) |
                     </td>
@@ -79,8 +80,7 @@
                             @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                         </td>
                     }
-
-                }
+                
             }
         </tr>
     }

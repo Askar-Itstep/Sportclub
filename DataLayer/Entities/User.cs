@@ -16,15 +16,8 @@ namespace DataLayer.Entities
 
         [Required]
         public DateTime BirthDay { get; set; }
-        //перенесено в register-model
-        ///^(\s*)?(\+)?([-_():= +]?\d[-_():= +]?){10,14}(\s*)?$/
-        ///^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$
-        //[RegularExpression(@"(^\+\d{1,2})?((\(\d{3}\))|(\-?\d{3}\-)|(\d{3}))((\d{3}\-\d{4})|(\d{3}\-\d\d\  
-        //            -\d\d)|(\d{7})|(\d{3}\-\d\-\d{3})) ", ErrorMessage = "Некорректный номер")]
         public string Phone { get; set; }
         
-
-        //[RegularExpression(@"(/\A[^@]+@([^@\.]+\.)+[^@\.]+\z/)) ", ErrorMessage = "Некорректный e-mail")]
         public string Email { get; set; }
         public Gender Gender { get; set; }
         
@@ -39,5 +32,9 @@ namespace DataLayer.Entities
 
        
         public string Token { get; set; }   //manager, coache
+
+        [ForeignKey("Image")]
+        public int ImageId { get; set; }
+        public virtual Image Image { get; set; }
     }
 }

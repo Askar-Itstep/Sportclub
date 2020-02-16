@@ -83,7 +83,7 @@ namespace Sportclub.Controllers
             string login = model.Email.Split('@')[0];
             var roleBO = DependencyResolver.Current.GetService<RoleBO>();
             roleBO = roleBO.LoadAll().FirstOrDefault(r => r.RoleName.Contains("client"));
-            //roleBO = IsRole(roleBO, "client");    //проверка, если надо-установ.
+            roleBO = IsRole(roleBO, "client");    //проверка, если надо-установ.
             userBO.FullName = model.FullName;
             userBO.BirthDay = model.BirthDay;
             userBO.Phone = model.Phone;
@@ -109,7 +109,6 @@ namespace Sportclub.Controllers
                 if (!model.Token.Contains("top") && !model.Token.Contains("2")) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("manager")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "manager"); //может быть и NULL
-                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "manager1";
                     admin.User = userBO;
@@ -118,7 +117,6 @@ namespace Sportclub.Controllers
                 else {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("top_manager")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "top_manager");
-                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "top_manager";
                     admin.User = userBO;
@@ -137,7 +135,6 @@ namespace Sportclub.Controllers
                 if (key == 1) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("coache")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "coache");
-                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;                 
                     userBO.Token = "coache1";
                     coache.User = userBO;
@@ -160,7 +157,6 @@ namespace Sportclub.Controllers
                 else if (key == 3) {
                     roleBO = roleBO.LoadAll().Where(r => r.RoleName.Equals("top_coache")).FirstOrDefault();
                     roleBO = IsRole(roleBO, "top_coache");
-                    //userBO.Role = roleBO;
                     userBO.RoleId = roleBO.Id;
                     userBO.Token = "coache3";
                     coache.User = userBO;

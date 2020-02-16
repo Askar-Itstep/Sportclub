@@ -3,6 +3,7 @@ using BusinessLayer.BusinessObject;
 using DataLayer.Entities;
 using DataLayer.Repository;
 using Sportclub.ViewModel;
+using Sportclub.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -15,7 +16,6 @@ namespace DataLayer.Controllers
 {
     public class AdminController : Controller
     {
-        //private UnitOfWork unitOfWork = new UnitOfWork();
         IMapper mapper;
         public AdminController()
         { }
@@ -42,17 +42,28 @@ namespace DataLayer.Controllers
         [HttpPost]
         public ActionResult Create(AdministrationVM manager)
         {
-            //---------добор значений не вошед. в форму---------------
-            manager.User.Token = "manager";
-            manager.User.RoleId = 3;
-
             if(ModelState.IsValid)
             {
-                var userBO = mapper.Map<UserBO>(manager.User);              
+                var userBO = mapper.Map<UserBO>(manager.User);
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
+                userBO.Image = DependencyResolver.Current.GetService<ImageBO>().Load(1);
+                userBO.ImageId = 1;
+
                 var managerBO = mapper.Map<AdministrationBO>(manager);
-                managerBO.User.Id = userBO.Id;
-                managerBO.UserId = userBO.Id;
-                managerBO.Save(managerBO);
+                managerBO.User = userBO;
+                if (managerBO.Status.ToString().ToUpper().Contains("TOP")) {
+                    managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("top_manager")).Id;
+                    managerBO.User.Token = "top_manager";
+                }
+                if (managerBO.Status.ToString().ToUpper().Contains("ADMIN")) {
+                    managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Contains("admin")).Id;
+                    managerBO.User.Token = "admin";
+                }
+                if (managerBO.Status.ToString().ToUpper().Equals("MANAGER")) {
+                    managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("manager")).Id;
+                    managerBO.User.Token = "manager";
+                }
+                managerBO.Save(managerBO);  //сначала создется юзер!
                 return RedirectToAction("Index");                           
             }
             return View(manager);            
@@ -75,24 +86,52 @@ namespace DataLayer.Controllers
         }
         
         [HttpPost]
-        public ActionResult Edit(AdministrationVM managerVM) 
+        public ActionResult Edit(AdministrationVM managerVM, HttpPostedFileBase upload)
         {
-            if(ModelState.IsValid)
+            ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
+            ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
+
+            if (ModelState.IsValid)
             {
                 var userBO = mapper.Map<UserBO>(managerVM.User);
-                userBO.Save(userBO);     
-                userBO = userBO.LoadAll().Where(u => u.Email == managerVM.User.Email && u.Password == managerVM.User.Password).FirstOrDefault();
-
+                                
+                if (upload != null) {           //with img
+                    imageBase = SetImage(upload, imageVM, imageBase);
+                    userBO.ImageId = imageBase.Id;
+                }
+                else {
+                    userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
+                }
+                userBO.Save(userBO);
                 var managerBO = mapper.Map<AdministrationBO>(managerVM);
                 managerBO.User = userBO;
                 managerBO.User.Id = userBO.Id;
                 managerBO.UserId = userBO.Id;
                 managerBO.Save(managerBO);
-                return RedirectToAction("Index");
-            }   
+                return new JsonResult { Data = "Данные записаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            }
             return View(managerVM);
             
         }
+
+        private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
+        {
+            string filename = System.IO.Path.GetFileName(upload.FileName);
+            imageVM.Filename = filename;
+            byte[] myBytes = new byte[upload.ContentLength];
+            upload.InputStream.Read(myBytes, 0, upload.ContentLength);
+            imageVM.ImageData = myBytes;
+            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+            if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
+            {
+                var imageBO = mapper.Map<ImageBO>(imageVM);
+                imageBase.Save(imageBO);
+            }
+            List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+            imageBase = imageBases[0];
+            return imageBase;
+        }
+
         //---------------------------------------------------------------------------
         [HttpGet]
         [Authorize(Roles = "admin, top_manager")]

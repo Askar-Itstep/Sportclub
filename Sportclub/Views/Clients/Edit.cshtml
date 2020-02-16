@@ -1,15 +1,50 @@
-﻿@*@model Sportclub.Entities.Clients*@
-@model Sportclub.ViewModel.ClientsVM
+﻿@model Sportclub.ViewModel.ClientsVM
 
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    //var roleBO = ViewBag.Role;
 }
-
+<script>
+    $(document).ready(function () {
+        //------------Send model + Upload Files ---------------------------
+        var myForm = document.forms[0];
+        $('input[type=submit').on('click', function (e) {
+            $(this).attr("disabled", "disabled");
+            $(myForm).triggerHandler('submit');
+        });
+        $(myForm).on('submit', function (e) {
+            var files = document.getElementById('customFile').files;
+            console.log(files)
+            if (window.FormData !== undefined) {
+                var data = new FormData(document.forms[0]);
+                console.log(data)
+                for (var x = 0; x < files.length; x++) {
+                    data.append("file" + x, files[x]);
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/Clients/Edit",
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function (result) {
+                        alert(result); //"Данные записаны!"
+                        $(location).attr('href', '/Clients/Index');
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+                        $('input[type=submit').attr("disabled", "disabled");
+                    }
+                });
+            } else {
+                alert("Браузер не поддерживает загрузку файлов HTML5!");
+            }
+        });
+    })
+</script>
 <h2>Edit</h2>
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm("Edit", "Clients", FormMethod.Post, new { enctype = "multypart/form-data" })) {
     @Html.AntiForgeryToken()
 
 <div class="form-horizontal">
@@ -22,6 +57,13 @@
     @Html.HiddenFor(model => model.User.Login)
     @Html.HiddenFor(model => model.User.RoleId)
 
+    <div style="display:flex">
+        <div style="width:8%; height:10px;"></div>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input col-md-auto" name="upload" accept="image/jpeg" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+    </div>
     <div class="form-group">
         @Html.LabelFor(model => model.User.FullName, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">

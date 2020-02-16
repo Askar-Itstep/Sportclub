@@ -35,7 +35,7 @@ namespace DataLayer.Controllers
             var clientsVM = mapper.Map<List<ClientsVM>>(clientsBO);
             return View(graphicsVM);
         }
-        //=============================================================================================
+    
         //------------------------------------------Create ------------------------------------------------------    
         [Authorize(Roles ="admin, top_coache, head_coache")]
         [HttpGet]
@@ -168,8 +168,8 @@ namespace DataLayer.Controllers
             var gymsVM = gymsBO.Select(c => mapper.Map<GymsVM>(c)).ToList();
             return PartialView("Partial/_GetGyms", gymsVM);
         }
-        //==========================================================================
-        //---------------------------------Edit--------------------------------------
+      
+        //------------------------------------------Edit----------------------------------------------
         [HttpGet]   //ajax-вызов из EditPage (установ. label в соотв. с выбранн. специаль.)
         public ActionResult GetSpecializ(int id)//выбрать  специальностЬ  по ID-coache (одно имя - разн. спец.)
         {
@@ -178,6 +178,7 @@ namespace DataLayer.Controllers
             return new JsonResult { Data = coacheVM.Specialization.Title, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
+        [HttpGet]
         [Authorize(Roles = "top_coache, head_coache")]
         public ActionResult Edit(int? id)   //ID-traning
         {
@@ -200,7 +201,7 @@ namespace DataLayer.Controllers
                     UserCoache = c.User
                 });
             ViewBag.Coaches = new SelectList(graphicWithCoacheWithName, "CoacheId", "UserCoache.FullName", graphicVM.CoacheId);
-            ViewBag.TimeBegin = graphicVM.TimeBegin.GetDateTimeFormats('t')[0];
+            ViewBag.TimeBegin = graphicVM.TimeBegin.GetDateTimeFormats('t')[0]; //надо поменять на список возм., начиная с действующ.
             ViewBag.TimeEnd = graphicVM.TimeEnd.GetDateTimeFormats('t')[0];
             return View(graphicVM);
         }
@@ -236,6 +237,7 @@ namespace DataLayer.Controllers
         }
 
         //-------------------------------Delete --------------------------------------
+        [Authorize(Roles = "top_coache, head_coache")]
         public ActionResult Delete(int? id)
         {
             if (id == null) {

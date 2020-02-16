@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sportclub.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -36,7 +37,9 @@ namespace Sportclub.ViewModel
         public RoleVM Role { get; set; }
 
         public string Token { get; set; }   //manager, coache
-        
+
+        public int ImageId { get; set; }
+        public virtual ImageVM Image { get; set; }
     }
 }
 

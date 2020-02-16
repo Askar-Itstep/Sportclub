@@ -95,6 +95,7 @@
     <Compile Include="BusinessObject\Gender.cs" />
     <Compile Include="BusinessObject\GraphTraningBO.cs" />
     <Compile Include="BusinessObject\GymsBO.cs" />
+    <Compile Include="BusinessObject\ImageBO.cs" />
     <Compile Include="BusinessObject\RoleBO.cs" />
     <Compile Include="BusinessObject\SpecializationBO.cs" />
     <Compile Include="BusinessObject\UserBO.cs" />

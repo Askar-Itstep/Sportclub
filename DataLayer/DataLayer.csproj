@@ -58,6 +58,7 @@
     <Compile Include="Entities\Gender.cs" />
     <Compile Include="Entities\GraphTraning.cs" />
     <Compile Include="Entities\Gyms.cs" />
+    <Compile Include="Entities\Image.cs" />
     <Compile Include="Entities\Model1.cs" />
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\Specialization.cs" />
@@ -98,6 +99,10 @@
     <Compile Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.designer.cs">
       <DependentUpon>202002111221134_Add-ManyToMany-Clients-Graphics.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002141539193_Add-ImageForUsers.cs" />
+    <Compile Include="Migrations\202002141539193_Add-ImageForUsers.designer.cs">
+      <DependentUpon>202002141539193_Add-ImageForUsers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\BaseRepository.cs" />
@@ -132,6 +137,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.resx">
       <DependentUpon>202002111221134_Add-ManyToMany-Clients-Graphics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002141539193_Add-ImageForUsers.resx">
+      <DependentUpon>202002141539193_Add-ImageForUsers.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
