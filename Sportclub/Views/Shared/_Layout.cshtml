@@ -12,6 +12,15 @@
 </head>
 
 <body>
+    <script>
+        $(function () {
+            var data = localStorage.getItem("imgData");
+            var img = document.createElement("img");
+            $(img).css({ 'width': '40px', 'height': '40px' });
+            $(img).attr('src', data);
+            $('#divImg').append(img);
+        })
+    </script>
     <div class="navbar navbar-default navbar-fixed-top" style="background-color:yellowgreen;">
         <div class="container">
             <div class="navbar-header">
@@ -33,8 +42,9 @@
                     <li>@Html.ActionLink("Залы", "Index", "Gyms")</li>
                     <li>@Html.ActionLink("Выход", "Logoff", "Account", new { area = "" }, new { @class = "navbar-brand" })</li>
                     <li>@Html.Label("Hello, "+ @User.Identity.Name)
-                        <div>
-                            <img src="~/Files/men.png" class="img-responsive" width="40"/>                           
+                        <div id="divImg">
+                            @*<img src="~/Files/men.png" class="img-responsive" width="40"/>*@
+
                         </div>
                     </li>
                 </ul>

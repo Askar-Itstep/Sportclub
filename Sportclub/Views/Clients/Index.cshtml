@@ -52,7 +52,7 @@
         </td>
         <td>
             @Html.Raw("<img style='width:60px; height:60px;' src=\"data:image/jpeg;base64,"
-                                                     + Convert.ToBase64String(item.User.Image.ImageData) + "\" />")
+                                   + Convert.ToBase64String(item.User.Image.ImageData) + "\" />")
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |

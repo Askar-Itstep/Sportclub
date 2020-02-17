@@ -44,7 +44,18 @@ namespace Sportclub.Controllers
                 
                 if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {
                     FormsAuthentication.SetAuthCookie(model.Login, true); //куки-набор (.AUTHPATH)
-                    return RedirectToAction("Index", "Home");
+
+                    //return RedirectToAction("Index", "Home");
+                    var imgBytes =  userBO.Image.ImageData;
+
+                    string base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
+                    string htmlstr = "data:image/jpeg;base64," + base64String;
+                    return new JsonResult
+                    {
+                        //Data = userBO.Image.ImageData,
+                        Data = htmlstr,
+                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                    };
                 }
                 else 
                     ModelState.AddModelError("", "Пользователя с таким логином и паролем нет"); //error validat.                

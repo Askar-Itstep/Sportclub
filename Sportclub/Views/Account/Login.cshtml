@@ -1,15 +1,27 @@
-﻿@*@model Sportclub.Models.LoginModel*@
-@*@model DataLayer.Entities.LoginModel*@
-@model Sportclub.ViewModel.LoginModelVM
+﻿@model Sportclub.ViewModel.LoginModelVM
 
 @{
     ViewBag.Title = "Регистрация";
 }
-
+<script>
+    function onSuccess(data) {
+        var img = document.createElement("img");
+        $(img).css({ 'width': '40px', 'height': '40px' });
+        $(img).attr('src', data);
+        localStorage.setItem("imgData", data);
+    
+    $(location).attr('href', '/Home/Index');
+    }
+</script>
 <h2>Авторизация</h2>
-
-
-@using (Html.BeginForm()) {
+  
+@using (Ajax.BeginForm("Login", new AjaxOptions
+{
+    HttpMethod = "Post",
+    Url = "/Account/Login",
+    OnSuccess = "onSuccess"
+})) { 
+    
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">

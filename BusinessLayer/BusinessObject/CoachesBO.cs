@@ -43,7 +43,12 @@ namespace BusinessLayer.BusinessObject
             var res = coaches.AsEnumerable().Select(a => mapper.Map<CoachesBO>(a)).ToList();
             return res;
         }
-
+        public IEnumerable<CoachesBO> LoadAllNoTracking()  //из DataObj в BusinessObj
+        {
+            var coaches = unitOfWork.Coaches.GetAllNoTracking();
+            var res = coaches.AsEnumerable().Select(a => mapper.Map<CoachesBO>(a)).ToList();
+            return res;
+        }
         public IEnumerable<CoachesBO> LoadAllWithInclude(params string[] values)
         {
             var coaches = unitOfWork.Coaches.Include(values);

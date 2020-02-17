@@ -57,7 +57,7 @@ namespace DataLayer.Controllers
             specializationsBO.Add(new SpecializationBO { Title = "-- Добавить специализацию --" });
             var specializationsVM = specializationsBO.Select(s => mapper.Map<SpecializationVM>(s));
             ViewBag.Specializations = new SelectList(specializationsVM, "Id", "Title");
-                                                                                 //произвести юзера  - в тренеры
+            //произвести юзера  - в тренеры
             var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null).ToList();
             var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u)).ToList();
             ViewBag.UserList = new SelectList(usersVM, "Id", "FullName");
@@ -96,18 +96,14 @@ namespace DataLayer.Controllers
             }
             if (ModelState.IsValid) {
                 var coacheBO = mapper.Map<CoachesBO>(coacheVM);
-                                      //userBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().FirstOrDefault(u => u.Login == userBO.Login && u.Password == userBO.Password);
-
-                //coacheBO.User = userBO;   //нельзя - дублирование!
                 coacheBO.Save(coacheBO);
-
-                var userBO = DependencyResolver.Current.GetService<UserBO>().Load(coacheVM.UserId);
+                
+                var userBO = DependencyResolver.Current.GetService<UserBO>().LoadAllNoTracking().FirstOrDefault(u => u.Id == coacheVM.UserId);
                 var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().FirstOrDefault(r => r.RoleName.Contains("coache"));
                 if (roleBO != null)
                     userBO.RoleId = roleBO.Id;
                 userBO.Token = "coache1";   //сразу в князи не получится!
-                userBO.Save(userBO);  //error-attache?
-
+                userBO.Save(userBO);  
                 return RedirectToAction("Index");;
             }
             return View(coacheVM);

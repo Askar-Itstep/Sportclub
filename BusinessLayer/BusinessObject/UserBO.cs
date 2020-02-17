@@ -57,6 +57,12 @@ namespace BusinessLayer.BusinessObject
             var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
             return res;
         }
+        public IEnumerable<UserBO> LoadAllNoTracking()  //из DataObj в BusinessObj
+        {
+            var users = unitOfWork.Users.GetAllNoTracking();
+            var res = users.AsEnumerable().Select(a => mapper.Map<UserBO>(a)).ToList();
+            return res;
+        }
         public IEnumerable<UserBO> LoadAllWithInclude(params string[] properties)  //из DataObj в BusinessObj
         {
             var users = unitOfWork.Users.Include(properties);
