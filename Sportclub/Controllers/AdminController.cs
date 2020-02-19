@@ -121,8 +121,9 @@ namespace DataLayer.Controllers
             byte[] myBytes = new byte[upload.ContentLength];
             upload.InputStream.Read(myBytes, 0, upload.ContentLength);
             imageVM.ImageData = myBytes;
-            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
+            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll()
+                                .Where(i => i.Filename == imageVM.Filename).ToList();   //может сравнивать по byte[]?
+            if (imgListBO == null || imgListBO.Count() == 0)                    //если такого в БД нет - сохранить
             {
                 var imageBO = mapper.Map<ImageBO>(imageVM);
                 imageBase.Save(imageBO);

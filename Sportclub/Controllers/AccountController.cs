@@ -46,13 +46,12 @@ namespace Sportclub.Controllers
                     FormsAuthentication.SetAuthCookie(model.Login, true); //куки-набор (.AUTHPATH)
 
                     //return RedirectToAction("Index", "Home");
-                    var imgBytes =  userBO.Image.ImageData;
 
+                    var imgBytes =  userBO.Image.ImageData;
                     string base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
                     string htmlstr = "data:image/jpeg;base64," + base64String;
                     return new JsonResult
                     {
-                        //Data = userBO.Image.ImageData,
                         Data = htmlstr,
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
                     };
