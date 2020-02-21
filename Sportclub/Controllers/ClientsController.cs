@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
@@ -11,6 +12,7 @@ using BusinessLayer.BusinessObject;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.Controllers;
 using Sportclub.ViewModel;
 using Sportclub.ViewModels;
 
@@ -52,28 +54,9 @@ namespace DataLayer.Controllers
         {
             return View();
         }
-
-        private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
-        {
-            string filename = System.IO.Path.GetFileName(upload.FileName);
-            imageVM.Filename = filename;
-            byte[] myBytes = new byte[upload.ContentLength];
-            upload.InputStream.Read(myBytes, 0, upload.ContentLength);
-            imageVM.ImageData = myBytes;
-            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
-            {
-                var imageBO = mapper.Map<ImageBO>(imageVM);
-                imageBase.Save(imageBO);
-            }
-            List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            imageBase = imageBases[0];
-            return imageBase;
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(ClientsVM clientVM, HttpPostedFileBase upload)
+        public async Task<ActionResult> CreateAsync(ClientsVM clientVM, HttpPostedFileBase upload)
         {
             ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
             ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
@@ -86,11 +69,11 @@ namespace DataLayer.Controllers
                 userBO.Gender = GenderBO.MEN;   //default
 
                 if (upload != null) {           //with img
-                    imageBase = SetImage(upload, imageVM, imageBase);
-                    userBO.ImageId = imageBase.Id;
+                    //imageBase = SetImage(upload, imageVM, imageBase);
+                    var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
                 }
                 else {
-                    userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
+                    userBO.ImageId = 1; //men2.png (Model1)
                 }
                 var clientBO = mapper.Map<ClientsBO>(clientVM);
                 clientBO.User = userBO;         //user create too!
@@ -101,6 +84,25 @@ namespace DataLayer.Controllers
             return View(clientVM);
         }
 
+        #region old SetImage
+        //private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
+        //{
+        //    string filename = System.IO.Path.GetFileName(upload.FileName);
+        //    imageVM.Filename = filename;
+        //    byte[] myBytes = new byte[upload.ContentLength];
+        //    upload.InputStream.Read(myBytes, 0, upload.ContentLength);
+        //    //imageVM.ImageData = myBytes;
+        //    var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
+        //    {
+        //        var imageBO = mapper.Map<ImageBO>(imageVM);
+        //        imageBase.Save(imageBO);
+        //    }
+        //    List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    imageBase = imageBases[0];
+        //    return imageBase;
+        //}
+        #endregion
         [HttpGet]
         public ActionResult Edit(int? id)
         {
@@ -118,7 +120,7 @@ namespace DataLayer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(ClientsVM clientVM, HttpPostedFileBase upload)
+        public async Task<ActionResult> EditAsync(ClientsVM clientVM, HttpPostedFileBase upload)
         {
             ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
             ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
@@ -128,12 +130,12 @@ namespace DataLayer.Controllers
                 clientBO.User.Role = roleBO;   //роль не меняется! 
                 UserBO userBO = clientBO.User;
                 if(upload != null) {
-                    imageBase = SetImage(upload, imageVM, imageBase);
+                    //imageBase = SetImage(upload, imageVM, imageBase);
+                    var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
                     userBO.ImageId = imageBase.Id;
                 }
                 userBO.Save(userBO);
                 clientBO.Save(clientBO);
-                //return RedirectToAction("Index");
                 return new JsonResult { Data = "Данные записаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
             return View(clientVM);

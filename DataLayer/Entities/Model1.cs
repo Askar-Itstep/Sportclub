@@ -40,7 +40,8 @@ namespace DataLayer
             context.Roles.Add(coacheRole);
 
             //2) Images
-            Image image = new Image {Id=1, Filename="", ImageData=new byte[1] { 0 } };
+            //Image image = new Image {Id=1, Filename="", ImageData=new byte[1] { 0 } };
+            Image image = new Image { Id = 1, Filename = "", URI = "https://storageblobitstep.blob.core.windows.net/containerblob/blobFolder/New Directory/men2.png" };
             //2b)Users
             User userAdmin = new User {
                 BirthDay = new DateTime(1900, 1, 1), Gender = Gender.MEN, Role = adminRole, Login = "admin", Password = "admin", ImageId=1 };

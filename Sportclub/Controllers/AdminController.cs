@@ -1,22 +1,33 @@
 ﻿using AutoMapper;
 using BusinessLayer.BusinessObject;
 using DataLayer.Entities;
-using DataLayer.Repository;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Sportclub.Controllers;
 using Sportclub.ViewModel;
 using Sportclub.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using CloudBlobClient = Microsoft.Azure.Storage.Blob.CloudBlobClient;
+using CloudBlobContainer = Microsoft.Azure.Storage.Blob.CloudBlobContainer;
+using CloudBlockBlob = Microsoft.Azure.Storage.Blob.CloudBlockBlob;
 
 namespace DataLayer.Controllers
 {
     public class AdminController : Controller
     {
-        IMapper mapper;
+        private IMapper mapper;
+        //static CloudBlobClient blobClient;
+        //const string blobContainerName = "containerblob";
+        //private const string storagekey = "DefaultEndpointsProtocol=https;AccountName=storageblobitstep;AccountKey=iS0bPloKlG1EBzuUsjlRf7PYXFAUHZu+omLC5FjVFnnc/yn64Zp6MYqlg+7Wu15Vx32OGQK8nhr22AEE4rfhjQ==;EndpointSuffix=core.windows.net";
+        //private const string uripath = "https://storageblobitstep.blob.core.windows.net/containerblob";
+        //static CloudBlobContainer blobContainer = new CloudBlobContainer(new Uri(uripath));
         public AdminController()
         { }
         public AdminController(IMapper mapper)
@@ -24,7 +35,7 @@ namespace DataLayer.Controllers
             this.mapper = mapper;
         }
 
-        [Authorize(Roles = "admin, top_manager, manager, ")]          //из CustomRoleProvider!
+        [Authorize(Roles = "admin, top_manager, manager")]          //из CustomRoleProvider!
         public ActionResult Index()
         {
             var managers = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User)).ToList();
@@ -33,17 +44,16 @@ namespace DataLayer.Controllers
         }
         //--------------------------------------------------------------------------------------------------------------
         [HttpGet]
-        [Authorize(Roles ="admin, top_manager")]
+        [Authorize(Roles = "admin, top_manager")]
         public ActionResult Create()
-        {                   //дать топам право созд. помощн. из возд.
+        {
             return View();
         }
-       
+
         [HttpPost]
         public ActionResult Create(AdministrationVM manager)
         {
-            if(ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var userBO = mapper.Map<UserBO>(manager.User);
                 var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
                 userBO.Image = DependencyResolver.Current.GetService<ImageBO>().Load(1);
@@ -64,18 +74,19 @@ namespace DataLayer.Controllers
                     managerBO.User.Token = "manager";
                 }
                 managerBO.Save(managerBO);  //сначала создется юзер!
-                return RedirectToAction("Index");                           
+                return RedirectToAction("Index");
             }
-            return View(manager);            
+            return View(manager);
         }
         //------------------------------------------------------------------------------------
-      
+
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            if (id == null) {
                 return HttpNotFound();
-            
-            var managerBO = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User)).Where(m=>m.Id == id).FirstOrDefault();   //здесь eще нет RoleBO (не явл. навиг. св.)
+            }
+
+            var managerBO = DependencyResolver.Current.GetService<AdministrationBO>().LoadAllWithInclude(nameof(User)).Where(m => m.Id == id).FirstOrDefault();   //здесь eще нет RoleBO (не явл. навиг. св.)
 
             var roleBO = DependencyResolver.Current.GetService<RoleBO>();
             roleBO = roleBO.LoadAll().Where(r => r.Id == managerBO.User.RoleId).FirstOrDefault();
@@ -84,25 +95,24 @@ namespace DataLayer.Controllers
             var managerVM = mapper.Map<AdministrationVM>(managerBO);
             return View(managerVM);
         }
-        
+
         [HttpPost]
-        public ActionResult Edit(AdministrationVM managerVM, HttpPostedFileBase upload)
+        public async Task<ActionResult> Edit(AdministrationVM managerVM, HttpPostedFileBase upload)
         {
             ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
             ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
 
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var userBO = mapper.Map<UserBO>(managerVM.User);
-                                
-                if (upload != null) {           //with img
-                    imageBase = SetImage(upload, imageVM, imageBase);
-                    userBO.ImageId = imageBase.Id;
+
+                if (upload != null) {          //если запрос пришел с изображ.
+                    var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
                 }
-                else {
-                    userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
-                }
+                else 
+                    userBO.ImageId = 1;
+                
                 userBO.Save(userBO);
+
                 var managerBO = mapper.Map<AdministrationBO>(managerVM);
                 managerBO.User = userBO;
                 managerBO.User.Id = userBO.Id;
@@ -110,37 +120,67 @@ namespace DataLayer.Controllers
                 managerBO.Save(managerBO);
                 return new JsonResult { Data = "Данные записаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            return View(managerVM);
-            
+            return new JsonResult { Data = "Ошибка записи", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
+        #region  async Task<ImageBO> SetImage 
+        //private async Task<ImageBO> SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase, UserBO userBO)
+        //{
+        //    string filename = System.IO.Path.GetFileName(upload.FileName);
+        //    imageVM.Filename = filename;
 
-        private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
-        {
-            string filename = System.IO.Path.GetFileName(upload.FileName);
-            imageVM.Filename = filename;
-            byte[] myBytes = new byte[upload.ContentLength];
-            upload.InputStream.Read(myBytes, 0, upload.ContentLength);
-            imageVM.ImageData = myBytes;
-            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll()
-                                .Where(i => i.Filename == imageVM.Filename).ToList();   //может сравнивать по byte[]?
-            if (imgListBO == null || imgListBO.Count() == 0)                    //если такого в БД нет - сохранить
-            {
-                var imageBO = mapper.Map<ImageBO>(imageVM);
-                imageBase.Save(imageBO);
-            }
-            List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            imageBase = imageBases[0];
-            return imageBase;
-        }
+        //    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storagekey);           
+        //    CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();             // Create the blob client.            
+        //    CloudBlobContainer container = blobClient.GetContainerReference(blobContainerName);// Retrieve reference to a previously created container.            
+        //    CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);           // Retrieve reference to a blob named "myblob".
 
+
+        //    using (var fileStream = upload.InputStream) {
+        //        await blockBlob.UploadFromStreamAsync(fileStream);
+        //    }
+        //    string uriStr = uripath + "/" + filename;
+        //    imageVM.URI = new Uri(uriStr);
+        //    //запись в БД
+        //    var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    if (imgListBO == null || imgListBO.Count() == 0)                    //если такого в БД нет - сохранить
+        //    {
+        //        var imageBO = mapper.Map<ImageBO>(imageVM);
+        //        imageBase.Save(imageBO);
+        //    }
+        //    List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    imageBase = imageBases[0];
+        //    userBO.ImageId = imageBase.Id;
+        //    return imageBase;
+        //}
+        #endregion
+
+        #region old SetImage(ImageData)
+        //private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
+        //{
+        //    string filename = System.IO.Path.GetFileName(upload.FileName);
+        //    imageVM.Filename = filename;
+        //    byte[] myBytes = new byte[upload.ContentLength];
+        //    upload.InputStream.Read(myBytes, 0, upload.ContentLength);           
+        //    //imageVM.ImageData = myBytes;             
+        //    var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList(); //посмотреть есть ли такой в БД?                        
+        //    if (imgListBO == null || imgListBO.Count() == 0)    //и если нет - сохранить
+        //    {
+        //        var tempImageBO = mapper.Map<ImageBO>(imageVM);
+        //        imageBase.Save(tempImageBO);
+        //    }
+        //    List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    imageBase = imageBases[0];
+        //    return imageBase;
+        //}
+        #endregion
         //---------------------------------------------------------------------------
         [HttpGet]
         [Authorize(Roles = "admin, top_manager")]
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            if (id == null) {
                 return HttpNotFound();
-            
+            }
+
             var managerBO = DependencyResolver.Current.GetService<AdministrationBO>();
             managerBO = managerBO.LoadAllWithInclude(nameof(User)).Where(m => m.Id == id).FirstOrDefault();
             var userBO = DependencyResolver.Current.GetService<UserBO>().LoadAllWithInclude(nameof(Role)).Where(u => u.Id == managerBO.User.Id).FirstOrDefault();
@@ -149,27 +189,27 @@ namespace DataLayer.Controllers
             return View(managerVM);
 
         }
-        
+
         [HttpPost]
         public ActionResult Delete(AdministrationVM managerVM)
         {
-            if(ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 var managerBO = mapper.Map<AdministrationBO>(managerVM);
                 var userBO = managerBO.User;
                 managerBO.DeleteSave(managerBO);
                 userBO.DeleteSave(userBO);
 
-                return RedirectToAction("Index");                
-            }            
+                return RedirectToAction("Index");
+            }
             return View(managerVM);
-            
+
         }
         //------------------------------------------------------------------
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            if (id == null) {
                 return HttpNotFound();
+            }
 
             var managerBO = DependencyResolver.Current.GetService<AdministrationBO>()
                                 .LoadAllWithInclude(nameof(User)).Where(m => m.Id == id).FirstOrDefault();

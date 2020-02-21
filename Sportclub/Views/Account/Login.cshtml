@@ -4,24 +4,56 @@
     ViewBag.Title = "Регистрация";
 }
 <script>
-    function onSuccess(data) {
-        var img = document.createElement("img");
-        $(img).css({ 'width': '40px', 'height': '40px' });
-        $(img).attr('src', data);
-        localStorage.setItem("imgData", data);
-    
-    $(location).attr('href', '/Home/Index');
+    {
+        //function onSuccess(data) {
+        //    var img = document.createElement("img");
+        //    console.log(data)
+        //    $(img).css({ 'width': '40px', 'height': '40px' });
+        //    $(img).attr('src', data);
+        //    localStorage.setItem("imgData", data);
+
+        //$(location).attr('href', '/Home/Index');
+        //}
     }
+    $(function (e) {
+        var myForm = document.forms[0];
+        $('input[type=submit]').click(function (e) {
+            $(this).attr('disabled', true);
+            $(myForm).triggerHandler('submit');
+        });
+        $(myForm).submit(function (e) {
+            $.ajax({
+                method: "POST",
+                data: $(myForm).serialize(),
+                success: function (data) {
+                    //var img = $("#img");
+                    if (data.success == true) {
+                        {
+                            //$(img).css({ 'width': '40px', 'height': '40px' });
+                            //$(img).attr('src', data.image);
+                        }
+                        localStorage.setItem("imgData", data.image);
+
+                        $(location).attr('href', '/Home/Index');
+                    }
+                    else 
+                        alert(data.message);
+                    $('input[type= submit]').attr('disabled', false);
+                },
+                error: function (xhr, status) {
+                    alert(status);
+                    $('input[type= submit]').attr('disabled', false);
+                }
+            })
+        });
+    })
 </script>
 <h2>Авторизация</h2>
-  
-@using (Ajax.BeginForm("Login", new AjaxOptions
-{
-    HttpMethod = "Post",
-    Url = "/Account/Login",
-    OnSuccess = "onSuccess"
-})) { 
-    
+@*<img id="img"/>*@
+
+@*@using (Ajax.BeginForm("Login", new AjaxOptions{HttpMethod = "Post", Url = "/Account/Login", OnSuccess = "onSuccess"})) {*@
+
+@using (Html.BeginForm()) { 
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">

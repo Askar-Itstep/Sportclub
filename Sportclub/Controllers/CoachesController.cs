@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
@@ -11,6 +12,7 @@ using BusinessLayer.BusinessObject;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.Controllers;
 using Sportclub.ViewModel;
 using Sportclub.ViewModels;
 
@@ -108,25 +110,25 @@ namespace DataLayer.Controllers
             }
             return View(coacheVM);
         }
-
-        private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
-        {
-            string filename = System.IO.Path.GetFileName(upload.FileName);
-            imageVM.Filename = filename;
-            byte[] myBytes = new byte[upload.ContentLength];
-            upload.InputStream.Read(myBytes, 0, upload.ContentLength);
-            imageVM.ImageData = myBytes;
-            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
-            {
-                var imageBO = mapper.Map<ImageBO>(imageVM);
-                imageBase.Save(imageBO);
-            }
-            List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            imageBase = imageBases[0];
-            return imageBase;
-        }
-
+        #region old SetImage
+        //private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
+        //{
+        //    string filename = System.IO.Path.GetFileName(upload.FileName);
+        //    imageVM.Filename = filename;
+        //    byte[] myBytes = new byte[upload.ContentLength];
+        //    upload.InputStream.Read(myBytes, 0, upload.ContentLength);
+        //    //imageVM.ImageData = myBytes;
+        //    var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
+        //    {
+        //        var imageBO = mapper.Map<ImageBO>(imageVM);
+        //        imageBase.Save(imageBO);
+        //    }
+        //    List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+        //    imageBase = imageBases[0];
+        //    return imageBase;
+        //}
+        #endregion
         //-------------------------------------------------------------------------------------------------
         public ActionResult Edit(int? id)
         {
@@ -144,7 +146,7 @@ namespace DataLayer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CoachesVM coacheVM, HttpPostedFileBase upload)  //в форму добавл. скрыт. поля model.UserId + model.User.Id
+        public async Task<ActionResult> EditAsync(CoachesVM coacheVM, HttpPostedFileBase upload)  //в форму добавл. скрыт. поля model.UserId + model.User.Id
         {
             ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
             ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
@@ -166,15 +168,15 @@ namespace DataLayer.Controllers
                 }
                 var userBO = coacheBO.User;
                 if (upload != null) { //with img
-                    imageBase = SetImage(upload, imageVM, imageBase);
-                    userBO.ImageId = imageBase.Id;
+                    //imageBase = SetImage(upload, imageVM, imageBase);
+                    imageBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);
                 }
                 else {
-                    userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
+                    //userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
+                    userBO.ImageId = 1;
                 }
                 userBO.Save(userBO);        //нужно!
                 coacheBO.Save(coacheBO);
-                //return RedirectToAction("Index");
                 return new JsonResult { Data = "Данные перезаписаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
             return View(coacheVM);

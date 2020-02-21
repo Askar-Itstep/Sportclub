@@ -10,6 +10,8 @@ namespace DataLayer.Entities
     {
         public int Id { get; set; }
         public string Filename { get; set; }
-        public byte[] ImageData { get; set; }
+
+        //public byte[] ImageData { get; set; }
+        public string URI { get; set; }
     }
 }

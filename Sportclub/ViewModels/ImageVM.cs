@@ -9,6 +9,8 @@ namespace Sportclub.ViewModels
     {
         public int Id { get; set; }
         public string Filename { get; set; }
-        public byte[] ImageData { get; set; }
+
+        //public byte[] ImageData { get; set; }
+        public Uri URI { get; set; }
     }
 }

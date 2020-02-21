@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BusinessLayer.BusinessObject;
 using DataLayer.Entities;
+using Sportclub.App_Start;
 using Sportclub.ViewModel;
 using Sportclub.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Unity;
@@ -178,7 +180,8 @@ namespace DataLayer
                 //---------------------------------------------------------------------------------------
 
                 mpr.CreateMap<Image, ImageBO>()
-               .ConstructUsing(c => DependencyResolver.Current.GetService<ImageBO>());
+               .ConstructUsing(c => DependencyResolver.Current.GetService<ImageBO>())
+               .ForMember(dest => dest.URI, o => o.MapFrom(src => src.URI));
 
                 mpr.CreateMap<ImageBO, Image>()
                 .ConstructUsing(c => DependencyResolver.Current.GetService<Image>());
@@ -192,6 +195,9 @@ namespace DataLayer
 
                 mpr.CreateMap<IEnumerable<ImageBO>, List<ImageVM>>()
                .ConstructUsing(c => DependencyResolver.Current.GetService<List<ImageVM>>());
+                //---------------------Addon!-----------------------------
+                mpr.CreateMap<string, Uri>().ConvertUsing<StringToUriConverter>();
+                mpr.CreateMap<Uri, string>().ConvertUsing<UriToStringConverter>();
             });
         }
 

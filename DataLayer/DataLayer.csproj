@@ -103,6 +103,10 @@
     <Compile Include="Migrations\202002141539193_Add-ImageForUsers.designer.cs">
       <DependentUpon>202002141539193_Add-ImageForUsers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202002191034168_AddUri-DelImageData.cs" />
+    <Compile Include="Migrations\202002191034168_AddUri-DelImageData.designer.cs">
+      <DependentUpon>202002191034168_AddUri-DelImageData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\BaseRepository.cs" />
@@ -140,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202002141539193_Add-ImageForUsers.resx">
       <DependentUpon>202002141539193_Add-ImageForUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202002191034168_AddUri-DelImageData.resx">
+      <DependentUpon>202002191034168_AddUri-DelImageData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

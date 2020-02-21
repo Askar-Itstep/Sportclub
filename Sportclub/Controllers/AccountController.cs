@@ -41,25 +41,32 @@ namespace Sportclub.Controllers
                 var userBO = DependencyResolver.Current.GetService<UserBO>();
                 var userBOList = userBO.LoadAll();
                 userBO = userBOList.FirstOrDefault(u=>(u.Login.Equals(model.Login) || u.Login.Equals(nick)) && u.Password.Equals(model.Password));
-                
+
                 if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {
-                    FormsAuthentication.SetAuthCookie(model.Login, true); //куки-набор (.AUTHPATH)
-
+                    FormsAuthentication.SetAuthCookie(model.Login, true);
+                    Uri uri = userBO.Image.URI;
+                    //ViewBag.UserImageUri = uri.ToString(); //в HomeController положить в localStorage 
                     //return RedirectToAction("Index", "Home");
-
-                    var imgBytes =  userBO.Image.ImageData;
-                    string base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
-                    string htmlstr = "data:image/jpeg;base64," + base64String;
-                    return new JsonResult
-                    {
-                        Data = htmlstr,
-                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                    };
+                    #region var1: ImageData
+                    //var imgBytes =  userBO.Image.ImageData;
+                    //string base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
+                    //string htmlstr = "data:image/jpeg;base64," + base64String;    //Data = htmlstr
+                    #endregion
+                    #region var2: URI
+                    //return new JsonResult
+                    //{
+                    //    Data = uri, //Data = htmlstr
+                    //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                    //};
+                    #endregion
+                    return Json(new { success = true, message = "Wellcome!", image = uri });                    
                 }
-                else 
-                    ModelState.AddModelError("", "Пользователя с таким логином и паролем нет"); //error validat.                
+                else
+                    //ModelState.AddModelError("", "Пользователя с таким логином и паролем нет");   
+                    return Json(new { success = false, message = "Пользователя с таким логином и паролем нет" });
             }
-            return View(model);
+            //return View(model);  
+            return Json(new { success = false, message = "Модель не валидна!" });
         }
 
         public ActionResult Registration()
@@ -76,7 +83,7 @@ namespace Sportclub.Controllers
                 userBO = userBO.LoadAll().Where(u=>u.Email != null && u.FullName != null).FirstOrDefault(u => u.Email == model.Email || u.FullName.Equals(model.FullName));
                 if (userBO == null) {
                     userBO = CreateUser(model);                   
-                    if (userBO != null) {   //..и если юзер добавлен в бд - загруз. в куки
+                    if (userBO != null) {   
                         FormsAuthentication.SetAuthCookie(model.FullName, true);
                         return RedirectToAction("Index", "Home");
                     }
@@ -104,7 +111,6 @@ namespace Sportclub.Controllers
             //1-client
             if (model.Token == null || model.Token.Equals(""))  //Токен выдается административно или не выдается
             {
-                //userBO.Role = roleBO; //двойное сохр. роли
                 userBO.RoleId = roleBO.Id;
 
                 var clientBO = DependencyResolver.Current.GetService<ClientsBO>();
