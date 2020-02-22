@@ -6,23 +6,31 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
+using BusinessLayer.BusinessObject;
 using DataLayer;
 using DataLayer.Entities;
 using DataLayer.Repository;
+using Sportclub.ViewModel;
 
 namespace DataLayer.Controllers
 {
     public class GymsController : Controller
     {
         private UnitOfWork unitOfWork = new UnitOfWork();
-
-       
+        IMapper mapper;
+       public GymsController(IMapper mapper)
+        {
+            this.mapper = mapper;
+        }
         public ActionResult Index()
         {
-            return View(unitOfWork.Gyms.GetAll().ToList());
+            var gymsBO = DependencyResolver.Current.GetService<GymsBO>().LoadAll(); //unitOfWork.Gyms.GetAll().ToList();
+           
+            var gymsVM = gymsBO.Select(g=>mapper.Map<GymsVM>(g));
+            return View(gymsVM);
         }
 
-        // GET: Gyms/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -37,7 +45,6 @@ namespace DataLayer.Controllers
             return View(gyms);
         }
 
-        // GET: Gyms/Create
         public ActionResult Create()
         {
             return View();
@@ -57,7 +64,6 @@ namespace DataLayer.Controllers
             return View(gyms);
         }
 
-        // GET: Gyms/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)

@@ -57,7 +57,7 @@ namespace DataLayer.Controllers
             var specializationsVM = specializationsBO.Select(s => mapper.Map<SpecializationVM>(s));
             ViewBag.Specializations = new SelectList(specializationsVM, "Id", "Title");
 
-            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u =>u.Token != null && u.Token.Contains("coache"));
+            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null);// && u.Token.Contains("coache"));
             var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u));
             ViewBag.UserList = new SelectList(usersVM, "Id", "FullName");
             return View();
