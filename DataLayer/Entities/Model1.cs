@@ -69,6 +69,9 @@ namespace DataLayer
                 new Gyms{GymName = "dance"}
             };
             context.Gyms.AddRange(gyms);
+            //6
+            //GraphTraning traning = new GraphTraning { GymsId = 1 };
+            //context.GraphTranings.Add(traning);
             //--------------------
             context.SaveChanges();
             base.Seed(context);
