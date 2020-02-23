@@ -27,7 +27,7 @@ namespace DataLayer
         }
         
     }
-    public class MyContextInitializer : DropCreateDatabaseIfModelChanges<Model1>    
+    public class MyContextInitializer : CreateDatabaseIfNotExists<Model1>    //DropCreateDatabaseIfModelChanges
     {
         protected override void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login 
         {

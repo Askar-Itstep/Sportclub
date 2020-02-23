@@ -7,13 +7,13 @@ namespace DataLayer.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.0")]
-    public sealed partial class AddNavigatPropGymId : IMigrationMetadata
+    public sealed partial class NewFirst : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddNavigatPropGymId));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(NewFirst));
         
         string IMigrationMetadata.Id
         {
-            get { return "202002081551470_Add-NavigatProp-GymId"; }
+            get { return "202002230422097_NewFirst"; }
         }
         
         string IMigrationMetadata.Source

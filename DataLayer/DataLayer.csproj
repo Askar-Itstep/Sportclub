@@ -62,41 +62,9 @@
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\Specialization.cs" />
     <Compile Include="Entities\User.cs" />
-    <Compile Include="Migrations\202001021313511_FixOne.cs" />
-    <Compile Include="Migrations\202001021313511_FixOne.Designer.cs">
-      <DependentUpon>202001021313511_FixOne.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001021531173_ExtractUserIntoTable.cs" />
-    <Compile Include="Migrations\202001021531173_ExtractUserIntoTable.Designer.cs">
-      <DependentUpon>202001021531173_ExtractUserIntoTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001030411114_AddTableRole.cs" />
-    <Compile Include="Migrations\202001030411114_AddTableRole.Designer.cs">
-      <DependentUpon>202001030411114_AddTableRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001030453571_FixRole.cs" />
-    <Compile Include="Migrations\202001030453571_FixRole.Designer.cs">
-      <DependentUpon>202001030453571_FixRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001040720093_AddTokenUser.cs" />
-    <Compile Include="Migrations\202001040720093_AddTokenUser.Designer.cs">
-      <DependentUpon>202001040720093_AddTokenUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001041417320_fix-Initial.cs" />
-    <Compile Include="Migrations\202001041417320_fix-Initial.Designer.cs">
-      <DependentUpon>202001041417320_fix-Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002081551470_Add-NavigatProp-GymId.cs" />
-    <Compile Include="Migrations\202002081551470_Add-NavigatProp-GymId.designer.cs">
-      <DependentUpon>202002081551470_Add-NavigatProp-GymId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002081603551_Alt-NavigatProp-GymsId.cs" />
-    <Compile Include="Migrations\202002081603551_Alt-NavigatProp-GymsId.designer.cs">
-      <DependentUpon>202002081603551_Alt-NavigatProp-GymsId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.cs" />
-    <Compile Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.designer.cs">
-      <DependentUpon>202002111221134_Add-ManyToMany-Clients-Graphics.cs</DependentUpon>
+    <Compile Include="Migrations\202002230422097_NewFirst.cs" />
+    <Compile Include="Migrations\202002230422097_NewFirst.designer.cs">
+      <DependentUpon>202002230422097_NewFirst.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,39 +74,15 @@
     <Compile Include="Repository\UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202001021313511_FixOne.resx">
-      <DependentUpon>202001021313511_FixOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001021531173_ExtractUserIntoTable.resx">
-      <DependentUpon>202001021531173_ExtractUserIntoTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001030411114_AddTableRole.resx">
-      <DependentUpon>202001030411114_AddTableRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001030453571_FixRole.resx">
-      <DependentUpon>202001030453571_FixRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001040720093_AddTokenUser.resx">
-      <DependentUpon>202001040720093_AddTokenUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001041417320_fix-Initial.resx">
-      <DependentUpon>202001041417320_fix-Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002081551470_Add-NavigatProp-GymId.resx">
-      <DependentUpon>202002081551470_Add-NavigatProp-GymId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002081603551_Alt-NavigatProp-GymsId.resx">
-      <DependentUpon>202002081603551_Alt-NavigatProp-GymsId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.resx">
-      <DependentUpon>202002111221134_Add-ManyToMany-Clients-Graphics.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202002230422097_NewFirst.resx">
+      <DependentUpon>202002230422097_NewFirst.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
