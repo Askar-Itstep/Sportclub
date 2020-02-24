@@ -23,7 +23,7 @@
                 }
                 $.ajax({
                     type: "POST",
-                    url: "/Clients/Edit",
+                    url: "/Clients/EditAsync",
                     contentType: false,
                     processData: false,
                     data: data,
@@ -44,7 +44,7 @@
 </script>
 <h2>Edit</h2>
 
-@using (Html.BeginForm("Edit", "Clients", FormMethod.Post, new { enctype = "multypart/form-data" })) {
+@using (Html.BeginForm("Edit", "Clients", FormMethod.Post, new { enctype = "multipart/form-data" })) {
     @Html.AntiForgeryToken()
 
 <div class="form-horizontal">

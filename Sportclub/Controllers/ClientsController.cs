@@ -18,7 +18,6 @@ using Sportclub.ViewModels;
 
 namespace DataLayer.Controllers
 {
-    [Authorize(Roles = "admin, top_manager, manager, top_coache, head_coache, coache")]
     public class ClientsController : Controller
     {
         IMapper mapper;
@@ -50,7 +49,7 @@ namespace DataLayer.Controllers
         }
 
         [Authorize(Roles = "admin, top_manager, manager")]
-        public ActionResult Create() //админ может добав. нов. клиента.
+        public ActionResult Create() //админ&co может добав. нов. клиента.
         {
             return View();
         }
@@ -68,12 +67,11 @@ namespace DataLayer.Controllers
                 userBO.Login = clientVM.User.Email.Split('@')[0];
                 userBO.Gender = GenderBO.MEN;   //default
 
-                if (upload != null) {           //with img
-                    //imageBase = SetImage(upload, imageVM, imageBase);
-                    var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
+                if (upload != null) {           //+ img, если такого нет - записать в БД и вернуть!
+                    var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper); 
                 }
                 else {
-                    userBO.ImageId = 1; //men2.png (Model1)
+                    userBO.ImageId = 1; //default - men.png (Model1)
                 }
                 var clientBO = mapper.Map<ClientsBO>(clientVM);
                 clientBO.User = userBO;         //user create too!
@@ -84,25 +82,6 @@ namespace DataLayer.Controllers
             return View(clientVM);
         }
 
-        #region old SetImage
-        //private ImageBO SetImage(HttpPostedFileBase upload, ImageVM imageVM, ImageBO imageBase)
-        //{
-        //    string filename = System.IO.Path.GetFileName(upload.FileName);
-        //    imageVM.Filename = filename;
-        //    byte[] myBytes = new byte[upload.ContentLength];
-        //    upload.InputStream.Read(myBytes, 0, upload.ContentLength);
-        //    //imageVM.ImageData = myBytes;
-        //    var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-        //    if (imgListBO == null || imgListBO.Count() == 0)  //если такого в БД нет - сохранить
-        //    {
-        //        var imageBO = mapper.Map<ImageBO>(imageVM);
-        //        imageBase.Save(imageBO);
-        //    }
-        //    List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-        //    imageBase = imageBases[0];
-        //    return imageBase;
-        //}
-        #endregion
         [HttpGet]
         public ActionResult Edit(int? id)
         {
@@ -130,9 +109,7 @@ namespace DataLayer.Controllers
                 clientBO.User.Role = roleBO;   //роль не меняется! 
                 UserBO userBO = clientBO.User;
                 if(upload != null) {
-                    //imageBase = SetImage(upload, imageVM, imageBase);
                     var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
-                    userBO.ImageId = imageBase.Id;
                 }
                 userBO.Save(userBO);
                 clientBO.Save(clientBO);

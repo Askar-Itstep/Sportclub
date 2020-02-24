@@ -45,27 +45,12 @@ namespace Sportclub.Controllers
                 if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {
                     FormsAuthentication.SetAuthCookie(model.Login, true);
                     Uri uri = userBO.Image.URI;
-                    //ViewBag.UserImageUri = uri.ToString(); //в HomeController положить в localStorage 
-                    //return RedirectToAction("Index", "Home");
-                    #region var1: ImageData
-                    //var imgBytes =  userBO.Image.ImageData;
-                    //string base64String = Convert.ToBase64String(imgBytes, 0, imgBytes.Length);
-                    //string htmlstr = "data:image/jpeg;base64," + base64String;    //Data = htmlstr
-                    #endregion
-                    #region var2: URI
-                    //return new JsonResult
-                    //{
-                    //    Data = uri, //Data = htmlstr
-                    //    JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                    //};
-                    #endregion
+                    
                     return Json(new { success = true, message = "Wellcome!", image = uri });                    
                 }
-                else
-                    //ModelState.AddModelError("", "Пользователя с таким логином и паролем нет");   
+                else 
                     return Json(new { success = false, message = "Пользователя с таким логином и паролем нет" });
             }
-            //return View(model);  
             return Json(new { success = false, message = "Модель не валидна!" });
         }
 
@@ -107,6 +92,7 @@ namespace Sportclub.Controllers
             userBO.Email = model.Email;
             userBO.Login = login;
             userBO.Password = model.Password;
+            userBO.ImageId = 1;
 
             //1-client
             if (model.Token == null || model.Token.Equals(""))  //Токен выдается административно или не выдается

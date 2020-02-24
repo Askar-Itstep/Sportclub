@@ -22,8 +22,6 @@ namespace BusinessLayer.BusinessObject
         public DayOfWeek DayOfWeek { get; set; }
 
         //----------------------------------------
-
-        //public List<ClientsBO> Clients { get; set; }
         public ICollection<ClientsBO> Clients { get; set; }
 
         [Required]

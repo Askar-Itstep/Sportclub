@@ -23,11 +23,6 @@ namespace DataLayer.Controllers
     public class AdminController : Controller
     {
         private IMapper mapper;
-        //static CloudBlobClient blobClient;
-        //const string blobContainerName = "containerblob";
-        //private const string storagekey = "DefaultEndpointsProtocol=https;AccountName=storageblobitstep;AccountKey=iS0bPloKlG1EBzuUsjlRf7PYXFAUHZu+omLC5FjVFnnc/yn64Zp6MYqlg+7Wu15Vx32OGQK8nhr22AEE4rfhjQ==;EndpointSuffix=core.windows.net";
-        //private const string uripath = "https://storageblobitstep.blob.core.windows.net/containerblob";
-        //static CloudBlobContainer blobContainer = new CloudBlobContainer(new Uri(uripath));
         public AdminController()
         { }
         public AdminController(IMapper mapper)

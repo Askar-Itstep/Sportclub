@@ -123,7 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataLayer\DataLayer.csproj">
-      <Project>{1CE33A74-D80E-46BC-9A97-B2D650941A9F}</Project>
+      <Project>{1ce33a74-d80e-46bc-9a97-b2d650941a9f}</Project>
       <Name>DataLayer</Name>
     </ProjectReference>
   </ItemGroup>

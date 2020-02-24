@@ -40,9 +40,20 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=9.3.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.9.3.3\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -63,49 +74,9 @@
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\Specialization.cs" />
     <Compile Include="Entities\User.cs" />
-    <Compile Include="Migrations\202001021313511_FixOne.cs" />
-    <Compile Include="Migrations\202001021313511_FixOne.Designer.cs">
-      <DependentUpon>202001021313511_FixOne.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001021531173_ExtractUserIntoTable.cs" />
-    <Compile Include="Migrations\202001021531173_ExtractUserIntoTable.Designer.cs">
-      <DependentUpon>202001021531173_ExtractUserIntoTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001030411114_AddTableRole.cs" />
-    <Compile Include="Migrations\202001030411114_AddTableRole.Designer.cs">
-      <DependentUpon>202001030411114_AddTableRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001030453571_FixRole.cs" />
-    <Compile Include="Migrations\202001030453571_FixRole.Designer.cs">
-      <DependentUpon>202001030453571_FixRole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001040720093_AddTokenUser.cs" />
-    <Compile Include="Migrations\202001040720093_AddTokenUser.Designer.cs">
-      <DependentUpon>202001040720093_AddTokenUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001041417320_fix-Initial.cs" />
-    <Compile Include="Migrations\202001041417320_fix-Initial.Designer.cs">
-      <DependentUpon>202001041417320_fix-Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002081551470_Add-NavigatProp-GymId.cs" />
-    <Compile Include="Migrations\202002081551470_Add-NavigatProp-GymId.designer.cs">
-      <DependentUpon>202002081551470_Add-NavigatProp-GymId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002081603551_Alt-NavigatProp-GymsId.cs" />
-    <Compile Include="Migrations\202002081603551_Alt-NavigatProp-GymsId.designer.cs">
-      <DependentUpon>202002081603551_Alt-NavigatProp-GymsId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.cs" />
-    <Compile Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.designer.cs">
-      <DependentUpon>202002111221134_Add-ManyToMany-Clients-Graphics.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002141539193_Add-ImageForUsers.cs" />
-    <Compile Include="Migrations\202002141539193_Add-ImageForUsers.designer.cs">
-      <DependentUpon>202002141539193_Add-ImageForUsers.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202002191034168_AddUri-DelImageData.cs" />
-    <Compile Include="Migrations\202002191034168_AddUri-DelImageData.designer.cs">
-      <DependentUpon>202002191034168_AddUri-DelImageData.cs</DependentUpon>
+    <Compile Include="Migrations\202002231228061_NewFirstForBlobAzure.cs" />
+    <Compile Include="Migrations\202002231228061_NewFirstForBlobAzure.designer.cs">
+      <DependentUpon>202002231228061_NewFirstForBlobAzure.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,45 +86,15 @@
     <Compile Include="Repository\UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202001021313511_FixOne.resx">
-      <DependentUpon>202001021313511_FixOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001021531173_ExtractUserIntoTable.resx">
-      <DependentUpon>202001021531173_ExtractUserIntoTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001030411114_AddTableRole.resx">
-      <DependentUpon>202001030411114_AddTableRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001030453571_FixRole.resx">
-      <DependentUpon>202001030453571_FixRole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001040720093_AddTokenUser.resx">
-      <DependentUpon>202001040720093_AddTokenUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001041417320_fix-Initial.resx">
-      <DependentUpon>202001041417320_fix-Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002081551470_Add-NavigatProp-GymId.resx">
-      <DependentUpon>202002081551470_Add-NavigatProp-GymId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002081603551_Alt-NavigatProp-GymsId.resx">
-      <DependentUpon>202002081603551_Alt-NavigatProp-GymsId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002111221134_Add-ManyToMany-Clients-Graphics.resx">
-      <DependentUpon>202002111221134_Add-ManyToMany-Clients-Graphics.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002141539193_Add-ImageForUsers.resx">
-      <DependentUpon>202002141539193_Add-ImageForUsers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202002191034168_AddUri-DelImageData.resx">
-      <DependentUpon>202002191034168_AddUri-DelImageData.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202002231228061_NewFirstForBlobAzure.resx">
+      <DependentUpon>202002231228061_NewFirstForBlobAzure.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

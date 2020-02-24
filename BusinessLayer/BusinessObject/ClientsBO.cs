@@ -15,10 +15,6 @@ namespace BusinessLayer.BusinessObject
         public int Id { get; set; }
         public int UserId { get; set; }
         virtual public UserBO User { get; set; }
-        
-        //public int? GraphicId { get; set; }
-
-        //virtual public GraphTraningBO Graphic { get; set; }
 
         public ICollection<GraphTraningBO> GraphTraning { get; set; }
         //------------------------------------------------------------------------------------------

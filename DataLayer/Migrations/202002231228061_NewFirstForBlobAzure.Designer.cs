@@ -7,13 +7,13 @@ namespace DataLayer.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.0")]
-    public sealed partial class AddUriDelImageData : IMigrationMetadata
+    public sealed partial class NewFirstForBlobAzure : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddUriDelImageData));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(NewFirstForBlobAzure));
         
         string IMigrationMetadata.Id
         {
-            get { return "202002191034168_AddUri-DelImageData"; }
+            get { return "202002231228061_NewFirstForBlobAzure"; }
         }
         
         string IMigrationMetadata.Source

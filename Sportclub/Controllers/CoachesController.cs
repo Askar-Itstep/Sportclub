@@ -168,11 +168,9 @@ namespace DataLayer.Controllers
                 }
                 var userBO = coacheBO.User;
                 if (upload != null) { //with img
-                    //imageBase = SetImage(upload, imageVM, imageBase);
                     imageBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);
                 }
                 else {
-                    //userBO.Image = new ImageBO { Filename = "", ImageData = new byte[1] { 0 } };
                     userBO.ImageId = 1;
                 }
                 userBO.Save(userBO);        //нужно!

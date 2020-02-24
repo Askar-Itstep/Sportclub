@@ -6,10 +6,13 @@
 }
 
 <h2>Clients</h2>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@{
+    if (User.IsInRole("client") == false) {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
+}
 <table class="table">
     <tr>
         <th>
@@ -34,32 +37,46 @@
     </tr>
 
     @foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.FullName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.BirthDay.GetDateTimeFormats('D')[0])
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.Phone)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.Email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.Password)
-        </td>
-        <td >
-            @*@Html.Raw("<img style='width:60px; height:60px;' src=\"data:image/jpeg;base64,"+Convert.ToBase64String(item.User.Image.ImageData) + "\" />")*@       
-            <img style="width:60px;height:60px;" src="@item.User.Image.URI"/>
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-        </td>
-    </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.BirthDay.GetDateTimeFormats('D')[0])
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Email)
+            </td>
+            <td>
+                @{
+                    if (User.Identity.Name == item.User.Login || User.IsInRole("admin")==true) {
+
+                        @Html.DisplayFor(modelItem => item.User.Password)
+
+                    }
+                }
+            </td>
+            <td>
+                <img style="width:60px;height:60px;" src="@item.User.Image.URI" />
+            </td>
+            <td>
+                @{
+                    if (User.Identity.Name == item.User.Login) {
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                    }
+                }
+                |@Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @{
+                    if (User.Identity.Name == item.User.Login || User.IsInRole("top_coache") == true || User.IsInRole("coache") == true) {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    }
+                }
+
+            </td>
+        </tr>
     }
 
 </table>
