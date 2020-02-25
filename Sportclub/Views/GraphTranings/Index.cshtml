@@ -72,8 +72,8 @@
                     <td>
                         @Html.ActionLink("Записаться", "SignUp", new { id = item.Id }) |
                     </td>
-                    }
-                    if (User.IsInRole("client") == false) {
+                }
+                if (User.IsInRole("client") == false &&( User.IsInRole("top_coache") == true || User.IsInRole("manager") == true || User.IsInRole("top_manager") == true)) {
                         <td>
                             @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                             @Html.ActionLink("Details", "Details", new { id = item.Id }) |

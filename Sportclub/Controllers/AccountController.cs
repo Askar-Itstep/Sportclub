@@ -173,7 +173,7 @@ namespace Sportclub.Controllers
 
         private RoleBO IsRole(RoleBO roleBO, string param)
         {
-            if (roleBO == null || roleBO.Id == 0)//если в БД нет роли client
+            if (roleBO == null || roleBO.Id == 0 || !roleBO.RoleName.Equals(param))//если в БД нет роли client
             {
                 roleBO = DependencyResolver.Current.GetService<RoleBO>();
                 roleBO.RoleName = param;

@@ -49,27 +49,34 @@ namespace DataLayer.Controllers
         public ActionResult Create(AdministrationVM manager)
         {
             if (ModelState.IsValid) {
-                var userBO = mapper.Map<UserBO>(manager.User);
-                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
-                userBO.Image = DependencyResolver.Current.GetService<ImageBO>().Load(1);
-                userBO.ImageId = 1;
+                var userBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Email != null && u.FullName != null)
+                                                .FirstOrDefault(u => u.Email == manager.User.Email || u.FullName.Equals(manager.User.FullName));
+                if (userBO == null) {
+                    userBO = mapper.Map<UserBO>(manager.User);
+                    var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
+                    userBO.Image = DependencyResolver.Current.GetService<ImageBO>().Load(1);
+                    userBO.ImageId = 1;
 
-                var managerBO = mapper.Map<AdministrationBO>(manager);
-                managerBO.User = userBO;
-                if (managerBO.Status.ToString().ToUpper().Contains("TOP")) {
-                    managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("top_manager")).Id;
-                    managerBO.User.Token = "top_manager";
+                    var managerBO = mapper.Map<AdministrationBO>(manager);
+                    managerBO.User = userBO;
+                    if (managerBO.Status.ToString().ToUpper().Contains("TOP")) {
+                        managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("top_manager")).Id;
+                        managerBO.User.Token = "top_manager";
+                    }
+                    if (managerBO.Status.ToString().ToUpper().Contains("ADMIN")) {
+                        managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Contains("admin")).Id;
+                        managerBO.User.Token = "admin";
+                    }
+                    if (managerBO.Status.ToString().ToUpper().Equals("MANAGER")) {
+                        managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("manager")).Id;
+                        managerBO.User.Token = "manager";
+                    }
+                    managerBO.Save(managerBO);  //сначала создется юзер!
+
+                    return RedirectToAction("Index");
                 }
-                if (managerBO.Status.ToString().ToUpper().Contains("ADMIN")) {
-                    managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Contains("admin")).Id;
-                    managerBO.User.Token = "admin";
-                }
-                if (managerBO.Status.ToString().ToUpper().Equals("MANAGER")) {
-                    managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("manager")).Id;
-                    managerBO.User.Token = "manager";
-                }
-                managerBO.Save(managerBO);  //сначала создется юзер!
-                return RedirectToAction("Index");
+                else
+                    ModelState.AddModelError("", "Пользователь с таким логином или именем уже существует");
             }
             return View(manager);
         }

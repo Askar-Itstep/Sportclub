@@ -85,9 +85,18 @@
             <img style='width:60px; height:60px;' src="@item.User.Image.URI" />
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            @{
+                if (User.Identity.Name == item.User.Login || User.IsInRole("top_coache") == true || User.IsInRole("manager") == true || User.IsInRole("top_manager") == true) {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                }
+            }
+            |@Html.ActionLink("Details", "Details", new { id = item.Id }) |
+            @{
+                if (User.Identity.Name == item.User.Login || User.IsInRole("top_coache") == true || User.IsInRole("manager") == true || User.IsInRole("top_manager") == true) {
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                }
+            }
+
         </td>
     </tr>
     }

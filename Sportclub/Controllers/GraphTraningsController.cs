@@ -37,7 +37,7 @@ namespace DataLayer.Controllers
         }
     
         //------------------------------------------Create ------------------------------------------------------    
-        [Authorize(Roles ="admin, top_coache, head_coache")]
+        [Authorize(Roles ="admin, top_manager, manager, top_coache, head_coache")]
         [HttpGet]
         public ActionResult Create()
         {
@@ -179,7 +179,7 @@ namespace DataLayer.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "top_coache, head_coache")]
+        [Authorize(Roles = "top_manager, manager, top_coache, head_coache")]
         public ActionResult Edit(int? id)   //ID-traning
         {
             if (id == null) {
