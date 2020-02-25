@@ -14,11 +14,15 @@
 <body>
     <script>
         $(function () {
+            //1)- img fo user---------
             var data = localStorage.getItem("imgData");
             var img = document.createElement("img");
             $(img).css({ 'width': '40px', 'height': '40px' });
             $(img).attr('src', data);
             $('#divImg').append(img);
+            //2)-img for background--------
+            $(document.body).css("background-image", "url(/Files/sport3.jpg)")
+
         })
     </script>
     <div class="navbar navbar-default navbar-fixed-top" style="background-color:yellowgreen;">
