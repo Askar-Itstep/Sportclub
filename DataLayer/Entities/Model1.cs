@@ -33,16 +33,20 @@ namespace DataLayer
     }
     public class MyContextInitializer : CreateDatabaseIfNotExists<Model1>    //DropCreateDatabaseIfModelChanges
     {
-        private const string uripath = "https://storageblobitstep.blob.core.windows.net/containerblob";
-        const string blobContainerName = "containerblob";
-        public static async Task<bool> UploadFileAsync(FileStream fileStream)
+        private string[] connectName = { "blobContainer", "blobBoxBackground" };
+        private string[] uripath =  {"https://storageblobitstep.blob.core.windows.net/containerblob",
+                                     "https://imagesbackground.blob.core.windows.net/backgrounds" };
+        private string[] blobContainerName = {"containerblob", "backgrounds" };    //именя контейнеров в Azure
+        public static async Task<bool> UploadFileAsync(FileStream fileStream, string connectName, string boxName)
         {
             try {
                 string filename = fileStream.Name;
-                string storagekey = ConfigurationManager.ConnectionStrings["blobContainer"].ConnectionString;
+                string storagekey = ConfigurationManager.ConnectionStrings[connectName].ConnectionString;
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storagekey);
+
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-                CloudBlobContainer container = blobClient.GetContainerReference(blobContainerName);
+                CloudBlobContainer container = blobClient.GetContainerReference(boxName);
+
                 container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);
 
@@ -65,7 +69,7 @@ namespace DataLayer
 
             context.Roles.AddRange(roles);
             //2) Images            
-            //----------нужно сначала загрузить 1-ый файл из папки File-----------------
+            //----------нужно сначала загрузить 1-ый файл из папки File--а также для фона---------------
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files"); //../Sportclub/Sportclub/Files
             DirectoryInfo dir = new DirectoryInfo(path);
             string filename = "";
@@ -73,11 +77,18 @@ namespace DataLayer
                 if (item.Name == "men.png" || item.Name == "default.png" || item.Name == "men.jpg" || item.Name == "default.jpg") {
                     filename = item.Name;
                     using (var filestream = File.Open(item.FullName, FileMode.Open)) {
-                        await UploadFileAsync(filestream);
+                        await UploadFileAsync(filestream, connectName[0], blobContainerName[0]);
+                    }
+                }
+                if (item.Name.Contains("sport")) {
+                    filename = item.Name;
+                    using (var filestream = File.Open(item.FullName, FileMode.Open)) {
+                        await UploadFileAsync(filestream, connectName[1], blobContainerName[1]);
                     }
                 }
             }
-            string uriStr = Path.Combine(uripath, filename);    // + "/" +
+            //сохр. в БД путей для изобр. юзеров
+            string uriStr = Path.Combine(uripath[0], filename);    
             Image image = new Image { Filename = "", URI = uriStr };
 
             context.Images.Add(image);
