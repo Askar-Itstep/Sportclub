@@ -45,8 +45,8 @@ namespace Sportclub.Controllers
                 if (userBO != null && userBO.Login.Equals(model.Login) && userBO.Password.Equals(model.Password)) {
                     FormsAuthentication.SetAuthCookie(model.Login, true);
                     Uri uri = userBO.Image.URI;
-                    
-                    return Json(new { success = true, message = "Wellcome!", image = uri });                    
+                    var arrImgBackground = BlobHelper.DowloadUriBackground();
+                    return Json(new { success = true, message = "Wellcome!", image = uri, arrImg = arrImgBackground });                    
                 }
                 else 
                     return Json(new { success = false, message = "Пользователя с таким логином и паролем нет" });

@@ -18,11 +18,30 @@
             var data = localStorage.getItem("imgData");
             var img = document.createElement("img");
             $(img).css({ 'width': '40px', 'height': '40px' });
+
+            console.log(data)
             $(img).attr('src', data);
             $('#divImg').append(img);
-            //2)-img for background--------
-            $(document.body).css("background-image", "url(/Files/sport3.jpg)")
 
+            //2)-img for background--------
+            var arrImg = JSON.parse(localStorage.getItem("arrImg"));
+            //$(document.body).css("background-image", "url(/Files/sport3.jpg)");
+
+            function outer(arr) {
+                let x = 0;
+                function inner() {
+                    x++;
+                    if (x >= 3)
+                        x = 0;
+                    console.log("x: " + arrImg[x])
+                    $(document.body).css("background-image", "url(" + arrImg[x] + ")");
+                    
+                };
+                return inner;
+            }
+            let fn = outer(arrImg);
+
+            setInterval(fn, 60000);
         })
     </script>
     <div class="navbar navbar-default navbar-fixed-top" style="background-color:yellowgreen;">

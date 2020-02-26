@@ -35,7 +35,7 @@ namespace DataLayer
     {
         private const string uripath = "https://storageblobitstep.blob.core.windows.net/containerblob";
         const string blobContainerName = "containerblob";
-        public static async Task<bool> UploadFile(FileStream fileStream)
+        public static async Task<bool> UploadFileAsync(FileStream fileStream)
         {
             try {
                 string filename = fileStream.Name;
@@ -55,7 +55,7 @@ namespace DataLayer
                 return false;
             }
         }
-        protected override void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login 
+        protected override async void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login 
         {
             //1) Roles
             List<Role> roles = new List<Role>()   {
@@ -73,11 +73,11 @@ namespace DataLayer
                 if (item.Name == "men.png" || item.Name == "default.png" || item.Name == "men.jpg" || item.Name == "default.jpg") {
                     filename = item.Name;
                     using (var filestream = File.Open(item.FullName, FileMode.Open)) {
-                        UploadFile(filestream);
+                        await UploadFileAsync(filestream);
                     }
                 }
             }
-            string uriStr = uripath + "/" + filename;
+            string uriStr = Path.Combine(uripath, filename);    // + "/" +
             Image image = new Image { Filename = "", URI = uriStr };
 
             context.Images.Add(image);

@@ -26,14 +26,9 @@
                 method: "POST",
                 data: $(myForm).serialize(),
                 success: function (data) {
-                    //var img = $("#img");
                     if (data.success == true) {
-                        {
-                            //$(img).css({ 'width': '40px', 'height': '40px' });
-                            //$(img).attr('src', data.image);
-                        }
                         localStorage.setItem("imgData", data.image);
-
+                        localStorage.setItem("arrImg", JSON.stringify(data.arrImg));   //for background
                         $(location).attr('href', '/Home/Index');
                     }
                     else 
@@ -49,8 +44,6 @@
     })
 </script>
 <h2>Авторизация</h2>
-@*<img id="img"/>*@
-
 @*@using (Ajax.BeginForm("Login", new AjaxOptions{HttpMethod = "Post", Url = "/Account/Login", OnSuccess = "onSuccess"})) {*@
 
 @using (Html.BeginForm()) { 
