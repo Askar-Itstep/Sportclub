@@ -40,10 +40,10 @@
                 alert("Браузер не поддерживает загрузку файлов HTML5!");
             }
         });
-    })
+    }) 
 </script>
 <h2>Edit</h2>
-@if (User.Identity.Name == Model.User.Login) {
+@if (User.Identity.Name == Model.User.Login || User.IsInRole("top_manager")==true) {
     using (Html.BeginForm("Edit", "Admin", FormMethod.Post, new { enctype = "multypart/form-data" })) {
         @Html.AntiForgeryToken()
 

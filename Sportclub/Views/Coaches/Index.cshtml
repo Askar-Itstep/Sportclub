@@ -81,12 +81,12 @@
             @Html.DisplayFor(modelItem => item.User.Password)
         </td>
         <td>
-            @*@Html.Raw("<img style='width:60px; height:60px;' src=\"data:image/jpeg;base64,"+ Convert.ToBase64String(item.User.Image.ImageData) + "\" />")*@
             <img style='width:60px; height:60px;' src="@item.User.Image.URI" />
         </td>
         <td>
             @{
-                if (User.Identity.Name == item.User.Login || User.IsInRole("top_coache") == true || User.IsInRole("manager") == true || User.IsInRole("top_manager") == true) {
+                if (User.Identity.Name == item.User.Login || User.IsInRole("head_coache") == true  || User.IsInRole("top_coache") == true 
+                    || User.IsInRole("manager") == true || User.IsInRole("top_manager") == true) {
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id })
                 }
             }

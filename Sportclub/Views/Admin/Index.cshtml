@@ -31,13 +31,20 @@
         <td>@item.User.Gender</td>
         <td>@item.Status</td>
         <td>
-            <img style='width:60px; height:60px;' src="@item.User.Image.URI"/>
+            <img style='width:60px; height:60px;' src="@item.User.Image.URI" />
         </td>
-        <td>@Html.ActionLink("Edit", "Edit", new { id = @item.Id })</td>
+        @{ if (User.IsInRole("top_manager") == true) {
+                <td>@Html.ActionLink("Edit", "Edit", new { id = @item.Id })</td>
+            }
+        }
         <td>|</td>
         <td>@Html.ActionLink("Details", "Details", new { id = @item.Id })</td>
         <td>|</td>
-        <td>@Html.ActionLink("Delete", "Delete", new { id = @item.Id })</td>
+        @{ if (User.IsInRole("manager") == false) {
+                <td>@Html.ActionLink("Delete", "Delete", new { id = @item.Id })</td>
+            }
+        }
     </tr>
+
     }
 </table>

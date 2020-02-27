@@ -1,22 +1,13 @@
 ﻿using AutoMapper;
 using BusinessLayer.BusinessObject;
 using DataLayer.Entities;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Sportclub.Controllers;
 using Sportclub.ViewModel;
 using Sportclub.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using CloudBlobClient = Microsoft.Azure.Storage.Blob.CloudBlobClient;
-using CloudBlobContainer = Microsoft.Azure.Storage.Blob.CloudBlobContainer;
-using CloudBlockBlob = Microsoft.Azure.Storage.Blob.CloudBlockBlob;
 
 namespace DataLayer.Controllers
 {
@@ -51,33 +42,33 @@ namespace DataLayer.Controllers
             if (ModelState.IsValid) {
                 var userBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Email != null && u.FullName != null)
                                                 .FirstOrDefault(u => u.Email == manager.User.Email || u.FullName.Equals(manager.User.FullName));
-                if (userBO == null) {
-                    userBO = mapper.Map<UserBO>(manager.User);
-                    var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
-                    userBO.Image = DependencyResolver.Current.GetService<ImageBO>().Load(1);
-                    userBO.ImageId = 1;
+                var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll();
 
-                    var managerBO = mapper.Map<AdministrationBO>(manager);
-                    managerBO.User = userBO;
-                    if (managerBO.Status.ToString().ToUpper().Contains("TOP")) {
-                        managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("top_manager")).Id;
-                        managerBO.User.Token = "top_manager";
-                    }
-                    if (managerBO.Status.ToString().ToUpper().Contains("ADMIN")) {
-                        managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Contains("admin")).Id;
-                        managerBO.User.Token = "admin";
-                    }
-                    if (managerBO.Status.ToString().ToUpper().Equals("MANAGER")) {
-                        managerBO.User.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("manager")).Id;
-                        managerBO.User.Token = "manager";
-                    }
-                    managerBO.Save(managerBO);  //сначала создется юзер!
-
-                    return RedirectToAction("Index");
+                if (userBO != null) 
+                    userBO.DeleteSave(userBO);  //удалится и юзер-клиент
+                
+                userBO = mapper.Map<UserBO>(manager.User);  //создать заново
+                userBO.Image = DependencyResolver.Current.GetService<ImageBO>().Load(1);
+                userBO.ImageId = 1;
+                var managerBO = mapper.Map<AdministrationBO>(manager);
+                if (managerBO.Status.ToString().ToUpper().Contains("TOP")) {
+                    userBO.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("top_manager")).Id;
+                    userBO.Token = "top_manager";
                 }
-                else
-                    ModelState.AddModelError("", "Пользователь с таким логином или именем уже существует");
+                if (managerBO.Status.ToString().ToUpper().Contains("ADMIN")) {
+                    userBO.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("admin")).Id;
+                    userBO.Token = "admin";
+                }
+                if (managerBO.Status.ToString().ToUpper().Equals("MANAGER")) {
+                    userBO.RoleId = roleBO.FirstOrDefault(r => r.RoleName.Equals("manager")).Id;
+                    userBO.Token = "manager";
+                }
+                managerBO.User = userBO;
+                managerBO.Save(managerBO);  //сначала создется юзер!
+                return RedirectToAction("Index");
             }
+            else
+                ModelState.AddModelError("", "Ошибка создания модели!");
             return View(manager);
         }
         //------------------------------------------------------------------------------------
@@ -110,9 +101,10 @@ namespace DataLayer.Controllers
                 if (upload != null) {          //если запрос пришел с изображ.
                     var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
                 }
-                else 
+                else {
                     userBO.ImageId = 1;
-                
+                }
+
                 userBO.Save(userBO);
 
                 var managerBO = mapper.Map<AdministrationBO>(managerVM);

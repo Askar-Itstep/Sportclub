@@ -3,7 +3,7 @@
 <script>
     function onSuccess(data) {
         $('#exampleModalScrollable').modal('hide');
-        console.log(data)
+        console.log(data)                   //все специальности в БД
         if (Array.isArray(data)) {
             $(data).each(function (i, item) {
                 $('#selSpec').append("<option value="+item["Id"]+">" + item["Title"] + "</option>")
@@ -13,7 +13,6 @@
             console.log("No is not array!")
             $('#selSpec').append("<option>" + data["Title"] + "</option>")
         }
-
     }
 </script>
 

@@ -25,7 +25,7 @@
 
             //2)-img for background--------
             var arrImg = JSON.parse(localStorage.getItem("arrImg"));
-            //$(document.body).css("background-image", "url(/Files/sport3.jpg)");
+            $(document.body).css("background-image", "url(/Files/sport3.jpg)");
 
             function outer(arr) {
                 let x = 0;
@@ -34,8 +34,7 @@
                     if (x >= 3)
                         x = 0;
                     console.log("x: " + arrImg[x])
-                    $(document.body).css("background-image", "url(" + arrImg[x] + ")");
-                    
+                    $(document.body).css("background-image", "url(" + arrImg[x] + ")");                    
                 };
                 return inner;
             }

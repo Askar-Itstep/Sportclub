@@ -18,7 +18,7 @@ using Sportclub.ViewModels;
 
 namespace DataLayer.Controllers
 {
-    [Authorize(Roles ="admin, top_manager, manager, top_coache, head_coache")]
+    [Authorize(Roles ="admin,top_manager,manager,top_coache,head_coache,coache")]
     public class CoachesController : Controller
     {
         
@@ -52,6 +52,7 @@ namespace DataLayer.Controllers
             return View(coacheVM);
         }
         //----------------------------------------------------------------------------------------------------
+        [Authorize(Roles = "top_manager,manager,top_coache, head_coache")]
         [HttpGet]
         public ActionResult Create()
         {
@@ -60,12 +61,13 @@ namespace DataLayer.Controllers
             var specializationsVM = specializationsBO.Select(s => mapper.Map<SpecializationVM>(s));
             ViewBag.Specializations = new SelectList(specializationsVM, "Id", "Title");
             //произвести юзера  - в тренеры
-            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null).ToList();
+            var usersBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Token == null || u.Token.Contains("coache")).ToList();
             var usersVM = usersBO.Select(u => mapper.Map<UserBO>(u)).ToList();
             ViewBag.UserList = new SelectList(usersVM, "Id", "FullName");
             return View();
 
         }
+
         [HttpPost]          //добавить специальн. тренеру
         public ActionResult CreateSpec(SpecializationVM specializationVM)   //обработ. ajax
         {
@@ -73,7 +75,11 @@ namespace DataLayer.Controllers
                 return HttpNotFound();
             if (ModelState.IsValid) {
                 var specBO = mapper.Map<SpecializationBO>(specializationVM);
-                specBO.Save(specBO);
+                var specAllBO = DependencyResolver.Current.GetService<SpecializationBO>().LoadAll().ToList();
+                if(specAllBO.FirstOrDefault(s=>s.Title == specBO.Title) == null) {  //проверить есть такая в БД
+                    specBO.Save(specBO);
+                }
+                
                 var specVM = specBO.LoadAll().Select(s => mapper.Map<SpecializationVM>(s));
                 ViewBag.Specializations = new SelectList(specVM, "Id", "Title");
                 return new JsonResult
@@ -140,7 +146,13 @@ namespace DataLayer.Controllers
                 return HttpNotFound();
             }
             var coacheVM = mapper.Map<CoachesVM>(coacheBO);
-            ViewBag.SpecList = new SelectList(DependencyResolver.Current.GetService<SpecializationBO>().LoadAll(), "Id", "Title");
+            var specializationsBO = DependencyResolver.Current.GetService<SpecializationBO>().LoadAll().ToList();
+            var specializationsVM = mapper.Map<List<SpecializationVM>>(specializationsBO);
+            var rolesBO = DependencyResolver.Current.GetService<RoleBO>().Load(coacheBO.User.RoleId);
+            if (User.IsInRole("coache") == false) { //тренер не может добавить спец. - только манагер!
+                specializationsVM.Add(new SpecializationVM { Title = "-- Добавить специализацию --" });
+            } 
+            ViewBag.SpecList = new SelectList(specializationsVM, "Id", "Title");
             return View(coacheVM);
         }
 

@@ -7,9 +7,24 @@
 
 <h2>Edit</h2>
 <script>
+//use select <--Добавить специальн.-->
+    $(function () { 
+        $('#SpecializationId').change(function (e) {
+            if ($(this).val() == 0) {   //for managers ..
+                alert("Добавить новую специальность возможно только в разделе <Create>!");
+                $('#SpecializationId').val(1);
+            }
+        })
+    });
+    //---------------заблок. возм. "просто"тренеру изм. свой статус--------
     $(function () {
-
-        //-------------Send Model + Upload Files ---------------------------
+        if ($('input#RoleAdminUser').val() == 'True') {
+            alert("Вниманию тренеров. Если вы хотите изменить свой статус добавить специальность обратитесь в администрацию");
+            $('select#Status').attr('disabled', true);
+        }
+    })
+    //-------------Send Model + Upload Files ---------------------------   
+    $(function () {     
         var myForm = document.forms[0];
         $('input[type=submit').on('click', function (e) {
             $(this).attr("disabled", "disabled");
@@ -17,7 +32,10 @@
         });
         $(myForm).on('submit', function (e) {
             var files = document.getElementById('customFile').files;
-            console.log(files)
+
+            if ($('#SpecializationId').val() == 0) {
+                $('#SpecializationId').val(1);  //default
+            }
             if (window.FormData !== undefined) {
                 var data = new FormData(document.forms[0]);
                 console.log(data)
@@ -52,6 +70,7 @@
 <div class="form-horizontal">
     <h4>Coaches</h4>
     <hr />
+    @Html.Hidden("RoleAdminUser", User.IsInRole("coache"))
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.Id)
     @Html.HiddenFor(model => model.UserId)
