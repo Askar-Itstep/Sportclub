@@ -220,10 +220,10 @@
     <Content Include="Files\men.png" />
     <Content Include="Files\men2.png" />
     <Content Include="Files\men3.png" />
-    <Content Include="Files\predator .png" />
+    <Content Include="Files\predator.png" />
     <Content Include="Files\sport2.jpg" />
     <Content Include="Files\sport3.jpg" />
-    <Content Include="Files\terminator .png" />
+    <Content Include="Files\terminator.png" />
     <Content Include="Files\women.png" />
     <Content Include="Files\women2.png" />
     <Content Include="Files\women3.png" />

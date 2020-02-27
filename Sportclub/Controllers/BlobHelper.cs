@@ -26,18 +26,20 @@ namespace Sportclub.Controllers
             string filename = Path.GetFileName(upload.FileName);
             bool resUpload = await UploadFile(upload);
             //б)-----запись в БД----------
-            string uriStr = uripath + "/" + filename;
-            imageVM.Filename = filename;
-            imageVM.URI = new Uri(uriStr);
-            var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            if (imgListBO == null || imgListBO.Count() == 0)                    //если такого в БД нет - сохранить
-            {
-                var imageBO = mapper.Map<ImageBO>(imageVM);
-                imageBase.Save(imageBO);
+            if (resUpload == true) {
+                string uriStr = uripath + "/" + filename;
+                imageVM.Filename = filename;
+                imageVM.URI = new Uri(uriStr);
+                var imgListBO = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+                if (imgListBO == null || imgListBO.Count() == 0)                    //если такого в БД нет - сохранить
+                {
+                    var imageBO = mapper.Map<ImageBO>(imageVM);
+                    imageBase.Save(imageBO);
+                }
+                List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
+                imageBase = imageBases[0];
+                userBO.ImageId = imageBase.Id;
             }
-            List<ImageBO> imageBases = DependencyResolver.Current.GetService<ImageBO>().LoadAll().Where(i => i.Filename == imageVM.Filename).ToList();
-            imageBase = imageBases[0];
-            userBO.ImageId = imageBase.Id;
             return imageBase;
         }
 
@@ -45,10 +47,10 @@ namespace Sportclub.Controllers
         {
             try {
                 string filename = Path.GetFileName(upload.FileName);
-                string storagekey = ConfigurationManager.ConnectionStrings["blobContainer"].ConnectionString;
+                string storagekey = ConfigurationManager.ConnectionStrings["blobContainer"].ConnectionString;  
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storagekey);
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-                CloudBlobContainer container = blobClient.GetContainerReference(blobContainerName);
+                CloudBlobContainer container = blobClient.GetContainerReference(blobContainerName); //.. .windows.net/containerblob";
                 container.SetPermissions(  new BlobContainerPermissions {  PublicAccess = BlobContainerPublicAccessType.Blob });
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);
 
