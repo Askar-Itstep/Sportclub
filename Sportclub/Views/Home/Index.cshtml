@@ -5,14 +5,27 @@
 }
 <script>
     {
-        //$(function (e) {
-        //var img = document.createElement("img");
-        //$(img).css({ 'width': '40px', 'height': '40px' });
-        //$(img).attr('src', data);
-        //localStorage.setItem("imgData", data);
-        //})
+        $(function (e) {
+            var data = $('#divUserUri').html();
+            if ($(data != null && data != undefined)) {
+                localStorage.setItem("imgData", data);
+            }
+            var dataBgr = $('#divBackUri').html();
+            if (dataBgr != null && dataBgr != undefined) {
+                var arr0 = JSON.parse(dataBgr);
+                console.log("arr0: " + arr0[0])
+                localStorage.setItem("arrImg", dataBgr);
+            }
+        })
     }
 </script>
+
+<div hidden="hidden" id="divUserUri">
+    @ViewBag.UserUri
+</div>
+<div hidden="hidden" id="divBackUri">
+    @ViewBag.imgBackGround
+</div>
 <div class="jumbotron">
     <h1>Спортклуб Itstep</h1>
     <p class="lead">Присоединяйся к нам. Делай вместе с нами. Делай лучше нас!</p>

@@ -19,20 +19,26 @@
             if (data != null && data != undefined) {
                 var img = document.createElement("img");
                 $(img).css({ 'width': '40px', 'height': '40px' });
-
-                console.log(data)
+                
                 $(img).attr('src', data);
                 $('#divImg').append(img);
             }
 
             //2)-img for background--------
             var arrImg = JSON.parse(localStorage.getItem("arrImg"));
+            if (arrImg != undefined && arrImg != null) {
+                var len = arrImg.length;
+                console.log("arr[0]: " + arrImg[0])
+                $(document.body).css({
+                    "background-image": "url(" + arrImg[0] +")",  
+                    "background-repeat": "no-repeat",
+                    "background-size": "cover"
+                });
+                let fn = outer(arrImg);
+
+                setInterval(fn, 60000);
+            }
             
-            $(document.body).css({
-                "background-image": "url(/Files/sport3.jpg)",
-                "background-repeat": "no-repeat",
-                "background-size": "cover"
-            });
 
             function outer(arr) {
                 let x = 0;
@@ -45,13 +51,7 @@
                 };
                 return inner;
             }
-            if (arrImg != undefined && arrImg != null) {
-                var len = arrImg.length;
-
-                let fn = outer(arrImg);
-
-                setInterval(fn, 60000);
-            }
+           
         })
     </script>
     <div class="navbar navbar-default navbar-fixed-top" style="background-color:yellowgreen;">

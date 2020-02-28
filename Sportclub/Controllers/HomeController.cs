@@ -1,4 +1,5 @@
 ﻿using DataLayer.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace DataLayer.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string userUri = null,  string jsonArr = null)
         {
+            ViewBag.UserUri = userUri;
+            ViewBag.imgBackGround = jsonArr;
             return View();
         }
 

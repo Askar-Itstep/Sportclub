@@ -3,6 +3,7 @@ using BusinessLayer.BusinessObject;
 using DataLayer.Entities;
 using DataLayer.Providers;
 using DataLayer.Repository;
+using Newtonsoft.Json;
 using Sportclub.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -46,12 +47,18 @@ namespace Sportclub.Controllers
                     FormsAuthentication.SetAuthCookie(model.Login, true);
                     Uri uri = userBO.Image.URI;
                     var arrImgBackground = BlobHelper.DowloadUriBackground();
-                    return Json(new { success = true, message = "Wellcome!", image = uri, arrImg = arrImgBackground });                    
+                    var jsonArr = JsonConvert.SerializeObject(arrImgBackground);
+                    //return Json(new { success = true, message = "Wellcome!", image = uri, arrImg = arrImgBackground });              
+
+                    //3)вариация способа №1 - прямо отправить в конроллер!
+                    return RedirectToAction("Index", "Home", new { userUri = uri, jsonArr = jsonArr});
                 }
-                else 
-                    return Json(new { success = false, message = "Пользователя с таким логином и паролем нет" });
+                else
+                    //return Json(new { success = false, message = "Пользователя с таким логином и паролем нет" });
+                    return View(model);
             }
-            return Json(new { success = false, message = "Модель не валидна!" });
+            //return Json(new { success = false, message = "Модель не валидна!" });
+            return View(model);
         }
 
         public ActionResult Registration()
