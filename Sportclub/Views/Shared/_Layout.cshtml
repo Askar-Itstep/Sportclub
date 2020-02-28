@@ -16,12 +16,14 @@
         $(function () {
             //1)- img fo user---------
             var data = localStorage.getItem("imgData");
-            var img = document.createElement("img");
-            $(img).css({ 'width': '40px', 'height': '40px' });
+            if (data != null && data != undefined) {
+                var img = document.createElement("img");
+                $(img).css({ 'width': '40px', 'height': '40px' });
 
-            console.log(data)
-            $(img).attr('src', data);
-            $('#divImg').append(img);
+                console.log(data)
+                $(img).attr('src', data);
+                $('#divImg').append(img);
+            }
 
             //2)-img for background--------
             var arrImg = JSON.parse(localStorage.getItem("arrImg"));
@@ -43,7 +45,7 @@
                 };
                 return inner;
             }
-            if (arrImg != undefined) {
+            if (arrImg != undefined && arrImg != null) {
                 var len = arrImg.length;
 
                 let fn = outer(arrImg);
