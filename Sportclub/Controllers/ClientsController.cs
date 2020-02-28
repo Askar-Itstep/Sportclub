@@ -111,6 +111,10 @@ namespace DataLayer.Controllers
                 if(upload != null) {
                     var imgBase = await BlobHelper.SetImageAsync(upload, imageVM, imageBase, userBO, mapper);//если такого нет - записать в БД и вернуть! 
                 }
+                else {
+                    var currUserBO = DependencyResolver.Current.GetService<UserBO>().LoadAll().Where(u => u.Id == clientBO.UserId).FirstOrDefault();
+                    userBO.ImageId = currUserBO.ImageId;
+                }
                 userBO.Save(userBO);
                 clientBO.Save(clientBO);
                 return new JsonResult { Data = "Данные записаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };

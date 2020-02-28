@@ -221,8 +221,14 @@
     <Content Include="Files\men2.png" />
     <Content Include="Files\men3.png" />
     <Content Include="Files\predator.png" />
+    <Content Include="Files\sport1.jpg" />
     <Content Include="Files\sport2.jpg" />
     <Content Include="Files\sport3.jpg" />
+    <Content Include="Files\sport4.jpg" />
+    <Content Include="Files\sport5.jpg" />
+    <Content Include="Files\sport6.jpg" />
+    <Content Include="Files\sport7.jpg" />
+    <Content Include="Files\sport8.png" />
     <Content Include="Files\terminator.png" />
     <Content Include="Files\women.png" />
     <Content Include="Files\women2.png" />
