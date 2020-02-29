@@ -81,7 +81,7 @@ namespace DataLayer
                     }
                 }
                 if (item.Name.Contains("sport")) {
-                    filename = item.Name;
+                    //filename = item.Name;
                     using (var filestream = File.Open(item.FullName, FileMode.Open)) {
                         UploadFile(filestream, connectName[1], blobContainerName[1]);
                     }
@@ -89,7 +89,7 @@ namespace DataLayer
             }
             //сохр. в БД путей для изобр. юзеров
             string uriStr = Path.Combine(uripath[0], filename);    
-            Image image = new Image { Filename = "", URI = uriStr };
+            Image image = new Image { Filename = filename, URI = uriStr };
 
             context.Images.Add(image);
 
