@@ -37,7 +37,7 @@ namespace DataLayer
         private string[] uripath =  {"https://storageblobitstep.blob.core.windows.net/containerblob",
                                      "https://imagesbackground.blob.core.windows.net/backgrounds" };
         private string[] blobContainerName = {"containerblob", "backgrounds" };    //именя контейнеров в Azure
-        public static async Task<bool> UploadFileAsync(FileStream fileStream, string connectName, string boxName)
+        public static bool UploadFile(FileStream fileStream, string connectName, string boxName)
         {
             try {
                 string filename = fileStream.Name;
@@ -50,7 +50,7 @@ namespace DataLayer
                 container.SetPermissions(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);
 
-                await blockBlob.UploadFromStreamAsync(fileStream);
+                blockBlob.UploadFromStreamAsync(fileStream);
 
                 return true;
             }
@@ -59,7 +59,7 @@ namespace DataLayer
                 return false;
             }
         }
-        protected override async void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login 
+        protected override void Seed(Model1 context)    //1-ое обращ. из AccauntC.\Login 
         {
             //1) Roles
             List<Role> roles = new List<Role>()   {
@@ -77,13 +77,13 @@ namespace DataLayer
                 if (item.Name == "men.png" || item.Name == "default.png" || item.Name == "men.jpg" || item.Name == "default.jpg") {
                     filename = item.Name;
                     using (var filestream = File.Open(item.FullName, FileMode.Open)) {
-                        await UploadFileAsync(filestream, connectName[0], blobContainerName[0]);
+                        UploadFile(filestream, connectName[0], blobContainerName[0]);
                     }
                 }
                 if (item.Name.Contains("sport")) {
                     filename = item.Name;
                     using (var filestream = File.Open(item.FullName, FileMode.Open)) {
-                        await UploadFileAsync(filestream, connectName[1], blobContainerName[1]);
+                        UploadFile(filestream, connectName[1], blobContainerName[1]);
                     }
                 }
             }
