@@ -17,12 +17,9 @@ namespace DataLayer.Entities
         [Required]
         public DateTime BirthDay { get; set; }
         public string Phone { get; set; }
-        
         public string Email { get; set; }
         public Gender Gender { get; set; }
-        
         public string Login { get; set; }
-        
         public string Password { get; set; }
 
         

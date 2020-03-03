@@ -11,25 +11,25 @@ namespace Sportclub.ViewModel
     public class UserVM
     {
         public int Id { get; set; }
-
+        [Required]
         public string FullName { get; set; }
 
         [Required]
         public DateTime BirthDay { get; set; }
 
-
-        //[RegularExpression(
-        //    @"(^\+\d{1,2})?((\(\d{3}\))|(\-?\d{3}\-)|(\d{3}))((\d{3}\-\d{4})|(\d{3}\-\d\d\ -\d\d)
-        //        |(\d{7})|(\d{3}\-\d\-\d{3}))", ErrorMessage = "Некорректный номер")]
+        [Display(Name ="phone type: 8(+7) 999 111 22 33")]
+        [RegularExpression(@"^((8|\+7)[\- ]?)?(\d{3}[\- ]?)?[\d ]{7,11}$", ErrorMessage = "Некорректный номер")]
+        [Required]
         public string Phone { get; set; }
 
 
-        //[RegularExpression(@"(/\A[^@]+@([^@\.]+\.)+[^@\.]+\z/) ", ErrorMessage = "Некорректный e-mail")]
+        [RegularExpression(@"\w[^@]+@([^@\.]+\.)+[^@\.]+\w", ErrorMessage = "Некорректный e-mail")]
+        [Required]
         public string Email { get; set; }
         public GenderVM Gender { get; set; }
-
+        [Required]
         public string Login { get; set; }
-
+        [Required]
         public string Password { get; set; }
 
 

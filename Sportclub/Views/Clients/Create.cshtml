@@ -28,8 +28,14 @@
                     processData: false,
                     data: data,
                     success: function (result) {
-                        alert(result); //"Данные записаны!"
-                        $(location).attr('href', '/Clients/Index');
+                        if (result.good != false) {
+                            alert(result);  //"Данные записаны!"
+                            $(location).attr('href', '/Clients/Index');
+                        }
+                        else {
+                            alert(result.Data)
+                            $(location).attr('href', '/Clients/Create');
+                        }
                     },
                     error: function (xhr, status) {
                         alert(status);
@@ -44,13 +50,12 @@
 </script>
 <h2>Create</h2>
 
-@using (Html.BeginForm("Create", "Client", FormMethod.Post, new { enctype = "multypart/form-data" })) {
+@using (Html.BeginForm("CreateAsync", "Client", FormMethod.Post, new { enctype = "multipart/form-data" })) {
     @Html.AntiForgeryToken()
 
 <div class="form-horizontal">
     <h4>Clients</h4>
     <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div style="display:flex">
         <div style="width:8%; height:10px;"></div>
@@ -59,6 +64,8 @@
             <label class="custom-file-label" for="customFile">Choose file</label>
         </div>
     </div>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
     <div class="form-group">
         @Html.LabelFor(model => model.User.FullName, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">

@@ -29,7 +29,7 @@ namespace DataLayer
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
         }
-
+        
     }
     public class MyContextInitializer : CreateDatabaseIfNotExists<Model1>    //DropCreateDatabaseIfModelChanges
     {

@@ -13,12 +13,11 @@ namespace Sportclub.ViewModel
         [Required]
         public string FullName { get; set; }
         public DateTime BirthDay { get; set; }
-
-        //^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$
-
+        
+        [Required]
         [RegularExpression(@"^(\s*)?(\+)?([-_():= +]?\d[-_():= +]?){10,14}(\s*)?$", ErrorMessage = "Некорректный номер телефона")]
         public string Phone { get; set; }
-
+        [Required]
         [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", ErrorMessage = "Некорректный e-mail")]
         public string Email { get; set; }
 

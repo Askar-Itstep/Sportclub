@@ -56,11 +56,14 @@ namespace DataLayer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateAsync(ClientsVM clientVM, HttpPostedFileBase upload)
-        {
-            ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
-            ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
-
+        { 
             if (ModelState.IsValid) {
+                ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
+                ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
+
+                System.Diagnostics.Debug.WriteLine("User: " + ModelState.IsValidField("User"));
+                System.Diagnostics.Debug.WriteLine("UserId: " + ModelState.IsValidField("User.Id"));
+                System.Diagnostics.Debug.WriteLine("User.FullName: " + ModelState.IsValidField("User.FullName"));
                 var userBO = mapper.Map<UserBO>(clientVM.User);
                 var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().FirstOrDefault(r => r.RoleName == "client");
                 userBO.RoleId = roleBO.Id;
@@ -79,7 +82,10 @@ namespace DataLayer.Controllers
                 clientBO.Save(clientBO);
                 return new JsonResult { Data = "Данные записаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            return View(clientVM);
+            else
+                //ModelState.AddModelError("", "Ошибка создания модели!");
+                return  Json ( new { Data = "Ошибка создания модели!", good = false, JsonRequestBehavior = JsonRequestBehavior.AllowGet } );
+            //return View(clientVM);
         }
 
         [HttpGet]
