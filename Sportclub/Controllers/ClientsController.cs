@@ -83,9 +83,7 @@ namespace DataLayer.Controllers
                 return new JsonResult { Data = "Данные записаны", JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
             else
-                //ModelState.AddModelError("", "Ошибка создания модели!");
                 return  Json ( new { Data = "Ошибка создания модели!", good = false, JsonRequestBehavior = JsonRequestBehavior.AllowGet } );
-            //return View(clientVM);
         }
 
         [HttpGet]
