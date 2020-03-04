@@ -56,14 +56,15 @@ namespace DataLayer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateAsync(ClientsVM clientVM, HttpPostedFileBase upload)
-        { 
+        {
+            ModelState.Remove("User.Login");
+            
+            var errors = ModelState.Values.SelectMany(v => v.Errors).ToList();
+            errors.ForEach(e => System.Diagnostics.Debug.WriteLine("User: " + e));
+
             if (ModelState.IsValid) {
                 ImageVM imageVM = DependencyResolver.Current.GetService<ImageVM>();
                 ImageBO imageBase = DependencyResolver.Current.GetService<ImageBO>();
-
-                System.Diagnostics.Debug.WriteLine("User: " + ModelState.IsValidField("User"));
-                System.Diagnostics.Debug.WriteLine("UserId: " + ModelState.IsValidField("User.Id"));
-                System.Diagnostics.Debug.WriteLine("User.FullName: " + ModelState.IsValidField("User.FullName"));
                 var userBO = mapper.Map<UserBO>(clientVM.User);
                 var roleBO = DependencyResolver.Current.GetService<RoleBO>().LoadAll().FirstOrDefault(r => r.RoleName == "client");
                 userBO.RoleId = roleBO.Id;

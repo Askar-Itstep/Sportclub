@@ -16,8 +16,7 @@ namespace Sportclub.ViewModel
 
         [Required]
         public DateTime BirthDay { get; set; }
-
-        [Display(Name ="phone type: 8(+7) 999 111 22 33")]
+        
         [RegularExpression(@"^((8|\+7)[\- ]?)?(\d{3}[\- ]?)?[\d ]{7,11}$", ErrorMessage = "Некорректный номер")]
         [Required]
         public string Phone { get; set; }
